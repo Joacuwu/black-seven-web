@@ -1,4 +1,5 @@
 import AnnouncementBar from "@/components/AnnouncementBar";
+import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat } from "next/font/google";
 import "./globals.css";
@@ -42,9 +43,10 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${bebas.variable} ${montserrat.variable}`}>
       <body className="bg-black text-white font-sans antialiased selection:bg-red-600 selection:text-white">
-        {/* BARRA SUPERIOR FIJA */}
-        <header className="sticky top-0 z-50 bg-black">
+        {/* BLOQUE SUPERIOR FIJO */}
+        <header className="sticky top-0 z-50 w-full bg-black">
           <AnnouncementBar />
+          <Navbar />
         </header>
         {children}
       </body>
