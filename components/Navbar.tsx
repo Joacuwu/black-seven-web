@@ -47,7 +47,7 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* DROPDOWN: DROPS (Alineado a la derecha para no cortarse) */}
+        {/* DROPDOWN: DROPS */}
         <div 
           className="relative py-2 cursor-pointer"
           onMouseEnter={() => setIsDropsOpen(true)}
