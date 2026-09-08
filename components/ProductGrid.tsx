@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useCart } from "../context/CartContext";
 
 const PRODUCTS = [
-  { id: 1, name: "777 White", price: "$25.000", tag: "NEW",  img: "/remera1.jpg" },
+  { id: 1, name: "777 White", price: "$25.000", tag: "NEW",  img: "/remera2.jpg" },
   { id: 2, name: "BLK 7 Black", price: "$25.000", tag: "HOT", img: "/remera3.jpg" },
   { id: 3, name: "Conjunto BLK 777", price: "$55.000", tag: "DROP", img: "/conjunto1.jpg" },
   { id: 4, name: "Tee Oversize Star", price: "$28.000", tag: "NEW", img: "/campera1.jpg" },
