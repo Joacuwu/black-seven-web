@@ -1,40 +1,77 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, Menu } from "lucide-react";
-import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
-  const { cart, setIsCartOpen } = useCart();
+  const [isColeccionOpen, setIsColeccionOpen] = useState(false);
+  const [isDropsOpen, setIsDropsOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-40 bg-black/80 backdrop-blur-md border-b border-neutral-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <button className="md:hidden text-white hover:text-red-600">
-          <Menu size={24} />
-        </button>
+    <nav className="bg-black text-white px-6 py-4 flex justify-between items-center relative z-50 border-b border-neutral-800">
+      {/* LOGO */}
+      <Link href="/" className="text-2xl font-black tracking-tighter">
+        BLACK SEVEN
+      </Link>
 
-        <Link href="/" className="font-bebas text-3xl sm:text-4xl tracking-widest text-white hover:text-red-600 transition-colors">
-          BLACK SEVEN
-        </Link>
-
-        <nav className="hidden md:flex items-center space-x-8 font-montserrat text-xs tracking-widest uppercase text-neutral-400">
-          <Link href="#coleccion" className="hover:text-white transition-colors">Colección</Link>
-          <Link href="#coleccion" className="hover:text-white transition-colors">Drops</Link>
-        </nav>
-
-        <button 
-          onClick={() => setIsCartOpen(true)}
-          className="relative p-2 text-white hover:text-red-600 transition-colors"
+      {/* MENÚ DE NAVEGACIÓN */}
+      <div className="flex gap-8 items-center font-medium text-sm tracking-wide">
+        
+        {/* DROPDOWN: COLECCIÓN */}
+        <div 
+          className="relative py-2 cursor-pointer"
+          onMouseEnter={() => setIsColeccionOpen(true)}
+          onMouseLeave={() => setIsColeccionOpen(false)}
         >
-          <ShoppingBag size={22} />
-          {cart.length > 0 && (
-            <span className="absolute top-0 right-0 bg-red-600 text-white font-bebas text-xs px-1.5 py-0.5 rounded-full">
-              {cart.length}
-            </span>
+          <span className="hover:text-neutral-400 transition-colors uppercase">
+            Colección
+          </span>
+
+          {isColeccionOpen && (
+            <div className="absolute top-full left-0 w-48 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col">
+              <Link href="/coleccion/remeras" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+                Remeras & Tees
+              </Link>
+              <Link href="/coleccion/hoodies" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+                Buzos & Hoodies
+              </Link>
+              <Link href="/coleccion/conjuntos" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+                Conjuntos
+              </Link>
+              <Link href="/coleccion/pantalones" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+                Pantalones
+              </Link>
+            </div>
           )}
-        </button>
+        </div>
+
+        {/* DROPDOWN: DROPS */}
+        <div 
+          className="relative py-2 cursor-pointer"
+          onMouseEnter={() => setIsDropsOpen(true)}
+          onMouseLeave={() => setIsDropsOpen(false)}
+        >
+          <span className="hover:text-neutral-400 transition-colors uppercase">
+            Drops
+          </span>
+
+          {isDropsOpen && (
+            <div className="absolute top-full left-0 w-48 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col">
+              <Link href="/drops/drop-01" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors flex justify-between items-center">
+                <span>DROP #01</span>
+                <span className="text-[10px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">HOT</span>
+              </Link>
+              <Link href="/drops/edicion-limitada" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+                Edición Limitada
+              </Link>
+              <Link href="/drops/proximamente" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+                Próximos Lanzamientos
+              </Link>
+            </div>
+          )}
+        </div>
+
       </div>
-    </header>
+    </nav>
   );
 }
