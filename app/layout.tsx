@@ -1,5 +1,6 @@
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
+import { CartProvider } from "@/context/CartContext";
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat } from "next/font/google";
 import "./globals.css";
@@ -43,12 +44,14 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${bebas.variable} ${montserrat.variable}`}>
       <body className="bg-black text-white font-sans antialiased selection:bg-red-600 selection:text-white">
-        {/* BLOQUE SUPERIOR FIJO */}
-        <header className="sticky top-0 z-50 w-full bg-black">
-          <AnnouncementBar />
-          <Navbar />
-        </header>
-        {children}
+        <CartProvider>
+          {/* BLOQUE SUPERIOR FIJO */}
+          <header className="sticky top-0 z-50 w-full bg-black">
+            <AnnouncementBar />
+            <Navbar />
+          </header>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
