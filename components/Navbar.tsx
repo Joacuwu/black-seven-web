@@ -10,7 +10,7 @@ export default function Navbar() {
   const { cart, setIsCartOpen } = useCart();
 
   return (
-    <nav className="bg-black text-white px-6 py-4 flex justify-between items-center relative z-50 border-b border-neutral-800">
+    <nav className="sticky top-0 z-40 bg-black text-white px-6 py-4 flex justify-between items-center border-b border-neutral-800">
       {/* LOGO */}
       <Link href="/" className="text-2xl font-black tracking-tighter">
         BLACK SEVEN

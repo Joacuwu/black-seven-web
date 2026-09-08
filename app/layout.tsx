@@ -42,7 +42,10 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${bebas.variable} ${montserrat.variable}`}>
       <body className="bg-black text-white font-sans antialiased selection:bg-red-600 selection:text-white">
-        <AnnouncementBar />
+        {/* BARRA SUPERIOR FIJA */}
+        <header className="sticky top-0 z-50 bg-black">
+          <AnnouncementBar />
+        </header>
         {children}
       </body>
     </html>
