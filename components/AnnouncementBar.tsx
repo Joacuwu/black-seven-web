@@ -20,7 +20,7 @@ export default function AnnouncementBar() {
   }, []);
 
   return (
-    <div className="bg-neutral-900 text-neutral-300 text-[11px] font-bold tracking-widest uppercase py-2 px-4 text-center border-b border-neutral-800 transition-all duration-500">
+    <div className="bg-red-600 text-white text-[11px] font-bold tracking-widest uppercase py-2 px-4 text-center border-b border-red-700 transition-all duration-500">
       <p className="animate-fade-in">{ANNOUNCEMENTS[currentIndex]}</p>
     </div>
   );
