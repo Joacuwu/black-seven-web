@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-bebas {
+    font-family: var(--font-bebas), sans-serif;
+  }
+  .font-montserrat {
+    font-family: var(--font-montserrat), sans-serif;
+  }
+}
