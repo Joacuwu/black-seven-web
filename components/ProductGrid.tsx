@@ -3,56 +3,44 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 
-// Definimos un tipo para nuestros productos (más pro)
-type Product = {
-  id: number;
-  name: string;
-  price: string;
-  tag: string;
-  img: string;
-  imgHover: string; // ¡NUEVA! Foto de fondo
-};
-
-const PRODUCTS: Product[] = [
-  { 
-    id: 1, 
-    name: "777 White", 
-    price: "$25.000", 
-    tag: "NEW", 
-    img: "/remera2.jpg",
-    imgHover: "/remera1.jpg" // Asegurate de tener esta foto en 'public'
-  },
-  { 
-    id: 2, 
-    name: "BLK 7 Black", 
-    price: "$25.000", 
-    tag: "HOT", 
-    img: "/remera3.jpg",
-    imgHover: "/campera1.jpg" // Poné otra foto que quieras mostrar
-  },
-  { 
-    id: 3, 
-    name: "Conjunto BLK 777", 
-    price: "$55.000", 
-    tag: "DROP", 
-    img: "/conjunto1.jpg",
-    imgHover: "/remera2.jpg" // Otra foto de referencia
-  },
-  { 
-    id: 4, 
-    name: "Tee Oversize Star", 
-    price: "$28.000", 
-    tag: "NEW", 
-    img: "/campera1.jpg",
-    imgHover: "/remera3.jpg" // Otra foto de referencia
-  },
-];
-
 export default function ProductGrid() {
   const { addToCart } = useCart();
-  
-  // Estado para guardar el ID del producto que tiene el mouse encima
   const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
+
+  const PRODUCTS = [
+    { 
+      id: 1, 
+      name: "777 White", 
+      price: "$25.000", 
+      tag: "NEW", 
+      img: "/remera2.jpg",
+      imgHover: "/remera1.jpg"
+    },
+    { 
+      id: 2, 
+      name: "BLK 7 Black", 
+      price: "$25.000", 
+      tag: "HOT", 
+      img: "/remera3.jpg",
+      imgHover: "/campera1.jpg"
+    },
+    { 
+      id: 3, 
+      name: "Conjunto BLK 777", 
+      price: "$55.000", 
+      tag: "DROP", 
+      img: "/conjunto1.jpg",
+      imgHover: "/remera2.jpg"
+    },
+    { 
+      id: 4, 
+      name: "Tee Oversize Star", 
+      price: "$28.000", 
+      tag: "NEW", 
+      img: "/campera1.jpg",
+      imgHover: "/remera3.jpg"
+    },
+  ];
 
   return (
     <div className="bg-black text-white px-6 py-12">
@@ -68,15 +56,15 @@ export default function ProductGrid() {
             onMouseEnter={() => setHoveredProductId(product.id)}
             onMouseLeave={() => setHoveredProductId(null)}
           >
-            {/* TAG (NEW, HOT, etc.) */}
+            {/* TAG */}
             {product.tag && (
               <span className="absolute top-3 left-3 bg-white text-black font-extrabold text-[10px] px-2 py-0.5 rounded-sm uppercase tracking-wider z-10">
                 {product.tag}
               </span>
             )}
             
-            {/* CONTENEDOR DE IMAGEN CON EFECTO HOVER */}
-            <div className="relative aspect-[4/5] w-full overflow-hidden">
+            {/* IMAGEN CON HOVER */}
+            <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-900">
               <img
                 src={hoveredProductId === product.id ? product.imgHover : product.img}
                 alt={product.name}
@@ -94,9 +82,8 @@ export default function ProductGrid() {
                 {product.price}
               </p>
               
-              {/* BOTÓN AGREGAR */}
               <button
-                onClick={() => addToCart(product)}
+                onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, size: "M", img: product.img })}
                 className="w-full bg-white text-black py-2.5 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors"
               >
                 Agregar al Carrito
