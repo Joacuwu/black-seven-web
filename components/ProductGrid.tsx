@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useCart } from "../context/CartContext";
+import Link from "next/link";
+import { useCart } from "@/context/CartContext";
 
 export default function ProductGrid() {
   const { addToCart } = useCart();
@@ -43,8 +44,8 @@ export default function ProductGrid() {
   ];
 
   return (
-    <div className="bg-black text-white px-6 py-12">
-      <h2 className="text-3xl font-black tracking-tighter uppercase mb-10 text-center">
+    <div className="bg-black text-white px-6 py-12 font-montserrat">
+      <h2 className="text-3xl font-black tracking-tighter uppercase mb-10 text-center font-bebas">
         Lo Último
       </h2>
       
@@ -56,32 +57,39 @@ export default function ProductGrid() {
             onMouseEnter={() => setHoveredProductId(product.id)}
             onMouseLeave={() => setHoveredProductId(null)}
           >
-            {/* TAG */}
-            {product.tag && (
-              <span className="absolute top-3 left-3 bg-white text-black font-extrabold text-[10px] px-2 py-0.5 rounded-sm uppercase tracking-wider z-10">
-                {product.tag}
-              </span>
-            )}
-            
-            {/* IMAGEN CON HOVER */}
-            <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-900">
-              <img
-                src={hoveredProductId === product.id ? product.imgHover : product.img}
-                alt={product.name}
-                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
-              />
-            </div>
-            
-            {/* DETALLES */}
-            <div className="p-4 flex flex-col flex-grow">
-              <p className="text-xs text-neutral-400 uppercase tracking-wide mb-1">Black Seven</p>
-              <h3 className="text-sm font-bold tracking-tight mb-2 flex-grow line-clamp-2">
-                {product.name}
-              </h3>
-              <p className="text-lg font-black tracking-tighter mb-4 text-white">
-                {product.price}
-              </p>
+            {/* LINK QUE ENVOLVERÁ IMAGEN Y TÍTULO */}
+            <Link href={`/producto/${product.id}`} className="flex flex-col flex-grow">
               
+              {/* TAG */}
+              {product.tag && (
+                <span className="absolute top-3 left-3 bg-white text-black font-extrabold text-[10px] px-2 py-0.5 rounded-sm uppercase tracking-wider z-10">
+                  {product.tag}
+                </span>
+              )}
+              
+              {/* IMAGEN CON HOVER */}
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-900">
+                <img
+                  src={hoveredProductId === product.id ? product.imgHover : product.img}
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+                />
+              </div>
+              
+              {/* DETALLES DE PRODUCTO */}
+              <div className="p-4 flex flex-col flex-grow">
+                <p className="text-xs text-neutral-400 uppercase tracking-wide mb-1">Black Seven</p>
+                <h3 className="text-sm font-bold tracking-tight mb-2 flex-grow line-clamp-2 group-hover:text-neutral-300 transition-colors">
+                  {product.name}
+                </h3>
+                <p className="text-lg font-black tracking-tighter text-white">
+                  {product.price}
+                </p>
+              </div>
+            </Link>
+
+            {/* BOTÓN MANTENIDO FUERA DEL LINK */}
+            <div className="p-4 pt-0">
               <button
                 onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, size: "M", img: product.img })}
                 className="w-full bg-white text-black py-2.5 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors"
@@ -89,6 +97,7 @@ export default function ProductGrid() {
                 Agregar al Carrito
               </button>
             </div>
+
           </div>
         ))}
       </div>
