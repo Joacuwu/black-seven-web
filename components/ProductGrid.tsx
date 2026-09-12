@@ -36,7 +36,7 @@ export default function ProductGrid() {
     { 
       id: 4, 
       name: "Tee Oversize Star", 
-      price: "$28.000", 
+      price: "$1", 
       tag: "NEW", 
       img: "/campera1.jpg",
       imgHover: "/remera3.jpg"
