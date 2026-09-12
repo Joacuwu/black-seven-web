@@ -6,11 +6,12 @@ import { X, Trash2 } from "lucide-react";
 export default function CartDrawer() {
   const { cart, removeFromCart, isCartOpen, setIsCartOpen } = useCart();
 
-  // Cambiá este número por el WhatsApp del emprendimiento (con código de país)
+  // Número de WhatsApp del emprendimiento
   const PHONE_NUMBER = "5491127035976"; 
 
-  const sendWhatsAppOrder = () => {
-    if (cart.length === 0) return;
+  // Genera el enlace de WhatsApp codificado
+  const getWhatsAppUrl = () => {
+    if (cart.length === 0) return "#";
 
     let message = "¡Hola *BLACK SEVEN*! Quiero realizar el siguiente pedido:\n\n";
     cart.forEach((item, index) => {
@@ -18,8 +19,7 @@ export default function CartDrawer() {
     });
     message += "\n¿Tienen stock disponible para coordinar el pago y envío?";
 
-    const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
+    return `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
   };
 
   if (!isCartOpen) return null;
@@ -58,12 +58,14 @@ export default function CartDrawer() {
 
         {cart.length > 0 && (
           <div className="pt-4 border-t border-neutral-800">
-            <button
-              onClick={sendWhatsAppOrder}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-bebas text-xl py-3 tracking-widest uppercase transition-colors"
+            <a
+              href={getWhatsAppUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full bg-red-600 hover:bg-red-700 text-white font-bebas text-xl py-3 tracking-widest uppercase transition-colors text-center"
             >
               Comprar por WhatsApp
-            </button>
+            </a>
           </div>
         )}
       </div>
