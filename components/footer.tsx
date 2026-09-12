@@ -42,7 +42,7 @@ export default function Footer() {
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-200">Comunidad</h4>
           <p className="text-xs text-neutral-400">Seguinos en nuestras redes para no perderte ningún Drop.</p>
           <div className="flex gap-4 pt-1">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-300 hover:text-white uppercase tracking-wider underline">
+            <a href="https://www.instagram.com/black.sevenn7/" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-300 hover:text-white uppercase tracking-wider underline">
               Instagram
             </a>
             <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-300 hover:text-white uppercase tracking-wider underline">
