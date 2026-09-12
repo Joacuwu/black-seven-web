@@ -3,7 +3,7 @@
 import Hero from "../components/Hero";
 import ProductGrid from "../components/ProductGrid";
 import CartDrawer from "../components/CartDrawer";
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 
 export default function Home() {
   return (
