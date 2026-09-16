@@ -13,17 +13,17 @@ export default function Navbar() {
   return (
     <nav className="bg-black text-white px-6 py-4 flex justify-between items-center border-b border-neutral-800 relative z-40">
       
-      {/* LOGO EN IMAGEN */}
-<Link href="/" className="flex items-center">
-  <Image
-    src="/logo.png"
-    alt="BLACK SEVEN Logo"
-    width={290} // Aumentado (antes 160)
-    height={90} // Aumentado (antes 40)
-    className="h-12 md:h-14 w-auto object-contain" // Controla la altura visual real (antes h-8)
-    priority
-  />
-</Link>
+      {/* LOGO EN IMAGEN AGRANDADO */}
+      <Link href="/" className="flex items-center py-1">
+        <Image
+          src="/logo.png"
+          alt="BLACK SEVEN Logo"
+          width={280}
+          height={70}
+          className="h-12 md:h-16 w-auto object-contain transition-transform hover:scale-105"
+          priority
+        />
+      </Link>
 
       {/* MENÚ DE NAVEGACIÓN */}
       <div className="flex gap-8 items-center font-medium text-sm tracking-wide">
