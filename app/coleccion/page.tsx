@@ -48,6 +48,26 @@ const ALL_PRODUCTS = [
     img: "/camperablk77.jpg",
     imgHover: "/camperablk77hover.jpg",
   },
+  {
+    id: "5",
+    name: "CAMPERA BLACKSEVEN 77",
+    category: "camperas",
+    price: 52000,
+    tag: "NEW",
+    sizes: ["S", "M", "L"],
+    img: "/camperablackseven77.jpg",
+    imgHover: "/camperablackseven77hover.jpg",
+  },
+  {
+    id: "6",
+    name: "BUZO BLK 77",
+    category: "hoddies",
+    price: 52000,
+    tag: "NEW",
+    sizes: ["S", "M", "L"],
+    img: "/buzoblackseven77_1.jpg",
+    imgHover: "/buzoblackseven77hover.jpg",
+  },
 ];
 
 function ColeccionContent() {
