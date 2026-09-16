@@ -72,8 +72,9 @@ export default function ProductDetailPage() {
   const [addedAnimation, setAddedAnimation] = useState<boolean>(false);
   const [isGuiaOpen, setIsGuiaOpen] = useState<boolean>(false);
 
-  // Estado para el efecto Zoom
+  // Estado para el efecto Zoom y posición exacta del cursor
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [isZoomed, setIsZoomed] = useState(false);
 
   const activeImage = selectedImage ?? product.images[0] ?? "/remera777.jpg";
@@ -83,9 +84,17 @@ export default function ProductDetailPage() {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    
+    // Posición en porcentaje (para el transformOrigin de la imagen)
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
     setZoomPosition({ x, y });
+
+    // Posición en pixeles relativa al contenedor (para la lente flotante)
+    setCursorPos({
+      x: e.clientX - left,
+      y: e.clientY - top
+    });
   };
 
   const handleAddToCart = () => {
@@ -140,9 +149,13 @@ export default function ProductDetailPage() {
               ))}
             </div>
 
-            {/* IMAGEN PRINCIPAL CON ZOOM AL HACER HOVER */}
+            {/* IMAGEN PRINCIPAL CON ZOOM Y DETALLES PRO */}
             <div
-              className="relative w-full aspect-[3/4] bg-neutral-950 border border-neutral-900 rounded-sm overflow-hidden cursor-crosshair"
+              className={`relative w-full aspect-[3/4] bg-neutral-950 border transition-all duration-300 rounded-sm overflow-hidden cursor-none select-none ${
+                isZoomed 
+                  ? "border-red-600/60 shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
+                  : "border-neutral-900"
+              }`}
               onMouseEnter={() => setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
               onMouseMove={handleMouseMove}
@@ -152,8 +165,8 @@ export default function ProductDetailPage() {
                 alt={product.name}
                 fill
                 priority
-                className={`object-cover transition-transform duration-200 ease-out ${
-                  isZoomed ? "scale-[2.2]" : "scale-100"
+                className={`object-cover transition-transform duration-150 ease-out ${
+                  isZoomed ? "scale-[2.3]" : "scale-100"
                 }`}
                 style={{
                   transformOrigin: isZoomed
@@ -161,7 +174,40 @@ export default function ProductDetailPage() {
                     : "center center",
                 }}
               />
+
+              {/* 1. CARTEL INDICADOR (DESAPARECE EN HOVER) */}
+              <div 
+                className={`absolute bottom-3 right-3 bg-black/70 backdrop-blur-md px-2.5 py-1 text-[10px] uppercase font-bold tracking-widest text-neutral-300 border border-neutral-800 rounded pointer-events-none flex items-center gap-1.5 transition-opacity duration-300 ${
+                  isZoomed ? "opacity-0" : "opacity-100"
+                }`}
+              >
+                <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                </svg>
+                Pasa el cursor para zoom
+              </div>
+
+              {/* 2. LENTE FLOTANTE Y MIRA (APARECE EN HOVER) */}
+              {isZoomed && (
+                <>
+                  {/* Círculo indicador / Lente flotante */}
+                  <div
+                    className="absolute w-16 h-16 border border-red-500/50 rounded-full pointer-events-none transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_10px_rgba(255,0,0,0.3)] bg-red-600/5"
+                    style={{
+                      left: `${cursorPos.x}px`,
+                      top: `${cursorPos.y}px`,
+                    }}
+                  />
+
+                  {/* Esquinas / Visor táctico estilo streetwear */}
+                  <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-red-600/80 pointer-events-none" />
+                  <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-red-600/80 pointer-events-none" />
+                  <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-red-600/80 pointer-events-none" />
+                  <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-red-600/80 pointer-events-none" />
+                </>
+              )}
             </div>
+
           </div>
 
           {/* COLUMNA DERECHA: DETALLES Y COMPRA */}
