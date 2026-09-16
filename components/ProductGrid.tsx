@@ -42,6 +42,38 @@ export default function ProductGrid() {
       img: "/camperablk77.jpg",
       imgHover: "/camperablk77hover.jpg"
     },
+    { 
+      id: 4, 
+      name: "CAMPERA BLK 77", 
+      price: "$25.000", 
+      tag: "NEW", 
+      img: "/camperablk77.jpg",
+      imgHover: "/camperablk77hover.jpg"
+    },
+    { 
+      id: 4, 
+      name: "CAMPERA BLK 77", 
+      price: "$25.000", 
+      tag: "NEW", 
+      img: "/camperablk77.jpg",
+      imgHover: "/camperablk77hover.jpg"
+    },
+    { 
+      id: 4, 
+      name: "CAMPERA BLK 77", 
+      price: "$25.000", 
+      tag: "NEW", 
+      img: "/camperablk77.jpg",
+      imgHover: "/camperablk77hover.jpg"
+    },
+    { 
+      id: 4, 
+      name: "CAMPERA BLK 77", 
+      price: "$25.000", 
+      tag: "NEW", 
+      img: "/camperablk77.jpg",
+      imgHover: "/camperablk77hover.jpg"
+    },
   ];
 
   return (
