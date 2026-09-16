@@ -4,7 +4,7 @@ import React from "react";
 
 export default function WhatsAppButton() {
   // Reemplazá este número por el de tu cliente (formato internacional sin el +)
-  const phoneNumber = "5491112345678"; 
+  const phoneNumber = "5491127035976"; 
   const message = encodeURIComponent(
     "¡Hola BLACK SEVEN! Tengo una consulta sobre un producto."
   );
