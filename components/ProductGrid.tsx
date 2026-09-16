@@ -43,12 +43,12 @@ export default function ProductGrid() {
       imgHover: "/camperablk77hover.jpg"
     },
     { 
-      id: 4, 
-      name: "CAMPERA BLK 77", 
+      id: 5, 
+      name: "CAMPERA BLACKSEVEN 77", 
       price: "$25.000", 
-      tag: "NEW", 
-      img: "/camperablk77.jpg",
-      imgHover: "/camperablk77hover.jpg"
+      tag: "GOD", 
+      img: "/camperablackseven77_1.jpg",
+      imgHover: "/camperablackseven77_1hover.jpg"
     },
     { 
       id: 4, 
