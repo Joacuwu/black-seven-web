@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -72,29 +72,68 @@ export default function ProductDetailPage() {
   const [addedAnimation, setAddedAnimation] = useState<boolean>(false);
   const [isGuiaOpen, setIsGuiaOpen] = useState<boolean>(false);
 
-  // Estado para el efecto Zoom y posición exacta del cursor
+  // Estados de Zoom
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [isZoomed, setIsZoomed] = useState(false);
+
+  // Ref para calcular gestos en móviles
+  const lastTapRef = useRef<number>(0);
 
   const activeImage = selectedImage ?? product.images[0] ?? "/remera777.jpg";
   const activeSize = selectedSize ?? product.sizes[0] ?? "M";
 
   const { addToCart } = useCart();
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+  // MANEJADOR DE EVENTOS DE MOUSE Y TOUCH
+  const updateZoomCoords = (clientX: number, clientY: number, currentTarget: HTMLDivElement) => {
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
     
-    // Posición en porcentaje (para el transformOrigin de la imagen)
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
+    // Posición porcentual para la propiedad transformOrigin
+    const x = Math.max(0, Math.min(100, ((clientX - left) / width) * 100));
+    const y = Math.max(0, Math.min(100, ((clientY - top) / height) * 100));
     setZoomPosition({ x, y });
 
-    // Posición en pixeles relativa al contenedor (para la lente flotante)
+    // Coordenadas en píxeles para la lente táctica
     setCursorPos({
-      x: e.clientX - left,
-      y: e.clientY - top
+      x: clientX - left,
+      y: clientY - top
     });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    updateZoomCoords(e.clientX, e.clientY, e.currentTarget);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300; // ms
+
+    // Detección de Doble Tap en celis
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      setIsZoomed((prev) => !prev);
+    } else {
+      // Tap simple / Inicio de arrastre
+      if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        updateZoomCoords(touch.clientX, touch.clientY, e.currentTarget);
+        setIsZoomed(true);
+      }
+    }
+    lastTapRef.current = now;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 1 && isZoomed) {
+      const touch = e.touches[0];
+      updateZoomCoords(touch.clientX, touch.clientY, e.currentTarget);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    // Si no fue doble tap sostenido, se desactiva al soltar
+    // Si preferís que se mantenga fijo tras tocar, podés quitar esta línea.
+    setIsZoomed(false);
   };
 
   const handleAddToCart = () => {
@@ -111,7 +150,7 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-8 pb-20 px-6 font-montserrat">
+    <div className="min-h-screen bg-black text-white pt-8 pb-20 px-4 md:px-6 font-montserrat">
       <div className="max-w-7xl mx-auto">
         
         {/* BREADCRUMB */}
@@ -124,7 +163,7 @@ export default function ProductDetailPage() {
         </nav>
 
         {/* CONTENEDOR PRINCIPAL */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           
           {/* COLUMNA IZQUIERDA: GALERÍA DE IMÁGENES */}
           <div className="flex flex-col-reverse md:flex-row gap-4">
@@ -135,7 +174,7 @@ export default function ProductDetailPage() {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(img)}
-                  className={`relative w-20 h-24 border ${
+                  className={`relative w-16 h-20 md:w-20 md:h-24 border ${
                     activeImage === img ? "border-red-600" : "border-neutral-800"
                   } bg-neutral-950 overflow-hidden flex-shrink-0 transition-all cursor-pointer`}
                 >
@@ -149,16 +188,19 @@ export default function ProductDetailPage() {
               ))}
             </div>
 
-            {/* IMAGEN PRINCIPAL CON ZOOM Y DETALLES PRO */}
+            {/* IMAGEN PRINCIPAL CON ZOOM PRO Y TOUCH CONTROLS */}
             <div
-              className={`relative w-full aspect-[3/4] bg-neutral-950 border transition-all duration-300 rounded-sm overflow-hidden cursor-none select-none ${
+              className={`relative w-full aspect-[3/4] bg-neutral-950 border transition-all duration-300 rounded-sm overflow-hidden select-none touch-none cursor-none ${
                 isZoomed 
-                  ? "border-red-600/60 shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
+                  ? "border-red-600/60 shadow-[0_0_25px_rgba(220,38,38,0.3)]" 
                   : "border-neutral-900"
               }`}
               onMouseEnter={() => setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
               onMouseMove={handleMouseMove}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               <Image
                 src={activeImage}
@@ -175,35 +217,36 @@ export default function ProductDetailPage() {
                 }}
               />
 
-              {/* 1. CARTEL INDICADOR (DESAPARECE EN HOVER) */}
+              {/* CARTEL INDICADOR DE TOUCH/HOVER (DESAPARECE AL AMPLIAR) */}
               <div 
-                className={`absolute bottom-3 right-3 bg-black/70 backdrop-blur-md px-2.5 py-1 text-[10px] uppercase font-bold tracking-widest text-neutral-300 border border-neutral-800 rounded pointer-events-none flex items-center gap-1.5 transition-opacity duration-300 ${
+                className={`absolute bottom-3 right-3 bg-black/80 backdrop-blur-md px-3 py-1.5 text-[10px] uppercase font-bold tracking-widest text-neutral-300 border border-neutral-800 rounded pointer-events-none flex items-center gap-1.5 transition-opacity duration-300 ${
                   isZoomed ? "opacity-0" : "opacity-100"
                 }`}
               >
-                <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
                 </svg>
-                Pasa el cursor para zoom
+                <span className="hidden md:inline">Hover para Zoom</span>
+                <span className="inline md:hidden">Mantén o Toca 2 veces</span>
               </div>
 
-              {/* 2. LENTE FLOTANTE Y MIRA (APARECE EN HOVER) */}
+              {/* MIRA TÁCTICA Y LENTE FLOTANTE */}
               {isZoomed && (
                 <>
-                  {/* Círculo indicador / Lente flotante */}
+                  {/* Lente flotante centrada en el dedo/mouse */}
                   <div
-                    className="absolute w-16 h-16 border border-red-500/50 rounded-full pointer-events-none transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_10px_rgba(255,0,0,0.3)] bg-red-600/5"
+                    className="absolute w-16 h-16 border border-red-500/60 rounded-full pointer-events-none transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_15px_rgba(255,0,0,0.4)] bg-red-600/10"
                     style={{
                       left: `${cursorPos.x}px`,
                       top: `${cursorPos.y}px`,
                     }}
                   />
 
-                  {/* Esquinas / Visor táctico estilo streetwear */}
-                  <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-red-600/80 pointer-events-none" />
-                  <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-red-600/80 pointer-events-none" />
-                  <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-red-600/80 pointer-events-none" />
-                  <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-red-600/80 pointer-events-none" />
+                  {/* Visor táctico de esquinas */}
+                  <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-red-600/80 pointer-events-none" />
+                  <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-red-600/80 pointer-events-none" />
+                  <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-red-600/80 pointer-events-none" />
+                  <div className="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-red-600/80 pointer-events-none" />
                 </>
               )}
             </div>
