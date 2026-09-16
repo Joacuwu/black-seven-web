@@ -98,7 +98,7 @@ const PRODUCTS_DATA: Record<string, {
       "Corte Relaxed Fit"
     ],
     sizes: ["M", "L", "XL"],
-    images: ["/buzoblackseven77_1.jpg", "/buzoblackseven77hover.jpg", "/buzoblackseven77_2.jpg"]
+    images: ["/buzoblackseven77_1.jpg", "/buzoblackseven77hover.jpg", "/buzoblackseven77_2.jpg", "/buzoblackseven77_3.jpg"]
   },
 };
 
