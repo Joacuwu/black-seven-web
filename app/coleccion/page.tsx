@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -53,7 +53,7 @@ const ALL_PRODUCTS = [
     name: "CAMPERA BLACKSEVEN 77",
     category: "camperas",
     price: 52000,
-    tag: "NEW",
+    tag: "GOD",
     sizes: ["S", "M", "L"],
     img: "/camperablackseven77.jpg",
     imgHover: "/camperablackseven77hover.jpg",
@@ -61,7 +61,7 @@ const ALL_PRODUCTS = [
   {
     id: "6",
     name: "BUZO BLACKSEVEN 77",
-    category: "hoodies", // Corregido de "hoddies" a "hoodies"
+    category: "hoodies",
     price: 52000,
     tag: "NEW",
     sizes: ["S", "M", "L"],
@@ -75,25 +75,16 @@ function ColeccionContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // DERIVACIÓN DIRECTA DE URL (Evita useEffect y llamadas innecesarias a setState)
   const categoryParam = searchParams.get("categoria");
+  const selectedCategory = categoryParam ? categoryParam.toLowerCase() : "todas";
 
-  // ESTADOS DE FILTROS
-  const [selectedCategory, setSelectedCategory] = useState<string>("todas");
+  // ESTADOS DE FILTROS LOCALES
   const [selectedSize, setSelectedSize] = useState<string>("todos");
   const [sortBy, setSortBy] = useState<string>("destacados");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  // SINCRONIZACIÓN DE NAVEGACIÓN Y QUERY PARAMS
-  useEffect(() => {
-    if (categoryParam) {
-      setSelectedCategory(categoryParam.toLowerCase());
-    } else {
-      setSelectedCategory("todas");
-    }
-  }, [categoryParam]);
-
   const handleCategoryChange = (cat: string) => {
-    setSelectedCategory(cat);
     if (cat === "todas") {
       router.push("/coleccion");
     } else {
@@ -124,7 +115,9 @@ function ColeccionContent() {
         
         {/* CABECERA */}
         <div className="border-b border-neutral-900 pb-8 mb-8 text-center md:text-left">
-          <span className="text-xs font-bold text-red-600 tracking-widest uppercase">CATÁLOGO COMPLETO</span>
+          <span className="text-xs font-bold text-red-600 tracking-widest uppercase">
+            CATÁLOGO COMPLETO
+          </span>
           <h1 className="text-4xl md:text-6xl font-black font-bebas tracking-wider uppercase mt-1">
             COLECCIÓN
           </h1>
@@ -240,7 +233,9 @@ function ColeccionContent() {
 
                   {/* DATOS */}
                   <div className="p-4 flex flex-col flex-grow">
-                    <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">BLACK SEVEN</span>
+                    <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">
+                      BLACK SEVEN
+                    </span>
                     <h3 className="text-sm font-bold tracking-tight mt-1 flex-grow line-clamp-1 group-hover:text-neutral-300 transition-colors uppercase">
                       {product.name}
                     </h3>
