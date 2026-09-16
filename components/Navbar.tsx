@@ -18,8 +18,8 @@ export default function Navbar() {
   <Image
     src="/logo.png"
     alt="BLACK SEVEN Logo"
-    width={240} // Aumentado (antes 160)
-    height={60} // Aumentado (antes 40)
+    width={290} // Aumentado (antes 160)
+    height={90} // Aumentado (antes 40)
     className="h-12 md:h-14 w-auto object-contain" // Controla la altura visual real (antes h-8)
     priority
   />
