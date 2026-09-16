@@ -14,8 +14,8 @@ export default function ProductGrid() {
       name: "777 White", 
       price: "$25.000", 
       tag: "NEW", 
-      img: "/remera2.jpg",
-      imgHover: "/remera1.jpg"
+      img: "/remera777.jpg",
+      imgHover: "/remera777hover.jpg"
     },
     { 
       id: 2, 
