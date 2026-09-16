@@ -8,7 +8,7 @@ export default function CartDrawer() {
   const { cart, removeFromCart, isCartOpen, setIsCartOpen } = useCart();
   const [loadingPayment, setLoadingPayment] = useState(false);
 
-  const PHONE_NUMBER = "5491127035976"; 
+  const PHONE_NUMBER = "5491127035976";
 
   const getWhatsAppUrl = () => {
     if (cart.length === 0) return "#";
@@ -22,11 +22,9 @@ export default function CartDrawer() {
     return `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
   };
 
-  // Función para procesar la compra online
   const handleOnlinePayment = async () => {
     setLoadingPayment(true);
     try {
-      // 1. Enviamos el carrito a nuestra API interna de checkout
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,7 +34,6 @@ export default function CartDrawer() {
       const data = await response.json();
 
       if (data.init_point) {
-        // 2. Redirigimos al usuario al Checkout de Mercado Pago
         window.location.href = data.init_point;
       } else {
         alert("Ocurrió un error al iniciar el pago.");
@@ -49,17 +46,29 @@ export default function CartDrawer() {
     }
   };
 
-  if (!isCartOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-neutral-950 border-l border-neutral-800 p-6 flex flex-col justify-between h-full font-montserrat">
+    <div
+      className={`fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
+        isCartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+      onClick={() => setIsCartOpen(false)}
+    >
+      {/* CONTENEDOR LATERAL CON DESLIZAMIENTO */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`w-full max-w-md bg-neutral-950 border-l border-neutral-800 p-6 flex flex-col justify-between h-full font-montserrat transform transition-transform duration-300 ease-in-out ${
+          isCartOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
         
         {/* HEADER Y PRODUCTOS */}
         <div>
           <div className="flex justify-between items-center pb-4 border-b border-neutral-800">
             <h2 className="font-bebas text-3xl tracking-wider text-white">TU CARRITO ({cart.length})</h2>
-            <button onClick={() => setIsCartOpen(false)} className="text-neutral-400 hover:text-white">
+            <button 
+              onClick={() => setIsCartOpen(false)} 
+              className="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+            >
               <X size={24} />
             </button>
           </div>
@@ -76,7 +85,7 @@ export default function CartDrawer() {
                     <p className="text-xs text-red-500 mt-1">Talle: {item.size}</p>
                     <p className="text-xs text-neutral-300 font-bold mt-1">{item.price}</p>
                   </div>
-                  <button onClick={() => removeFromCart(index)} className="text-neutral-500 hover:text-red-500">
+                  <button onClick={() => removeFromCart(index)} className="text-neutral-500 hover:text-red-500 transition-colors">
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -93,7 +102,7 @@ export default function CartDrawer() {
             <button
               onClick={handleOnlinePayment}
               disabled={loadingPayment}
-              className="w-full bg-white hover:bg-neutral-200 text-black font-bebas text-xl py-3 tracking-widest uppercase transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-white hover:bg-neutral-200 text-black font-bebas text-xl py-3 tracking-widest uppercase transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <CreditCard size={20} />
               {loadingPayment ? "PROCESANDO..." : "PAGAR ONLINE (TARJETA / MP)"}
