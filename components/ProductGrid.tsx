@@ -30,8 +30,8 @@ export default function ProductGrid() {
       name: "Conjunto BLK 777", 
       price: "$55.000", 
       tag: "DROP", 
-      img: "/conjunto1.jpg",
-      imgHover: "/remera2.jpg"
+      img: "/conjuntoblk777.jpg",
+      imgHover: "/conjuntoblk777hover.jpg"
     },
     { 
       id: 4, 

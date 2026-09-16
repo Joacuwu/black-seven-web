@@ -44,6 +44,20 @@ const PRODUCTS_DATA: Record<string, {
     sizes: ["M", "L", "XL"],
     images: ["/remerablk7.jpg", "/remerablk7hover.jpg"]
   }
+  "3" {
+    id: "3"
+    name: "CONJUNTO BLK 777",
+    price: 68000,
+    description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
+    details: [
+      "Frisa invisible pesada 80/20",
+      "Bordado de alta densidad en el pecho",
+      "Puños y cintura de morley reforzado",
+      "Corte Relaxed Fit"
+    ],
+    sizes: ["M", "L", "XL"],
+    images: ["/conjuntoblk777.jpg", "/conjuntoblk777hover.jpg"]
+  }
 };
 
 export default function ProductDetailPage() {
