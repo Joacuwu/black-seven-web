@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
@@ -49,16 +50,38 @@ const ALL_PRODUCTS = [
   },
 ];
 
-export default function ColeccionPage() {
+function ColeccionContent() {
   const { addToCart } = useCart();
-  
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const categoryParam = searchParams.get("categoria");
+
   // ESTADOS DE FILTROS
   const [selectedCategory, setSelectedCategory] = useState<string>("todas");
   const [selectedSize, setSelectedSize] = useState<string>("todos");
   const [sortBy, setSortBy] = useState<string>("destacados");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  // LÓGICA DE FILTRADO Y ORDENAMIENTO (Derived State)
+  // SINCRONIZACIÓN DE NAVEGACIÓN Y QUERY PARAMS
+  useEffect(() => {
+    if (categoryParam) {
+      setSelectedCategory(categoryParam.toLowerCase());
+    } else {
+      setSelectedCategory("todas");
+    }
+  }, [categoryParam]);
+
+  const handleCategoryChange = (cat: string) => {
+    setSelectedCategory(cat);
+    if (cat === "todas") {
+      router.push("/coleccion");
+    } else {
+      router.push(`/coleccion?categoria=${cat}`);
+    }
+  };
+
+  // LÓGICA DE FILTRADO Y ORDENAMIENTO
   const filteredProducts = useMemo(() => {
     return ALL_PRODUCTS.filter((product) => {
       const matchCategory =
@@ -93,11 +116,11 @@ export default function ColeccionPage() {
           
           {/* CATEGORÍAS */}
           <div className="flex flex-wrap gap-2 text-xs font-bold uppercase">
-            {["todas", "remeras", "hoodies", "conjuntos"].map((cat) => (
+            {["todas", "remeras", "hoodies", "conjuntos", "pantalones"].map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-2 border transition-all cursor-pointer ${
+                onClick={() => handleCategoryChange(cat)}
+                className={`px-3 py-2 border transition-all cursor-pointer font-bold ${
                   selectedCategory === cat
                     ? "bg-white text-black border-white"
                     : "bg-black text-neutral-400 border-neutral-800 hover:border-neutral-600"
@@ -147,10 +170,10 @@ export default function ColeccionPage() {
         {/* GRILLA DE PRODUCTOS */}
         {filteredProducts.length === 0 ? (
           <div className="py-20 text-center text-neutral-500">
-            <p className="text-lg font-bold">No se encontraron productos con estos filtros.</p>
+            <p className="text-lg font-bold">No se encontraron productos en esta categoría.</p>
             <button
-              onClick={() => { setSelectedCategory("todas"); setSelectedSize("todos"); }}
-              className="mt-4 text-xs text-red-600 underline uppercase tracking-wider"
+              onClick={() => handleCategoryChange("todas")}
+              className="mt-4 text-xs text-red-600 underline uppercase tracking-wider cursor-pointer"
             >
               Limpiar filtros
             </button>
@@ -229,5 +252,13 @@ export default function ColeccionPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function ColeccionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black text-white p-8">Cargando catálogo...</div>}>
+      <ColeccionContent />
+    </Suspense>
   );
 }
