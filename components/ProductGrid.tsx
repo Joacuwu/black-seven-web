@@ -15,7 +15,7 @@ export default function ProductGrid() {
       price: "$25.000", 
       tag: "NEW", 
       img: "/remera777.jpg",
-      imgHover: "/remera1.jpg"
+      imgHover: "/remera777hover.jpg"
     },
     { 
       id: 2, 
