@@ -3,16 +3,29 @@ import Image from "next/image";
 export default function Hero() {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20 bg-black">
-      {/* IMAGEN DE FONDO CON CARGA PRIORITARIA */}
-      <Image
-        src="/hero-bg.jpg" // Nombre del archivo que guardes en /public
-        alt="BLACK SEVEN Background"
-        fill
-        priority
-        className="object-cover object-center opacity-40" // Ajustá la opacidad (opacity-40 / opacity-50) según qué tan oscura quieras la imagen
-      />
+      {/* 1. IMAGEN PARA DESKTOP / COMPU (Se oculta en celu) */}
+      <div className="hidden md:block absolute inset-0">
+        <Image
+          src="/hero-bg.jpg" // 1920x1080
+          alt="BLACK SEVEN Background Desktop"
+          fill
+          priority
+          className="object-cover object-center opacity-40"
+        />
+      </div>
 
-      {/* OVERLAY DEGRADADO PARA MANTENER LA ESTÉTICA BORDÓ Y MEJORAR LECTURA */}
+      {/* 2. IMAGEN PARA MOBILE / CELU (Se muestra solo en pantallas chicas) */}
+      <div className="block md:hidden absolute inset-0">
+        <Image
+          src="/hero-bg-mobile.jpg" // 1080x1920
+          alt="BLACK SEVEN Background Mobile"
+          fill
+          priority
+          className="object-cover object-center opacity-50"
+        />
+      </div>
+
+      {/* OVERLAY DEGRADADO BORDÓ/NEGRO */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-950/40 via-black/80 to-black pointer-events-none" />
 
       {/* CONTENIDO PRINCIPAL */}
