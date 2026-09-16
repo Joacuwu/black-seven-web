@@ -44,10 +44,10 @@ export default function ProductGrid() {
   ];
 
   return (
-    <div className="bg-black text-white px-6 py-12 font-montserrat">
-      <h2 className="text-3xl font-black tracking-tighter uppercase mb-10 text-center font-bebas">
-        Lo Último
-      </h2>
+    <div className="max-w-7xl mx-auto">
+    <h2 className="text-3xl md:text-5xl font-black tracking-wider uppercase mb-16 text-center font-bebas">
+      Lo Último
+    </h2>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {PRODUCTS.map((product) => (
