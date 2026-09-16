@@ -60,7 +60,7 @@ const ALL_PRODUCTS = [
   },
   {
     id: "6",
-    name: "BUZO BLK 77",
+    name: "BUZO BLACKSEVEN 77",
     category: "hoodies", // Corregido de "hoddies" a "hoodies"
     price: 52000,
     tag: "NEW",

@@ -71,6 +71,34 @@ const PRODUCTS_DATA: Record<string, {
     ],
     sizes: ["M", "L", "XL"],
     images: ["/camperablk77.jpg", "/camperablk77hover.jpg"]
+  },
+  "4": {
+    id: "5",
+    name: "CAMPERA BLACKSEVEN 77",
+    price: 68000,
+    description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
+    details: [
+      "Frisa invisible pesada 80/20",
+      "Bordado de alta densidad en el pecho",
+      "Puños y cintura de morley reinforced",
+      "Corte Relaxed Fit"
+    ],
+    sizes: ["M", "L", "XL"],
+    images: ["/camperablackseven77.jpg", "/camperablackseven77hover.jpg"]
+  },
+  "4": {
+    id: "6",
+    name: "BUZO BLACKSEVEN 77",
+    price: 68000,
+    description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
+    details: [
+      "Frisa invisible pesada 80/20",
+      "Bordado de alta densidad en el pecho",
+      "Puños y cintura de morley reinforced",
+      "Corte Relaxed Fit"
+    ],
+    sizes: ["M", "L", "XL"],
+    images: ["/buzoblackseven77_1.jpg", "/buzoblackseven77hover.jpg"]
   }
 };
 
