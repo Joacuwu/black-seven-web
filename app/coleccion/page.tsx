@@ -116,7 +116,7 @@ function ColeccionContent() {
           
           {/* CATEGORÍAS */}
           <div className="flex flex-wrap gap-2 text-xs font-bold uppercase">
-            {["todas", "remeras", "hoodies", "camperas", "pantalones"].map((cat) => (
+            {["todas", "remeras", "camperas", "conjuntos", "pantalones"].map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
