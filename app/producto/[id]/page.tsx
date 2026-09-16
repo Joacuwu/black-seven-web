@@ -66,14 +66,12 @@ export default function ProductDetailPage() {
   
   const product = PRODUCTS_DATA[productId] || PRODUCTS_DATA["1"];
   
-  // Guardamos selecciones del usuario (null indica que se usa la opción por defecto del producto)
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [addedAnimation, setAddedAnimation] = useState<boolean>(false);
   const [isGuiaOpen, setIsGuiaOpen] = useState<boolean>(false);
 
-  // Valores derivados: Si el usuario seleccionó una opción, usa esa; de lo contrario toma la primera del producto activo
   const activeImage = selectedImage ?? product.images[0] ?? "/remera777.jpg";
   const activeSize = selectedSize ?? product.sizes[0] ?? "M";
 
@@ -111,8 +109,8 @@ export default function ProductDetailPage() {
           {/* COLUMNA IZQUIERDA: GALERÍA DE IMÁGENES */}
           <div className="flex flex-col-reverse md:flex-row gap-4">
             
-            {/* THUMBNAILS */}
-            <div className="flex md:flex-col gap-3 overflow-x-auto">
+            {/* THUMBNAILS CON SCROLLBAR OCULTA */}
+            <div className="flex md:flex-col gap-3 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {product.images.map((img, idx) => (
                 <button
                   key={idx}
