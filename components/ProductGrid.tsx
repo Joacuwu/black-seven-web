@@ -15,7 +15,7 @@ export default function ProductGrid() {
       price: "$25.000", 
       tag: "NEW", 
       img: "/remera777.jpg",
-      imgHover: "/remera777hover.jpg"
+      imgHover: "/remera1.jpg"
     },
     { 
       id: 2, 
@@ -67,12 +67,12 @@ export default function ProductGrid() {
                 </span>
               )}
               
-              {/* IMAGEN CON HOVER Y ENCUADRE COMPLETO */}
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-900 p-2 flex items-center justify-center">
+              {/* IMAGEN CON HOVER */}
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-900">
                 <img
                   src={hoveredProductId === product.id ? product.imgHover : product.img}
                   alt={product.name}
-                  className="w-full h-full object-contain object-center transition-all duration-500 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
                 />
               </div>
               
@@ -92,7 +92,7 @@ export default function ProductGrid() {
             <div className="p-4 pt-0">
               <button
                 onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, size: "M", img: product.img })}
-                className="w-full bg-white text-black py-2.5 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors cursor-pointer"
+                className="w-full bg-white text-black py-2.5 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors"
               >
                 Agregar al Carrito
               </button>
