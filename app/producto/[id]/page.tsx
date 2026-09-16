@@ -18,7 +18,7 @@ const PRODUCTS_DATA: Record<string, {
 }> = {
   "1": {
     id: "1",
-    name: "REMERA OVERSIZED HEAVYWEIGHT BLACK",
+    name: "REMERA 777 WHITE",
     price: 35000,
     description: "Confeccionada en algodón jersey 24/1 de pesado gramaje. Mantiene la forma y estructura con una caída boxy fit ideal para la cultura streetwear.",
     details: [
@@ -32,7 +32,7 @@ const PRODUCTS_DATA: Record<string, {
   },
   "2": {
     id: "2",
-    name: "HOODIE HEAVYWEIGHT DARK RED",
+    name: "REMERA BLK7 BLACK",
     price: 68000,
     description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
     details: [
@@ -42,7 +42,7 @@ const PRODUCTS_DATA: Record<string, {
       "Corte Relaxed Fit"
     ],
     sizes: ["M", "L", "XL"],
-    images: ["/remera2.jpg", "/remera1.jpg"]
+    images: ["/remerablk7.jpg", "/remerablk7hover.jpg"]
   }
 };
 
