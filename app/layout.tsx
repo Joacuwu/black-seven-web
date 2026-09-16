@@ -1,6 +1,7 @@
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
 import CartDrawer from "@/components/CartDrawer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { CartProvider } from "@/context/CartContext";
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat } from "next/font/google";
@@ -54,6 +55,8 @@ export default function RootLayout({
           {/* CARRITO LATERAL GLOBAL */}
           <CartDrawer />
           {children}
+          {/* BOTÓN FLOTANTE DE WHATSAPP */}
+          <WhatsAppButton />
         </CartProvider>
       </body>
     </html>
