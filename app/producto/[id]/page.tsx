@@ -38,7 +38,7 @@ const PRODUCTS_DATA: Record<string, {
     details: [
       "Frisa invisible pesada 80/20",
       "Bordado de alta densidad en el pecho",
-      "Puños y cintura de morley reforzado",
+      "Puños y cintura de morley reinforced",
       "Corte Relaxed Fit"
     ],
     sizes: ["M", "L", "XL"],
@@ -72,10 +72,21 @@ export default function ProductDetailPage() {
   const [addedAnimation, setAddedAnimation] = useState<boolean>(false);
   const [isGuiaOpen, setIsGuiaOpen] = useState<boolean>(false);
 
+  // Estado para el efecto Zoom
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
+  const [isZoomed, setIsZoomed] = useState(false);
+
   const activeImage = selectedImage ?? product.images[0] ?? "/remera777.jpg";
   const activeSize = selectedSize ?? product.sizes[0] ?? "M";
 
   const { addToCart } = useCart();
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPosition({ x, y });
+  };
 
   const handleAddToCart = () => {
     addToCart({
@@ -109,7 +120,7 @@ export default function ProductDetailPage() {
           {/* COLUMNA IZQUIERDA: GALERÍA DE IMÁGENES */}
           <div className="flex flex-col-reverse md:flex-row gap-4">
             
-            {/* THUMBNAILS CON SCROLLBAR OCULTA */}
+            {/* THUMBNAILS */}
             <div className="flex md:flex-col gap-3 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {product.images.map((img, idx) => (
                 <button
@@ -129,14 +140,26 @@ export default function ProductDetailPage() {
               ))}
             </div>
 
-            {/* IMAGEN PRINCIPAL */}
-            <div className="relative w-full aspect-[3/4] bg-neutral-950 border border-neutral-900 rounded-sm overflow-hidden">
+            {/* IMAGEN PRINCIPAL CON ZOOM AL HACER HOVER */}
+            <div
+              className="relative w-full aspect-[3/4] bg-neutral-950 border border-neutral-900 rounded-sm overflow-hidden cursor-crosshair"
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+              onMouseMove={handleMouseMove}
+            >
               <Image
                 src={activeImage}
                 alt={product.name}
                 fill
                 priority
-                className="object-cover"
+                className={`object-cover transition-transform duration-200 ease-out ${
+                  isZoomed ? "scale-[2.2]" : "scale-100"
+                }`}
+                style={{
+                  transformOrigin: isZoomed
+                    ? `${zoomPosition.x}% ${zoomPosition.y}%`
+                    : "center center",
+                }}
               />
             </div>
           </div>
