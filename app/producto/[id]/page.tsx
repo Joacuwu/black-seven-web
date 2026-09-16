@@ -43,16 +43,16 @@ const PRODUCTS_DATA: Record<string, {
     ],
     sizes: ["M", "L", "XL"],
     images: ["/remerablk7.jpg", "/remerablk7hover.jpg"]
-  }
-  "3" {
-    id: "3"
+  },
+  "3": {
+    id: "3",
     name: "CONJUNTO BLK 777",
     price: 68000,
     description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
     details: [
       "Frisa invisible pesada 80/20",
       "Bordado de alta densidad en el pecho",
-      "Puños y cintura de morley reforzado",
+      "Puños y cintura de morley reinforced",
       "Corte Relaxed Fit"
     ],
     sizes: ["M", "L", "XL"],
@@ -66,11 +66,16 @@ export default function ProductDetailPage() {
   
   const product = PRODUCTS_DATA[productId] || PRODUCTS_DATA["1"];
   
-  const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || "M");
-  const [selectedImage, setSelectedImage] = useState<string>(product.images[0] || "/remera1.jpg");
+  // Guardamos selecciones del usuario (null indica que se usa la opción por defecto del producto)
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [addedAnimation, setAddedAnimation] = useState<boolean>(false);
   const [isGuiaOpen, setIsGuiaOpen] = useState<boolean>(false);
+
+  // Valores derivados: Si el usuario seleccionó una opción, usa esa; de lo contrario toma la primera del producto activo
+  const activeImage = selectedImage ?? product.images[0] ?? "/remera777.jpg";
+  const activeSize = selectedSize ?? product.sizes[0] ?? "M";
 
   const { addToCart } = useCart();
 
@@ -79,8 +84,8 @@ export default function ProductDetailPage() {
       id: Number(product.id),
       name: product.name,
       price: `$${product.price.toLocaleString("es-AR")}`,
-      size: selectedSize,
-      img: selectedImage,
+      size: activeSize,
+      img: activeImage,
     });
     
     setAddedAnimation(true);
@@ -113,8 +118,8 @@ export default function ProductDetailPage() {
                   key={idx}
                   onClick={() => setSelectedImage(img)}
                   className={`relative w-20 h-24 border ${
-                    selectedImage === img ? "border-red-600" : "border-neutral-800"
-                  } bg-neutral-950 overflow-hidden flex-shrink-0 transition-all`}
+                    activeImage === img ? "border-red-600" : "border-neutral-800"
+                  } bg-neutral-950 overflow-hidden flex-shrink-0 transition-all cursor-pointer`}
                 >
                   <Image
                     src={img}
@@ -129,7 +134,7 @@ export default function ProductDetailPage() {
             {/* IMAGEN PRINCIPAL */}
             <div className="relative w-full aspect-[3/4] bg-neutral-950 border border-neutral-900 rounded-sm overflow-hidden">
               <Image
-                src={selectedImage}
+                src={activeImage}
                 alt={product.name}
                 fill
                 priority
@@ -171,8 +176,8 @@ export default function ProductDetailPage() {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`w-12 h-12 text-sm font-bold border transition-all ${
-                      selectedSize === size
+                    className={`w-12 h-12 text-sm font-bold border transition-all cursor-pointer ${
+                      activeSize === size
                         ? "bg-white text-black border-white"
                         : "bg-black text-neutral-400 border-neutral-800 hover:border-neutral-500"
                     }`}
@@ -188,14 +193,14 @@ export default function ProductDetailPage() {
               <div className="flex items-center border border-neutral-800 bg-neutral-950">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-3 text-sm text-neutral-400 hover:text-white"
+                  className="px-4 py-3 text-sm text-neutral-400 hover:text-white cursor-pointer"
                 >
                   -
                 </button>
                 <span className="px-4 py-3 text-sm font-bold">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-3 text-sm text-neutral-400 hover:text-white"
+                  className="px-4 py-3 text-sm text-neutral-400 hover:text-white cursor-pointer"
                 >
                   +
                 </button>
@@ -203,7 +208,7 @@ export default function ProductDetailPage() {
 
               <button
                 onClick={handleAddToCart}
-                className={`flex-1 font-bebas tracking-wider text-lg py-3 px-6 transition-all uppercase ${
+                className={`flex-1 font-bebas tracking-wider text-lg py-3 px-6 transition-all uppercase cursor-pointer ${
                   addedAnimation
                     ? "bg-green-600 text-white"
                     : "bg-red-600 hover:bg-red-700 text-white"
