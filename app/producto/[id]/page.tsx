@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import GuiaTallesModal from "@/components/GuiaTallesModal";
 
 const PRODUCTS_DATA: Record<string, {
   id: string;
@@ -55,6 +56,7 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState<string>(product.images[0] || "/remera1.jpg");
   const [quantity, setQuantity] = useState<number>(1);
   const [addedAnimation, setAddedAnimation] = useState<boolean>(false);
+  const [isGuiaOpen, setIsGuiaOpen] = useState<boolean>(false);
 
   const { addToCart } = useCart();
 
@@ -142,7 +144,11 @@ export default function ProductDetailPage() {
             <div>
               <div className="flex justify-between items-center mb-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">Talle:</span>
-                <button className="text-xs text-neutral-400 underline hover:text-white transition-colors">
+                <button 
+                  type="button"
+                  onClick={() => setIsGuiaOpen(true)}
+                  className="text-xs text-neutral-400 underline hover:text-white transition-colors cursor-pointer"
+                >
                   Guía de talles
                 </button>
               </div>
@@ -212,6 +218,12 @@ export default function ProductDetailPage() {
         </div>
 
       </div>
+
+      {/* MODAL GUÍA DE TALLES */}
+      <GuiaTallesModal
+        isOpen={isGuiaOpen}
+        onClose={() => setIsGuiaOpen(false)}
+      />
     </div>
   );
 }
