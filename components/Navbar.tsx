@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
@@ -11,9 +12,17 @@ export default function Navbar() {
 
   return (
     <nav className="bg-black text-white px-6 py-4 flex justify-between items-center border-b border-neutral-800 relative z-40">
-      {/* LOGO */}
-      <Link href="/" className="text-2xl font-black tracking-tighter">
-        BLACK SEVEN
+      
+      {/* LOGO EN IMAGEN */}
+      <Link href="/" className="flex items-center">
+        <Image
+          src="/logo.png" // Nombre del archivo ubicado en public/
+          alt="BLACK SEVEN Logo"
+          width={160}
+          height={40}
+          className="h-8 w-auto object-contain"
+          priority
+        />
       </Link>
 
       {/* MENÚ DE NAVEGACIÓN */}
@@ -76,7 +85,7 @@ export default function Navbar() {
         {/* ÍCONO DEL CARRITO */}
         <button 
           onClick={() => setIsCartOpen(true)}
-          className="relative p-2 hover:text-neutral-400 transition-colors"
+          className="relative p-2 hover:text-neutral-400 transition-colors cursor-pointer"
           aria-label="Carrito de compras"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
