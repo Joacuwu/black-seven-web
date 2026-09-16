@@ -47,8 +47,8 @@ export default function ProductGrid() {
       name: "CAMPERA BLACKSEVEN 77", 
       price: "$25.000", 
       tag: "GOD", 
-      img: "/camperablackseven77_1.jpg",
-      imgHover: "/camperablackseven77_1hover.jpg"
+      img: "/camperablackseven77.jpg",
+      imgHover: "/camperablackseven77hover.jpg"
     },
     { 
       id: 4, 
