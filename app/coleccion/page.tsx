@@ -40,13 +40,13 @@ const ALL_PRODUCTS = [
   },
   {
     id: "4",
-    name: "HOODIE OVERSIZED STAR",
-    category: "hoodies",
+    name: "CAMPERA BLK 77",
+    category: "amperas",
     price: 52000,
     tag: "NEW",
     sizes: ["S", "M", "L"],
-    img: "/campera1.jpg",
-    imgHover: "/remera3.jpg",
+    img: "/camperablk77.jpg",
+    imgHover: "/camperablk77hover.jpg",
   },
 ];
 
@@ -116,7 +116,7 @@ function ColeccionContent() {
           
           {/* CATEGORÍAS */}
           <div className="flex flex-wrap gap-2 text-xs font-bold uppercase">
-            {["todas", "remeras", "hoodies", "conjuntos", "pantalones"].map((cat) => (
+            {["todas", "remeras", "hoodies", "camperas", "pantalones"].map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
