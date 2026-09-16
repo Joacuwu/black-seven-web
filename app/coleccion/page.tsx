@@ -41,7 +41,7 @@ const ALL_PRODUCTS = [
   {
     id: "4",
     name: "CAMPERA BLK 77",
-    category: "amperas",
+    category: "camperas",
     price: 52000,
     tag: "NEW",
     sizes: ["S", "M", "L"],
