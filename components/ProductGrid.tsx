@@ -28,7 +28,7 @@ export default function ProductGrid() {
     },
     { 
       id: 3, 
-      name: "Conjunto BLK 777", 
+      name: "CONJUNTO BLK 777", 
       price: "$55.000", 
       tag: "DROP", 
       img: "/conjuntoblk777.jpg",
@@ -36,11 +36,11 @@ export default function ProductGrid() {
     },
     { 
       id: 4, 
-      name: "Tee Oversize Star", 
+      name: "CAMPERA BLK 77", 
       price: "$25.000", 
       tag: "NEW", 
-      img: "/campera1.jpg",
-      imgHover: "/remera3.jpg"
+      img: "/camperablk77.jpg",
+      imgHover: "/camperablk77hover.jpg"
     },
   ];
 
