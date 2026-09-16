@@ -11,7 +11,7 @@ export default function Navbar() {
   const { cart, setIsCartOpen } = useCart();
 
   return (
-    <nav className="bg-black text-white px-6 py-4 flex justify-between items-center border-b border-neutral-800 relative z-40">
+    <nav className="bg-black text-white px-4 md:px-8 py-3 flex justify-between items-center border-b border-neutral-800 relative z-40">
       
       {/* LOGO EN IMAGEN AGRANDADO */}
       <Link href="/" className="flex items-center py-1">
@@ -20,13 +20,13 @@ export default function Navbar() {
           alt="BLACK SEVEN Logo"
           width={280}
           height={70}
-          className="h-12 md:h-16 w-auto object-contain transition-transform hover:scale-105"
+          className="h-14 md:h-16 w-auto object-contain transition-transform hover:scale-105"
           priority
         />
       </Link>
 
       {/* MENÚ DE NAVEGACIÓN */}
-      <div className="flex gap-8 items-center font-medium text-sm tracking-wide">
+      <div className="flex gap-6 md:gap-8 items-center font-medium text-sm tracking-wide">
         
         {/* DROPDOWN: COLECCIÓN */}
         <div 
@@ -34,22 +34,40 @@ export default function Navbar() {
           onMouseEnter={() => setIsColeccionOpen(true)}
           onMouseLeave={() => setIsColeccionOpen(false)}
         >
-          <span className="hover:text-neutral-400 transition-colors uppercase">
+          <Link href="/coleccion" className="hover:text-neutral-400 transition-colors uppercase">
             Colección
-          </span>
+          </Link>
 
           {isColeccionOpen && (
-            <div className="absolute top-full left-0 w-48 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col z-50">
-              <Link href="/coleccion/remeras" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+            <div className="absolute top-full left-0 w-52 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col z-50">
+              <Link 
+                href="/coleccion" 
+                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase font-bold border-b border-neutral-800/60 pb-2 mb-1"
+              >
+                Ver Todo
+              </Link>
+              <Link 
+                href="/coleccion?categoria=remeras" 
+                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
+              >
                 Remeras & Tees
               </Link>
-              <Link href="/coleccion/hoodies" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+              <Link 
+                href="/coleccion?categoria=hoodies" 
+                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
+              >
                 Buzos & Hoodies
               </Link>
-              <Link href="/coleccion/conjuntos" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+              <Link 
+                href="/coleccion?categoria=conjuntos" 
+                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
+              >
                 Conjuntos
               </Link>
-              <Link href="/coleccion/pantalones" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+              <Link 
+                href="/coleccion?categoria=pantalones" 
+                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
+              >
                 Pantalones
               </Link>
             </div>
@@ -68,14 +86,23 @@ export default function Navbar() {
 
           {isDropsOpen && (
             <div className="absolute top-full right-0 w-48 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col z-50">
-              <Link href="/drops/drop-01" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors flex justify-between items-center">
+              <Link 
+                href="/coleccion?categoria=drop-01" 
+                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors flex justify-between items-center uppercase"
+              >
                 <span>DROP #01</span>
                 <span className="text-[10px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">HOT</span>
               </Link>
-              <Link href="/drops/edicion-limitada" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+              <Link 
+                href="/coleccion" 
+                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
+              >
                 Edición Limitada
               </Link>
-              <Link href="/drops/proximamente" className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors">
+              <Link 
+                href="/coleccion" 
+                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
+              >
                 Próximos Lanzamientos
               </Link>
             </div>
