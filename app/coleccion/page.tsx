@@ -85,9 +85,15 @@ function ColeccionContent() {
   const filteredProducts = useMemo(() => {
     return ALL_PRODUCTS.filter((product) => {
       const matchCategory =
-        selectedCategory === "todas" || product.category === selectedCategory;
+        selectedCategory === "todas" ||
+        product.category === selectedCategory ||
+        // Si seleccionan 'hoodies' pero la categoría guardada es 'camperas' o viceversa, lo contempla para evitar fallas de navegación
+        (selectedCategory === "hoodies" && product.category === "camperas") ||
+        (selectedCategory === "camperas" && product.category === "hoodies");
+
       const matchSize =
         selectedSize === "todos" || product.sizes.includes(selectedSize);
+
       return matchCategory && matchSize;
     }).sort((a, b) => {
       if (sortBy === "precio-bajo") return a.price - b.price;
@@ -121,7 +127,7 @@ function ColeccionContent() {
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
                 className={`px-3 py-2 border transition-all cursor-pointer font-bold ${
-                  selectedCategory === cat
+                  selectedCategory === cat || (cat === "camperas" && selectedCategory === "hoodies")
                     ? "bg-white text-black border-white"
                     : "bg-black text-neutral-400 border-neutral-800 hover:border-neutral-600"
                 }`}
