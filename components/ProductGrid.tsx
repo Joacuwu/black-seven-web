@@ -22,8 +22,8 @@ export default function ProductGrid() {
       name: "BLK 7 Black", 
       price: "$25.000", 
       tag: "HOT", 
-      img: "/remera3.jpg",
-      imgHover: "/campera1.jpg"
+      img: "/remerablk7.jpg",
+      imgHover: "/remerablk7hover.jpg"
     },
     { 
       id: 3, 
