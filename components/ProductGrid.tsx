@@ -51,29 +51,14 @@ export default function ProductGrid() {
       imgHover: "/camperablackseven77hover.jpg"
     },
     { 
-      id: 4, 
+      id: 6, 
       name: "BUZO BLACKSEVEN 77", 
       price: "$25.000", 
       tag: "NEW", 
       img: "/buzoblackseven77_1.jpg",
       imgHover: "/buzoblackseven77hover.jpg"
     },
-    { 
-      id: 4, 
-      name: "CAMPERA BLK 77", 
-      price: "$25.000", 
-      tag: "NEW", 
-      img: "/camperablk77.jpg",
-      imgHover: "/camperablk77hover.jpg"
-    },
-    { 
-      id: 4, 
-      name: "CAMPERA BLK 77", 
-      price: "$25.000", 
-      tag: "NEW", 
-      img: "/camperablk77.jpg",
-      imgHover: "/camperablk77hover.jpg"
-    },
+
   ];
 
   return (
