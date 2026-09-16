@@ -28,7 +28,7 @@ const PRODUCTS_DATA: Record<string, {
       "Lavar con agua fría y del revés"
     ],
     sizes: ["S", "M", "L", "XL"],
-    images: ["/remera1.jpg", "/remera2.jpg"]
+    images: ["/remera777.jpg", "/remera777hover.jpg"]
   },
   "2": {
     id: "2",
