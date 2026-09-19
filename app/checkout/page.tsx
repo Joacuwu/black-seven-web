@@ -31,16 +31,35 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulación del procesamiento del pedido
-    setTimeout(() => {
+    const generatedOrderNumber = Math.floor(100000 + Math.random() * 900000);
+    const calculatedTotal =
+      formData.metodoPago === "transferencia"
+        ? finalTotal - totalPrice * 0.1
+        : finalTotal;
+
+    try {
+      // Disparar la API Route de envío de e-mails
+      await fetch("/api/send-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          formData,
+          cart,
+          orderNumber: generatedOrderNumber,
+          finalTotal: calculatedTotal,
+        }),
+      });
+    } catch (error) {
+      console.error("Error al enviar los emails del pedido:", error);
+    } finally {
       setLoading(false);
       clearCart();
       router.push("/checkout/exito");
-    }, 1500);
+    }
   };
 
   if (cart.length === 0) {
