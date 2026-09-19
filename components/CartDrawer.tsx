@@ -78,14 +78,14 @@ export default function CartDrawer() {
               <p className="text-neutral-500 text-sm text-center py-8">Tu bolsa está vacía.</p>
             ) : (
               cart.map((item, index) => (
-                <div key={index} className="flex items-center justify-between bg-neutral-900 p-3 border border-neutral-800">
+                <div key={`${item.id}-${item.size}-${index}`} className="flex items-center justify-between bg-neutral-900 p-3 border border-neutral-800">
                   <img src={item.img} alt={item.name} className="w-16 h-16 object-cover" />
                   <div className="flex-1 ml-4">
                     <h4 className="font-bebas text-lg text-white leading-none">{item.name}</h4>
                     <p className="text-xs text-red-500 mt-1">Talle: {item.size}</p>
                     <p className="text-xs text-neutral-300 font-bold mt-1">{item.price}</p>
                   </div>
-                  <button onClick={() => removeFromCart(index)} className="text-neutral-500 hover:text-red-500 transition-colors">
+                  <button onClick={() => removeFromCart(item.id, item.size)} className="text-neutral-500 hover:text-red-500 transition-colors cursor-pointer">
                     <Trash2 size={18} />
                   </button>
                 </div>

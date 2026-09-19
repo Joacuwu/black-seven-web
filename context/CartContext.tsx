@@ -18,12 +18,16 @@ interface CartContextType {
   clearCart: () => void;
   totalPrice: number;
   totalItems: number;
+  isCartOpen: boolean;
+  setIsCartOpen: (open: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  // Inicializamos leyendo de localStorage directamente
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+
+  // Inicialización de estado con función callback para localStorage
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -35,7 +39,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  // Guardamos en localStorage únicamente cuando el carrito cambia
+  // Guardar cambios en localStorage
   useEffect(() => {
     localStorage.setItem("cart_blackseven", JSON.stringify(cart));
   }, [cart]);
@@ -67,7 +71,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart([]);
   };
 
-  // Cálculos de totales
+  // Totales
   const totalItems = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
   const totalPrice = cart.reduce((acc, item) => {
@@ -84,6 +88,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         totalPrice,
         totalItems,
+        isCartOpen,
+        setIsCartOpen,
       }}
     >
       {children}
