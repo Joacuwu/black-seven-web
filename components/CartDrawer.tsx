@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { X, Trash2, CreditCard } from "lucide-react";
+import Link from "next/link";
 
 export default function CartDrawer() {
   const { cart, removeFromCart, isCartOpen, setIsCartOpen } = useCart();
@@ -98,15 +99,15 @@ export default function CartDrawer() {
         {cart.length > 0 && (
           <div className="pt-4 border-t border-neutral-800 flex flex-col gap-3">
             
-            {/* BOTÓN 1: PAGAR CON TARJETA / MERCADO PAGO */}
-            <button
-              onClick={handleOnlinePayment}
-              disabled={loadingPayment}
-              className="w-full bg-white hover:bg-neutral-200 text-black font-bebas text-xl py-3 tracking-widest uppercase transition-colors flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <CreditCard size={20} />
-              {loadingPayment ? "PROCESANDO..." : "PAGAR ONLINE (TARJETA / MP)"}
-            </button>
+            {/* BOTÓN 1: FINALIZAR COMPRA EN LA WEB */}
+              <Link
+                    href="/checkout"
+                    onClick={() => setIsCartOpen(false)}
+                    className="w-full bg-white hover:bg-neutral-200 text-black font-bebas text-xl py-3 tracking-widest uppercase transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                  <CreditCard size={20} />
+                    PAGAR ONLINE (TARJETA / MP)
+              </Link>
 
             {/* BOTÓN 2: COMPRAR POR WHATSAPP */}
             <a
