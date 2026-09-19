@@ -27,7 +27,9 @@ export default function CheckoutPage() {
   const shippingCost = totalPrice > 50000 || cart.length === 0 ? 0 : 4500;
   const finalTotal = totalPrice + shippingCost;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -43,7 +45,7 @@ export default function CheckoutPage() {
 
     try {
       // Disparar la API Route de envío de e-mails
-      await fetch("/api/send-order", {
+      const res = await fetch("/api/send-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -53,20 +55,37 @@ export default function CheckoutPage() {
           finalTotal: calculatedTotal,
         }),
       });
-    } catch (error) {
-      console.error("Error al enviar los emails del pedido:", error);
-    } finally {
-      setLoading(false);
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(
+          `Error al procesar el pedido: ${
+            data.error || "Ocurrió un error inesperado"
+          }`
+        );
+        setLoading(false);
+        return;
+      }
+
       clearCart();
       router.push("/checkout/exito");
+    } catch (error) {
+      console.error("Error al enviar los emails del pedido:", error);
+      alert("Ocurrió un error de conexión al enviar el pedido.");
+      setLoading(false);
     }
   };
 
   if (cart.length === 0) {
     return (
       <div className="min-h-[70vh] bg-black text-white flex flex-col items-center justify-center p-6 text-center font-montserrat">
-        <h1 className="text-3xl font-bebas tracking-wide mb-4">TU CARRITO ESTÁ VACÍO</h1>
-        <p className="text-neutral-400 text-sm mb-6">No tenés productos cargados para realizar el checkout.</p>
+        <h1 className="text-3xl font-bebas tracking-wide mb-4">
+          TU CARRITO ESTÁ VACÍO
+        </h1>
+        <p className="text-neutral-400 text-sm mb-6">
+          No tenés productos cargados para realizar el checkout.
+        </p>
         <Link
           href="/coleccion"
           className="bg-white text-black px-6 py-3 font-bebas text-lg tracking-wider hover:bg-neutral-200 transition-colors"
@@ -84,11 +103,12 @@ export default function CheckoutPage() {
           FINALIZAR COMPRA
         </h1>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-10"
+        >
           {/* DATOS DEL CLIENTE Y ENVÍO */}
           <div className="lg:col-span-7 flex flex-col gap-6">
-            
             <div className="bg-neutral-950 border border-neutral-900 p-6 rounded-sm">
               <h2 className="text-lg font-bold font-bebas tracking-wider mb-4 text-red-600">
                 1. DATOS DE CONTACTO
@@ -183,8 +203,12 @@ export default function CheckoutPage() {
                     className="accent-red-600"
                   />
                   <div>
-                    <p className="text-sm font-bold">Transferencia Bancaria (-10% OFF)</p>
-                    <p className="text-xs text-neutral-500">Recibirás los datos bancarios al finalizar</p>
+                    <p className="text-sm font-bold">
+                      Transferencia Bancaria (-10% OFF)
+                    </p>
+                    <p className="text-xs text-neutral-500">
+                      Recibirás los datos bancarios al finalizar
+                    </p>
                   </div>
                 </label>
 
@@ -199,12 +223,13 @@ export default function CheckoutPage() {
                   />
                   <div>
                     <p className="text-sm font-bold">Mercado Pago / Tarjetas</p>
-                    <p className="text-xs text-neutral-500">Crédito, Débito o dinero en cuenta</p>
+                    <p className="text-xs text-neutral-500">
+                      Crédito, Débito o dinero en cuenta
+                    </p>
                   </div>
                 </label>
               </div>
             </div>
-
           </div>
 
           {/* RESUMEN DE COMPRA */}
@@ -216,13 +241,25 @@ export default function CheckoutPage() {
 
               <div className="flex flex-col gap-3 max-h-60 overflow-y-auto pr-1">
                 {cart.map((item, index) => (
-                  <div key={`${item.id}-${item.size}-${index}`} className="flex items-center gap-3 text-xs border-b border-neutral-900 pb-2">
+                  <div
+                    key={`${item.id}-${item.size}-${index}`}
+                    className="flex items-center gap-3 text-xs border-b border-neutral-900 pb-2"
+                  >
                     <div className="relative w-12 h-14 bg-neutral-900 flex-shrink-0">
-                      <Image src={item.img} alt={item.name} fill className="object-cover" />
+                      <Image
+                        src={item.img}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
                     <div className="flex-1">
-                      <p className="font-bold text-white uppercase">{item.name}</p>
-                      <p className="text-neutral-500">Talle: {item.size} | Cant: {item.quantity || 1}</p>
+                      <p className="font-bold text-white uppercase">
+                        {item.name}
+                      </p>
+                      <p className="text-neutral-500">
+                        Talle: {item.size} | Cant: {item.quantity || 1}
+                      </p>
                     </div>
                     <p className="font-bold">{item.price}</p>
                   </div>
@@ -236,7 +273,11 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>Envío:</span>
-                  <span>{shippingCost === 0 ? "¡GRATIS!" : `$${shippingCost.toLocaleString("es-AR")}`}</span>
+                  <span>
+                    {shippingCost === 0
+                      ? "¡GRATIS!"
+                      : `$${shippingCost.toLocaleString("es-AR")}`}
+                  </span>
                 </div>
                 {formData.metodoPago === "transferencia" && (
                   <div className="flex justify-between text-green-500 font-semibold">
@@ -252,10 +293,9 @@ export default function CheckoutPage() {
                 <span>TOTAL:</span>
                 <span className="text-xl text-white">
                   $
-                  {(
-                    formData.metodoPago === "transferencia"
-                      ? finalTotal - totalPrice * 0.1
-                      : finalTotal
+                  {(formData.metodoPago === "transferencia"
+                    ? finalTotal - totalPrice * 0.1
+                    : finalTotal
                   ).toLocaleString("es-AR")}
                 </span>
               </div>
@@ -269,7 +309,6 @@ export default function CheckoutPage() {
               </button>
             </div>
           </div>
-
         </form>
       </div>
     </div>
