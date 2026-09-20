@@ -109,6 +109,11 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* SEGUIMIENTO DE PEDIDO */}
+        <Link href="/seguimiento" className="hover:text-neutral-400 transition-colors uppercase">
+          Mi pedido
+        </Link>
+
         {/* ÍCONO DEL CARRITO */}
         <button 
           onClick={() => setIsCartOpen(true)}

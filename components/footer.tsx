@@ -30,6 +30,7 @@ export default function Footer() {
         <div className="flex flex-col gap-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-200">Ayuda</h4>
           <ul className="flex flex-col gap-2 text-xs text-neutral-400">
+            <li><Link href="/seguimiento" className="hover:text-white transition-colors">Seguimiento de Pedido</Link></li>
             <li><Link href="/preguntas-frecuentes" className="hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
             <li><Link href="/envios-y-devoluciones" className="hover:text-white transition-colors">Envíos & Devoluciones</Link></li>
             <li><Link href="/guia-de-talles" className="hover:text-white transition-colors">Guía de Talles</Link></li>

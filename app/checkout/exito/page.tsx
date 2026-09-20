@@ -26,11 +26,17 @@ function ExitoContent() {
       </h1>
       
       <p className="text-neutral-400 text-sm max-w-md mb-8 leading-relaxed">
-        Recibirás los detalles de tu pedido y el código de seguimiento por correo electrónico una vez despachado.
+        Recibirás los detalles de tu pedido y el código de seguimiento por correo electrónico una vez despachado. También podés consultar el estado cuando quieras con tu número de pedido y tu email.
       </p>
 
       {/* BOTONES DE ACCIÓN */}
       <div className="flex flex-col sm:flex-row gap-4">
+        <Link
+          href={`/seguimiento?order=${orderNumber}`}
+          className="bg-red-600 text-white font-bebas text-lg tracking-wider px-8 py-3 hover:bg-red-700 transition-colors"
+        >
+          SEGUIR MI PEDIDO
+        </Link>
         <Link
           href="/"
           className="bg-white text-black font-bebas text-lg tracking-wider px-8 py-3 hover:bg-neutral-200 transition-colors"

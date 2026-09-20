@@ -11,6 +11,8 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 const money = (value: number) => `$${value.toLocaleString("es-AR")}`;
 
 const PAYMENT_LABEL = {
@@ -83,7 +85,10 @@ export async function sendOrderEmails(order: OrderRow) {
                  </div>`
               : ""
           }
-          <p style="color: #374151; font-size: 13px;">Podés consultar el estado de tu pedido en cualquier momento desde la sección Seguimiento de la web con tu Nº de orden y este email.</p>
+          <p style="text-align: center; margin: 24px 0;">
+            <a href="${SITE_URL}/seguimiento?order=${order.order_number}" style="background-color: #dc2626; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Ver el estado de mi pedido</a>
+          </p>
+          <p style="color: #6b7280; font-size: 12px; text-align: center;">Vas a necesitar tu Nº de orden y este email.</p>
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
           <p style="color: #6b7280; text-align: center; font-size: 12px;">
             <strong>BLACK SEVEN TEAM</strong><br/>
