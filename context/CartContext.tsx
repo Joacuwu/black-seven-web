@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
-import { getProductById, formatPrice } from "@/data/products";
+import { useProducts } from "@/context/ProductsContext";
+import { formatPrice } from "@/lib/catalog-types";
 
 export interface CartItem {
   id: number;
@@ -26,6 +27,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { getProduct } = useProducts();
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
 
   // Inicialización de estado con función callback para localStorage
@@ -49,10 +51,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const cart = useMemo(
     () =>
       storedCart.map((item) => {
-        const product = getProductById(item.id);
+        const product = getProduct(item.id);
         return product ? { ...item, price: formatPrice(product.price) } : item;
       }),
-    [storedCart]
+    [storedCart, getProduct]
   );
 
   const addToCart = (newItem: CartItem) => {
@@ -86,7 +88,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
   const totalPrice = cart.reduce((acc, item) => {
-    const unitPrice = getProductById(item.id)?.price ?? 0;
+    // Mientras carga el catálogo se usa el precio guardado en el carrito ("$35.000" -> 35000).
+    const unitPrice = getProduct(item.id)?.price ?? (Number(item.price.replace(/D/g, "")) || 0);
     return acc + unitPrice * (item.quantity || 1);
   }, 0);
 

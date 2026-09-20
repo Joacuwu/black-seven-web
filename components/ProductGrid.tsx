@@ -4,10 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
-import { PRODUCTS, formatPrice } from "@/data/products";
+import { useProducts } from "@/context/ProductsContext";
+import { formatPrice } from "@/lib/catalog-types";
 
 export default function ProductGrid() {
   const { addToCart } = useCart();
+  const { products, loading } = useProducts();
   const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
 
 
@@ -18,8 +20,12 @@ export default function ProductGrid() {
           Lo Último
         </h2>
         
+        {!loading && products.length === 0 && (
+          <p className="text-center text-neutral-500 text-sm py-12">Próximamente nuevos productos.</p>
+        )}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {PRODUCTS.map((product) => (
+          {products.map((product) => (
             <div 
               key={product.id} 
               className="group relative flex flex-col h-full bg-neutral-950 border border-neutral-900 rounded-lg overflow-hidden transition-all duration-300 hover:border-neutral-700"

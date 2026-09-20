@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     }
 
     // Los precios y totales se calculan SIEMPRE en el servidor con el catálogo.
-    const lines = priceCart(body?.items);
+    const lines = await priceCart(body?.items);
     const totals = computeTotals(lines, method);
     const order = await createOrder({ customer, method, lines, totals });
 

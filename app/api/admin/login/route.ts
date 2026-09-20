@@ -5,9 +5,14 @@ import {
   checkPassword,
   createSessionToken,
   isAdminConfigured,
+  isAdminRequest,
 } from "@/lib/admin-auth";
 
 const FAILED_LOGIN_DELAY_MS = 1000;
+
+export async function GET() {
+  return NextResponse.json({ authenticated: await isAdminRequest() });
+}
 
 export async function POST(request: Request) {
   if (!isAdminConfigured()) {

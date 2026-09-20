@@ -6,15 +6,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import GuiaTallesModal from "@/components/GuiaTallesModal";
-import { getProductById, formatPrice } from "@/data/products";
+import { useProducts } from "@/context/ProductsContext";
+import { formatPrice, type Product } from "@/lib/catalog-types";
 
 
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const productId = params?.id as string;
-  
-  const product = getProductById(productId) ?? getProductById(1)!;
+  const { getProduct, loading } = useProducts();
+  const product = getProduct(params?.id as string);
+
+  if (loading) {
+    return <div className="min-h-[60vh] bg-black text-neutral-500 text-sm flex items-center justify-center">Cargando...</div>;
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-[60vh] bg-black text-white flex flex-col items-center justify-center gap-4 p-6 text-center font-montserrat">
+        <h1 className="text-3xl font-bebas tracking-wide">PRODUCTO NO DISPONIBLE</h1>
+        <Link href="/coleccion" className="bg-white text-black px-6 py-3 font-bebas text-lg tracking-wider hover:bg-neutral-200 transition-colors">
+          VER COLECCIÓN
+        </Link>
+      </div>
+    );
+  }
+
+  return <ProductDetail key={product.id} product={product} />;
+}
+
+function ProductDetail({ product }: { product: Product }) {
   
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);

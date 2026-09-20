@@ -5,11 +5,13 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
-import { PRODUCTS as ALL_PRODUCTS, formatPrice } from "@/data/products";
+import { useProducts } from "@/context/ProductsContext";
+import { formatPrice, categoryLabel } from "@/lib/catalog-types";
 
 
 function ColeccionContent() {
   const { addToCart } = useCart();
+  const { products: ALL_PRODUCTS, loading } = useProducts();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -30,6 +32,14 @@ function ColeccionContent() {
     }
   };
 
+  // Categorías y talles disponibles según los productos cargados en el panel
+  const categories = useMemo(() => [...new Set(ALL_PRODUCTS.map((p) => p.category))], [ALL_PRODUCTS]);
+  const availableSizes = useMemo(() => {
+    const order = ["XS", "S", "M", "L", "XL", "XXL"];
+    const sizes = [...new Set(ALL_PRODUCTS.flatMap((p) => p.sizes))];
+    return sizes.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
+  }, [ALL_PRODUCTS]);
+
   // LÓGICA DE FILTRADO Y ORDENAMIENTO
   const filteredProducts = useMemo(() => {
     return ALL_PRODUCTS.filter((product) => {
@@ -43,9 +53,9 @@ function ColeccionContent() {
     }).sort((a, b) => {
       if (sortBy === "precio-bajo") return a.price - b.price;
       if (sortBy === "precio-alto") return b.price - a.price;
-      return a.id - b.id;
+      return a.sortOrder - b.sortOrder || a.id - b.id;
     });
-  }, [selectedCategory, selectedSize, sortBy]);
+  }, [ALL_PRODUCTS, selectedCategory, selectedSize, sortBy]);
 
   return (
     <div className="min-h-screen bg-black text-white pt-8 pb-24 px-4 md:px-8 font-montserrat">
@@ -69,7 +79,7 @@ function ColeccionContent() {
           
           {/* CATEGORÍAS */}
           <div className="flex flex-wrap gap-2 text-xs font-bold uppercase">
-            {["todas", "remeras", "hoodies", "camperas", "conjuntos", "pantalones"].map((cat) => (
+            {["todas", ...categories].map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
@@ -96,10 +106,11 @@ function ColeccionContent() {
                 className="bg-black text-white border border-neutral-800 px-3 py-2 rounded-sm focus:outline-none focus:border-red-600 cursor-pointer uppercase"
               >
                 <option value="todos">Todos</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
+                {availableSizes.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
               </select>
             </div>
 
