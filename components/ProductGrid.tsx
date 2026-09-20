@@ -4,62 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { PRODUCTS, formatPrice } from "@/data/products";
 
 export default function ProductGrid() {
   const { addToCart } = useCart();
   const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
 
-  const PRODUCTS = [
-    { 
-      id: 1, 
-      name: "777 White", 
-      price: "$25.000", 
-      tag: "NEW", 
-      img: "/remera777.jpg",
-      imgHover: "/remera777hover.jpg"
-    },
-    { 
-      id: 2, 
-      name: "BLK 7 Black", 
-      price: "$25.000", 
-      tag: "HOT", 
-      img: "/remerablk7.jpg",
-      imgHover: "/remerablk7hover.jpg"
-    },
-    { 
-      id: 3, 
-      name: "CONJUNTO BLK 777", 
-      price: "$55.000", 
-      tag: "DROP", 
-      img: "/conjuntoblk777.jpg",
-      imgHover: "/conjuntoblk777hover.jpg"
-    },
-    { 
-      id: 4, 
-      name: "CAMPERA BLK 77", 
-      price: "$25.000", 
-      tag: "NEW", 
-      img: "/camperablk77.jpg",
-      imgHover: "/camperablk77hover.jpg"
-    },
-    { 
-      id: 5, 
-      name: "CAMPERA BLACKSEVEN 77", 
-      price: "$25.000", 
-      tag: "GOD", 
-      img: "/camperablackseven77.jpg",
-      imgHover: "/camperablackseven77hover.jpg"
-    },
-    { 
-      id: 6, 
-      name: "BUZO BLACKSEVEN 77", 
-      price: "$25.000", 
-      tag: "NEW", 
-      img: "/buzoblackseven77_1.jpg",
-      imgHover: "/buzoblackseven77hover.jpg"
-    },
-
-  ];
 
   return (
     <section className="relative z-10 bg-black text-white px-6 py-16 md:py-24 font-montserrat">
@@ -89,7 +39,7 @@ export default function ProductGrid() {
                 {/* IMAGEN CON HOVER SUAVE */}
                 <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-900">
                   <Image
-                    src={product.img}
+                    src={product.images[0]}
                     alt={product.name}
                     fill
                     className={`object-cover transition-opacity duration-500 ${
@@ -97,7 +47,7 @@ export default function ProductGrid() {
                     }`}
                   />
                   <Image
-                    src={product.imgHover}
+                    src={product.images[1] ?? product.images[0]}
                     alt={`${product.name} hover`}
                     fill
                     className={`object-cover transition-opacity duration-500 absolute top-0 left-0 ${
@@ -113,7 +63,7 @@ export default function ProductGrid() {
                     {product.name}
                   </h3>
                   <p className="text-lg font-black tracking-tighter text-white">
-                    {product.price}
+                    {formatPrice(product.price)}
                   </p>
                 </div>
               </Link>
@@ -121,7 +71,7 @@ export default function ProductGrid() {
               {/* BOTÓN MANTENIDO FUERA DEL LINK */}
               <div className="p-4 pt-0">
                 <button
-                  onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, size: "M", img: product.img })}
+                  onClick={() => addToCart({ id: product.id, name: product.name, price: formatPrice(product.price), size: product.sizes[0] ?? "M", img: product.images[0] })}
                   className="w-full bg-white text-black py-2.5 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors cursor-pointer"
                 >
                   Agregar al Carrito

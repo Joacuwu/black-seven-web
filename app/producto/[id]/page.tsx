@@ -6,107 +6,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import GuiaTallesModal from "@/components/GuiaTallesModal";
+import { getProductById, formatPrice } from "@/data/products";
 
-const PRODUCTS_DATA: Record<string, {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  details: string[];
-  sizes: string[];
-  images: string[];
-}> = {
-  "1": {
-    id: "1",
-    name: "REMERA 777 WHITE",
-    price: 35000,
-    description: "Confeccionada en algodón jersey 24/1 de pesado gramaje. Mantiene la forma y estructura con una caída boxy fit ideal para la cultura streetwear.",
-    details: [
-      "100% Algodón Jersey Heavyweight 240g",
-      "Estampa en serigrafía frente y espalda",
-      "Corte Boxy / Oversized Fit",
-      "Lavar con agua fría y del revés"
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    images: ["/remera777.jpg", "/remera777hover.jpg"]
-  },
-  "2": {
-    id: "2",
-    name: "REMERA BLK7 BLACK",
-    price: 68000,
-    description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
-    details: [
-      "Frisa invisible pesada 80/20",
-      "Bordado de alta densidad en el pecho",
-      "Puños y cintura de morley reinforced",
-      "Corte Relaxed Fit"
-    ],
-    sizes: ["M", "L", "XL"],
-    images: ["/remerablk7.jpg", "/remerablk7hover.jpg"]
-  },
-  "3": {
-    id: "3",
-    name: "CONJUNTO BLK 777",
-    price: 68000,
-    description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
-    details: [
-      "Frisa invisible pesada 80/20",
-      "Bordado de alta densidad en el pecho",
-      "Puños y cintura de morley reinforced",
-      "Corte Relaxed Fit"
-    ],
-    sizes: ["M", "L", "XL"],
-    images: ["/conjuntoblk777.jpg", "/conjuntoblk777hover.jpg"]
-  },
-  "4": {
-    id: "4",
-    name: "CAMPERA BLK 77",
-    price: 68000,
-    description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
-    details: [
-      "Frisa invisible pesada 80/20",
-      "Bordado de alta densidad en el pecho",
-      "Puños y cintura de morley reinforced",
-      "Corte Relaxed Fit"
-    ],
-    sizes: ["M", "L", "XL"],
-    images: ["/camperablk77.jpg", "/camperablk77hover.jpg"]
-  },
-  "5": {
-    id: "5",
-    name: "CAMPERA BLACKSEVEN 77",
-    price: 68000,
-    description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
-    details: [
-      "Frisa invisible pesada 80/20",
-      "Bordado de alta densidad en el pecho",
-      "Puños y cintura de morley reinforced",
-      "Corte Relaxed Fit"
-    ],
-    sizes: ["M", "L", "XL"],
-    images: ["/camperablackseven77.jpg", "/camperablackseven77hover.jpg"]
-  },
-  "6": {
-    id: "6",
-    name: "BUZO BLACKSEVEN 77",
-    price: 68000,
-    description: "Buzo de frisa invisible pesada con capucha de doble tela y bolsillo canguro. Diseñado para ofrecer máxima durabilidad y confort térmico.",
-    details: [
-      "Frisa invisible pesada 80/20",
-      "Bordado de alta densidad en el pecho",
-      "Puños y cintura de morley reinforced",
-      "Corte Relaxed Fit"
-    ],
-    sizes: ["M", "L", "XL"],
-    images: ["/buzoblackseven77_1.jpg","/buzoblackseven77_3.jpg" , "/buzoblackseven77_2.jpg", "/buzoblackseven77hover.jpg"]
-  },
-};
+
 
 export default function ProductDetailPage() {
   const params = useParams();
   const productId = params?.id as string;
   
-  const product = PRODUCTS_DATA[productId] || PRODUCTS_DATA["1"];
+  const product = getProductById(productId) ?? getProductById(1)!;
   
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -180,9 +88,9 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     addToCart({
-      id: Number(product.id),
+      id: product.id,
       name: product.name,
-      price: `$${product.price.toLocaleString("es-AR")}`,
+      price: formatPrice(product.price),
       size: activeSize,
       img: activeImage,
     });
@@ -304,7 +212,7 @@ export default function ProductDetailPage() {
                 {product.name}
               </h1>
               <p className="text-2xl font-bold mt-2 text-neutral-200">
-                ${product.price.toLocaleString("es-AR")}
+                {formatPrice(product.price)}
               </p>
               <p className="text-xs text-neutral-500 mt-1">3 y 6 cuotas sin interés en toda la web</p>
             </div>

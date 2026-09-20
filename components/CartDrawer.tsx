@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { X, Trash2, CreditCard } from "lucide-react";
 import Link from "next/link";
 
 export default function CartDrawer() {
   const { cart, removeFromCart, isCartOpen, setIsCartOpen } = useCart();
-  const [loadingPayment, setLoadingPayment] = useState(false);
 
   const PHONE_NUMBER = "5491127035976";
 
@@ -21,30 +19,6 @@ export default function CartDrawer() {
     message += "\n¿Tienen stock disponible para coordinar el pago y envío?";
 
     return `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-  };
-
-  const handleOnlinePayment = async () => {
-    setLoadingPayment(true);
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: cart }),
-      });
-
-      const data = await response.json();
-
-      if (data.init_point) {
-        window.location.href = data.init_point;
-      } else {
-        alert("Ocurrió un error al iniciar el pago.");
-      }
-    } catch (error) {
-      console.error("Error en pago:", error);
-      alert("Error al conectar con la pasarela de pagos.");
-    } finally {
-      setLoadingPayment(false);
-    }
   };
 
   return (

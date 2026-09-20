@@ -18,7 +18,7 @@ export default function CheckoutPage() {
     direccion: "",
     ciudad: "",
     codigoPostal: "",
-    metodoPago: "transferencia", // 'transferencia' | 'mercadopago'
+    metodoPago: "transferencia", // 'transferencia' | 'naranjax'
   });
 
   const [loading, setLoading] = useState(false);
@@ -37,41 +37,35 @@ export default function CheckoutPage() {
     e.preventDefault();
     setLoading(true);
 
-    const generatedOrderNumber = Math.floor(100000 + Math.random() * 900000);
-    const calculatedTotal =
-      formData.metodoPago === "transferencia"
-        ? finalTotal - totalPrice * 0.1
-        : finalTotal;
-
     try {
-      // ✅ RUTA CORREGIDA: /api/checkout/send-order (NO /api/send-order)
-      const res = await fetch("/api/checkout/send-order", {
+      // El servidor recalcula precios y totales con el catálogo; solo enviamos ids, talles y cantidades.
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           formData,
-          cart,
-          orderNumber: generatedOrderNumber,
-          finalTotal: calculatedTotal,
+          items: cart.map(({ id, size, quantity }) => ({ id, size, quantity })),
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        alert(
-          `Error al procesar el pedido: ${
-            data.error || "Ocurrió un error inesperado"
-          }`
-        );
+        alert(data.error || "Ocurrió un error inesperado");
         setLoading(false);
         return;
       }
 
+      // Pago online: el carrito se vacía recién cuando el cliente vuelve con el pago aprobado.
+      if (data.redirect_url) {
+        window.location.href = data.redirect_url;
+        return;
+      }
+
       clearCart();
-      router.push("/checkout/exito");
+      router.push(`/checkout/exito?order=${data.orderNumber}`);
     } catch (error) {
-      console.error("Error al enviar los emails del pedido:", error);
+      console.error("Error al enviar el pedido:", error);
       alert("Ocurrió un error de conexión al enviar el pedido.");
       setLoading(false);
     }
@@ -216,15 +210,15 @@ export default function CheckoutPage() {
                   <input
                     type="radio"
                     name="metodoPago"
-                    value="mercadopago"
-                    checked={formData.metodoPago === "mercadopago"}
+                    value="naranjax"
+                    checked={formData.metodoPago === "naranjax"}
                     onChange={handleChange}
                     className="accent-red-600"
                   />
                   <div>
-                    <p className="text-sm font-bold">Mercado Pago / Tarjetas</p>
+                    <p className="text-sm font-bold">Naranja X / Tarjetas</p>
                     <p className="text-xs text-neutral-500">
-                      Crédito, Débito o dinero en cuenta
+                      Tarjeta Naranja X, crédito o débito
                     </p>
                   </div>
                 </label>

@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function ExitoPage() {
-  // Se genera el número solo en el cliente durante el primer render
-  const [orderNumber] = useState(() => {
-    if (typeof window === "undefined") return "------";
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  });
+function ExitoContent() {
+  const orderNumber = useSearchParams().get("order") ?? "------";
 
   return (
     <div className="min-h-[80vh] bg-black text-white flex flex-col items-center justify-center p-6 text-center font-montserrat">
@@ -49,5 +46,13 @@ export default function ExitoPage() {
       </div>
 
     </div>
+  );
+}
+
+export default function ExitoPage() {
+  return (
+    <Suspense fallback={null}>
+      <ExitoContent />
+    </Suspense>
   );
 }

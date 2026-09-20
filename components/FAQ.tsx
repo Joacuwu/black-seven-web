@@ -27,7 +27,7 @@ const FAQ_DATA: FAQItem[] = [
   {
     question: "¿QUÉ MEDIOS DE PAGO ACEPTAN Y HAY CUOTAS?",
     answer:
-      "Aceptamos todas las tarjetas de crédito y débito mediante la pasarela segura de Mercado Pago. Ofrecemos opciones de 3 y 6 cuotas sin interés en productos seleccionados.",
+      "Aceptamos todas las tarjetas de crédito y débito mediante la pasarela segura de Naranja X. Ofrecemos opciones de 3 y 6 cuotas sin interés en productos seleccionados.",
   },
   {
     question: "¿CÓMO HAGO EL SEGUIMIENTO DE MI PEDIDO?",

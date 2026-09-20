@@ -5,70 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { PRODUCTS as ALL_PRODUCTS, formatPrice } from "@/data/products";
 
-// BASE DE DATOS DE PRODUCTOS
-const ALL_PRODUCTS = [
-  {
-    id: "1",
-    name: "REMERA 777 WHITE",
-    category: "remeras",
-    price: 35000,
-    tag: "NEW",
-    sizes: ["S", "M", "L", "XL"],
-    img: "/remera777.jpg",
-    imgHover: "/remera777hover.jpg",
-  },
-  {
-    id: "2",
-    name: "REMERA BLK7 BLACK",
-    category: "remeras",
-    price: 35000,
-    tag: "HOT",
-    sizes: ["M", "L", "XL"],
-    img: "/remerablk7.jpg",
-    imgHover: "/remerablk7hover.jpg",
-  },
-  {
-    id: "3",
-    name: "CONJUNTO BLK 777",
-    category: "conjuntos",
-    price: 68000,
-    tag: "DROP",
-    sizes: ["M", "L", "XL"],
-    img: "/conjuntoblk777.jpg",
-    imgHover: "/conjuntoblk777hover.jpg",
-  },
-  {
-    id: "4",
-    name: "CAMPERA BLK 77",
-    category: "camperas",
-    price: 52000,
-    tag: "NEW",
-    sizes: ["S", "M", "L"],
-    img: "/camperablk77.jpg",
-    imgHover: "/camperablk77hover.jpg",
-  },
-  {
-    id: "5",
-    name: "CAMPERA BLACKSEVEN 77",
-    category: "camperas",
-    price: 52000,
-    tag: "GOD",
-    sizes: ["S", "M", "L"],
-    img: "/camperablackseven77.jpg",
-    imgHover: "/camperablackseven77hover.jpg",
-  },
-  {
-    id: "6",
-    name: "BUZO BLACKSEVEN 77",
-    category: "hoodies",
-    price: 52000,
-    tag: "NEW",
-    sizes: ["S", "M", "L"],
-    img: "/buzoblackseven77_1.jpg",
-    imgHover: "/buzoblackseven77hover.jpg",
-  },
-];
 
 function ColeccionContent() {
   const { addToCart } = useCart();
@@ -82,7 +20,7 @@ function ColeccionContent() {
   // ESTADOS DE FILTROS LOCALES
   const [selectedSize, setSelectedSize] = useState<string>("todos");
   const [sortBy, setSortBy] = useState<string>("destacados");
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   const handleCategoryChange = (cat: string) => {
     if (cat === "todas") {
@@ -105,7 +43,7 @@ function ColeccionContent() {
     }).sort((a, b) => {
       if (sortBy === "precio-bajo") return a.price - b.price;
       if (sortBy === "precio-alto") return b.price - a.price;
-      return Number(a.id) - Number(b.id);
+      return a.id - b.id;
     });
   }, [selectedCategory, selectedSize, sortBy]);
 
@@ -214,7 +152,7 @@ function ColeccionContent() {
                   {/* IMAGEN CON HOVER SUAVE */}
                   <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-900">
                     <Image
-                      src={product.img}
+                      src={product.images[0]}
                       alt={product.name}
                       fill
                       className={`object-cover transition-opacity duration-500 ${
@@ -222,7 +160,7 @@ function ColeccionContent() {
                       }`}
                     />
                     <Image
-                      src={product.imgHover}
+                      src={product.images[1] ?? product.images[0]}
                       alt={`${product.name} hover`}
                       fill
                       className={`object-cover transition-opacity duration-500 absolute top-0 left-0 ${
@@ -240,7 +178,7 @@ function ColeccionContent() {
                       {product.name}
                     </h3>
                     <p className="text-lg font-black tracking-tighter text-white mt-2">
-                      ${product.price.toLocaleString("es-AR")}
+                      {formatPrice(product.price)}
                     </p>
                   </div>
                 </Link>
@@ -250,11 +188,11 @@ function ColeccionContent() {
                   <button
                     onClick={() =>
                       addToCart({
-                        id: Number(product.id),
+                        id: product.id,
                         name: product.name,
-                        price: `$${product.price.toLocaleString("es-AR")}`,
+                        price: formatPrice(product.price),
                         size: product.sizes[0] || "M",
-                        img: product.img,
+                        img: product.images[0],
                       })
                     }
                     className="w-full bg-white text-black py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
