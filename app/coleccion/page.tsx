@@ -18,6 +18,7 @@ function ColeccionContent() {
   // DERIVACIÓN DIRECTA DE URL (Evita useEffect y llamadas innecesarias a setState)
   const categoryParam = searchParams.get("categoria");
   const selectedCategory = categoryParam ? categoryParam.toLowerCase() : "todas";
+  const tagParam = searchParams.get("etiqueta")?.toUpperCase() ?? null;
 
   // ESTADOS DE FILTROS LOCALES
   const [selectedSize, setSelectedSize] = useState<string>("todos");
@@ -28,7 +29,7 @@ function ColeccionContent() {
     if (cat === "todas") {
       router.push("/coleccion");
     } else {
-      router.push(`/coleccion?categoria=${cat}`);
+      router.push(`/coleccion?categoria=${encodeURIComponent(cat)}`);
     }
   };
 
@@ -45,17 +46,18 @@ function ColeccionContent() {
     return ALL_PRODUCTS.filter((product) => {
       const matchCategory =
         selectedCategory === "todas" || product.category === selectedCategory;
+      const matchTag = !tagParam || product.tag === tagParam;
 
       const matchSize =
         selectedSize === "todos" || product.sizes.includes(selectedSize);
 
-      return matchCategory && matchSize;
+      return matchCategory && matchSize && matchTag;
     }).sort((a, b) => {
       if (sortBy === "precio-bajo") return a.price - b.price;
       if (sortBy === "precio-alto") return b.price - a.price;
       return a.sortOrder - b.sortOrder || a.id - b.id;
     });
-  }, [ALL_PRODUCTS, selectedCategory, selectedSize, sortBy]);
+  }, [ALL_PRODUCTS, selectedCategory, selectedSize, sortBy, tagParam]);
 
   return (
     <div className="min-h-screen bg-black text-white pt-8 pb-24 px-4 md:px-8 font-montserrat">
@@ -93,6 +95,15 @@ function ColeccionContent() {
               </button>
             ))}
           </div>
+
+          {tagParam && (
+            <button
+              onClick={() => router.push("/coleccion")}
+              className="px-3 py-2 border border-red-600 text-red-500 text-xs font-bold uppercase cursor-pointer hover:bg-red-600 hover:text-white transition-colors"
+            >
+              {tagParam} ✕
+            </button>
+          )}
 
           {/* TALLES Y ORDEN */}
           <div className="flex flex-wrap items-center gap-4 text-xs font-bold">

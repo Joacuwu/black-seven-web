@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useProducts } from "@/context/ProductsContext";
+import { categoryLabel } from "@/lib/catalog-types";
 
 export default function Footer() {
+  const { products } = useProducts();
+  const categories = [...new Set(products.map((p) => p.category))];
+
   return (
     <footer className="bg-black text-white border-t border-neutral-800 pt-16 pb-8 px-6 font-montserrat">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-neutral-900">
@@ -19,10 +24,14 @@ export default function Footer() {
         <div className="flex flex-col gap-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-200">Colección</h4>
           <ul className="flex flex-col gap-2 text-xs text-neutral-400">
-            <li><Link href="/coleccion/remeras" className="hover:text-white transition-colors">Remeras & Tees</Link></li>
-            <li><Link href="/coleccion/hoodies" className="hover:text-white transition-colors">Buzos & Hoodies</Link></li>
-            <li><Link href="/coleccion/conjuntos" className="hover:text-white transition-colors">Conjuntos</Link></li>
-            <li><Link href="/coleccion/pantalones" className="hover:text-white transition-colors">Pantalones</Link></li>
+            <li><Link href="/coleccion" className="hover:text-white transition-colors">Ver todo</Link></li>
+            {categories.map((category) => (
+              <li key={category}>
+                <Link href={`/coleccion?categoria=${encodeURIComponent(category)}`} className="hover:text-white transition-colors">
+                  {categoryLabel(category)}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -31,10 +40,8 @@ export default function Footer() {
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-200">Ayuda</h4>
           <ul className="flex flex-col gap-2 text-xs text-neutral-400">
             <li><Link href="/seguimiento" className="hover:text-white transition-colors">Seguimiento de Pedido</Link></li>
-            <li><Link href="/preguntas-frecuentes" className="hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
-            <li><Link href="/envios-y-devoluciones" className="hover:text-white transition-colors">Envíos & Devoluciones</Link></li>
-            <li><Link href="/guia-de-talles" className="hover:text-white transition-colors">Guía de Talles</Link></li>
-            <li><Link href="/contacto" className="hover:text-white transition-colors">Contacto</Link></li>
+            <li><Link href="/#preguntas-frecuentes" className="hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
+            <li><a href="https://wa.me/5491127035976" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Contacto por WhatsApp</a></li>
           </ul>
         </div>
 

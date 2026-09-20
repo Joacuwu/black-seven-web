@@ -44,7 +44,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="py-16 px-6 bg-black border-t border-neutral-900 font-montserrat">
+    <section id="preguntas-frecuentes" className="py-16 px-6 bg-black border-t border-neutral-900 font-montserrat">
       <div className="max-w-4xl mx-auto">
         {/* ENCABEZADO */}
         <div className="text-center mb-12">

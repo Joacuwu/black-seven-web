@@ -4,11 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
+import { useProducts } from "../context/ProductsContext";
+import { categoryLabel } from "@/lib/catalog-types";
 
 export default function Navbar() {
   const [isColeccionOpen, setIsColeccionOpen] = useState(false);
   const [isDropsOpen, setIsDropsOpen] = useState(false);
   const { cart, setIsCartOpen } = useCart();
+  const { products } = useProducts();
+
+  // Categorías y etiquetas salen de los productos cargados en el panel.
+  const categories = [...new Set(products.map((p) => p.category))];
+  const tags = [...new Set(products.map((p) => p.tag).filter((t): t is string => Boolean(t)))];
+  const dropdownItem = "px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase";
 
   return (
     <nav className="bg-black text-white px-4 md:px-8 py-3 flex justify-between items-center border-b border-neutral-800 relative z-40">
@@ -46,68 +54,39 @@ export default function Navbar() {
               >
                 Ver Todo
               </Link>
-              <Link 
-                href="/coleccion?categoria=remeras" 
-                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
-              >
-                Remeras & Tees
-              </Link>
-              <Link 
-                href="/coleccion?categoria=hoodies" 
-                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
-              >
-                Buzos & Hoodies
-              </Link>
-              <Link 
-                href="/coleccion?categoria=conjuntos" 
-                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
-              >
-                Conjuntos
-              </Link>
-              <Link 
-                href="/coleccion?categoria=pantalones" 
-                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
-              >
-                Pantalones
-              </Link>
+              {categories.map((category) => (
+                <Link key={category} href={`/coleccion?categoria=${encodeURIComponent(category)}`} className={dropdownItem}>
+                  {categoryLabel(category)}
+                </Link>
+              ))}
             </div>
           )}
         </div>
 
-        {/* DROPDOWN: DROPS */}
-        <div 
-          className="relative py-2 cursor-pointer"
-          onMouseEnter={() => setIsDropsOpen(true)}
-          onMouseLeave={() => setIsDropsOpen(false)}
-        >
-          <span className="hover:text-neutral-400 transition-colors uppercase">
+        {/* DROPS: una entrada por etiqueta (NEW, HOT, DROP...) */}
+        {tags.length > 0 ? (
+          <div
+            className="relative py-2 cursor-pointer"
+            onMouseEnter={() => setIsDropsOpen(true)}
+            onMouseLeave={() => setIsDropsOpen(false)}
+          >
+            <span className="hover:text-neutral-400 transition-colors uppercase">Drops</span>
+
+            {isDropsOpen && (
+              <div className="absolute top-full right-0 w-48 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col z-50">
+                {tags.map((tag) => (
+                  <Link key={tag} href={`/coleccion?etiqueta=${encodeURIComponent(tag)}`} className={dropdownItem}>
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link href="/coleccion" className="hover:text-neutral-400 transition-colors uppercase">
             Drops
-          </span>
-
-          {isDropsOpen && (
-            <div className="absolute top-full right-0 w-48 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col z-50">
-              <Link 
-                href="/coleccion?categoria=drop-01" 
-                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors flex justify-between items-center uppercase"
-              >
-                <span>DROP #01</span>
-                <span className="text-[10px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">HOT</span>
-              </Link>
-              <Link 
-                href="/coleccion" 
-                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
-              >
-                Edición Limitada
-              </Link>
-              <Link 
-                href="/coleccion" 
-                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase"
-              >
-                Próximos Lanzamientos
-              </Link>
-            </div>
-          )}
-        </div>
+          </Link>
+        )}
 
         {/* SEGUIMIENTO DE PEDIDO */}
         <Link href="/seguimiento" className="hover:text-neutral-400 transition-colors uppercase">
