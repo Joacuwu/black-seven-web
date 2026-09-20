@@ -1,116 +1,227 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ChevronDown, Menu, ShoppingBag, X } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductsContext";
 import { categoryLabel } from "@/lib/catalog-types";
 
-export default function Navbar() {
-  const [isColeccionOpen, setIsColeccionOpen] = useState(false);
-  const [isDropsOpen, setIsDropsOpen] = useState(false);
-  const { cart, setIsCartOpen } = useCart();
-  const { products } = useProducts();
+// ─────────────────────────────────────────────────────────────────────────────
+// CÓMO AGREGAR COSAS AL MENÚ
+//  • Un enlace nuevo: sumá una línea en `navItems` (más abajo) con { label, href }.
+//  • Un desplegable: agregale `children: [{ label, href }, ...]`.
+//  • Un ícono nuevo a la derecha (buscador, cuenta, favoritos...): ponelo en el bloque
+//    "ACCIONES" del final del <nav>, al lado del carrito.
+// El mismo menú se usa en computadora y en el panel del celular.
+// ─────────────────────────────────────────────────────────────────────────────
 
-  // Categorías y etiquetas salen de los productos cargados en el panel.
-  const categories = [...new Set(products.map((p) => p.category))];
-  const tags = [...new Set(products.map((p) => p.tag).filter((t): t is string => Boolean(t)))];
-  const dropdownItem = "px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase";
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+interface NavItem {
+  label: string;
+  href?: string;
+  children?: NavLink[];
+}
+
+const INSTAGRAM_URL = "https://www.instagram.com/black.sevenn7/";
+const WHATSAPP_URL = "https://wa.me/5491127035976";
+
+export default function Navbar() {
+  const { totalItems, setIsCartOpen } = useCart();
+  const { products } = useProducts();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  // Las categorías y las etiquetas salen solas de los productos cargados en el panel.
+  const navItems = useMemo<NavItem[]>(() => {
+    const categories = [...new Set(products.map((p) => p.category))];
+    const tags = [...new Set(products.map((p) => p.tag).filter((t): t is string => Boolean(t)))];
+
+    return [
+      {
+        label: "Colección",
+        href: "/coleccion",
+        children: categories.length
+          ? [
+              { label: "Ver todo", href: "/coleccion" },
+              ...categories.map((c) => ({ label: categoryLabel(c), href: `/coleccion?categoria=${encodeURIComponent(c)}` })),
+            ]
+          : undefined,
+      },
+      {
+        label: "Drops",
+        href: "/coleccion",
+        children: tags.length ? tags.map((t) => ({ label: t, href: `/coleccion?etiqueta=${encodeURIComponent(t)}` })) : undefined,
+      },
+      { label: "Mi pedido", href: "/seguimiento" },
+    ];
+  }, [products]);
+
+  // Con el menú del celular abierto: no se scrollea el fondo y Escape lo cierra.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <nav className="bg-black text-white px-4 md:px-8 py-3 flex justify-between items-center border-b border-neutral-800 relative z-40">
-      
-      {/* LOGO EN IMAGEN AGRANDADO */}
-      <Link href="/" className="flex items-center py-1 shrink-0">
+    <nav
+      aria-label="Principal"
+      className="bg-black text-white border-b border-neutral-900 px-4 md:px-8 h-16 grid grid-cols-[1fr_auto_1fr] md:flex items-center"
+    >
+      {/* MENÚ (celular) */}
+      <div className="md:hidden">
+        <button
+          onClick={() => setMenuOpen(true)}
+          aria-label="Abrir menú"
+          aria-expanded={menuOpen}
+          aria-controls="menu-movil"
+          className="-ml-2 p-2 hover:text-neutral-400 transition-colors cursor-pointer"
+        >
+          <Menu size={24} strokeWidth={1.5} />
+        </button>
+      </div>
+
+      {/* LOGO */}
+      <Link href="/" aria-label="BLACK SEVEN, ir al inicio" className="justify-self-center shrink-0 md:mr-12">
         <Image
           src="/logo.png"
-          alt="BLACK SEVEN Logo"
+          alt="BLACK SEVEN"
           width={280}
           height={70}
-          className="h-12 md:h-16 w-auto object-contain transition-transform hover:scale-105"
           priority
+          className="h-11 md:h-12 w-auto object-contain"
         />
       </Link>
 
-      {/* MENÚ DE NAVEGACIÓN */}
-      <div className="flex gap-4 md:gap-8 items-center font-medium text-xs sm:text-sm tracking-wide whitespace-nowrap">
-        
-        {/* DROPDOWN: COLECCIÓN */}
-        <div 
-          className="relative py-2 cursor-pointer"
-          onMouseEnter={() => setIsColeccionOpen(true)}
-          onMouseLeave={() => setIsColeccionOpen(false)}
-        >
-          <Link href="/coleccion" className="inline-block py-3 hover:text-neutral-400 transition-colors uppercase">
-            Colección
-          </Link>
+      {/* ENLACES (computadora) */}
+      <ul className="hidden md:flex items-center gap-9 flex-1">
+        {navItems.map((item) => (
+          <li key={item.label} className="relative group">
+            <Link
+              href={item.href ?? "#"}
+              className="inline-flex items-center gap-1 py-6 text-[13px] tracking-[0.18em] uppercase text-neutral-300 hover:text-white transition-colors"
+            >
+              {item.label}
+              {item.children && <ChevronDown size={13} className="opacity-60 transition-transform group-hover:rotate-180" />}
+            </Link>
 
-          {isColeccionOpen && (
-            <div className="absolute top-full left-0 w-52 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col z-50">
-              <Link 
-                href="/coleccion" 
-                className="px-4 py-2 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-colors uppercase font-bold border-b border-neutral-800/60 pb-2 mb-1"
-              >
-                Ver Todo
-              </Link>
-              {categories.map((category) => (
-                <Link key={category} href={`/coleccion?categoria=${encodeURIComponent(category)}`} onClick={() => setIsColeccionOpen(false)} className={dropdownItem}>
-                  {categoryLabel(category)}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* DROPS: una entrada por etiqueta (NEW, HOT, DROP...) */}
-        {tags.length > 0 ? (
-          <div
-            className="relative py-2 cursor-pointer"
-            onMouseEnter={() => setIsDropsOpen(true)}
-            onMouseLeave={() => setIsDropsOpen(false)}
-          >
-            <button type="button" onClick={() => setIsDropsOpen((open) => !open)} className="py-3 hover:text-neutral-400 transition-colors uppercase cursor-pointer">
-              Drops
-            </button>
-
-            {isDropsOpen && (
-              <div className="absolute top-full right-0 w-48 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col z-50">
-                {tags.map((tag) => (
-                  <Link key={tag} href={`/coleccion?etiqueta=${encodeURIComponent(tag)}`} onClick={() => setIsDropsOpen(false)} className={dropdownItem}>
-                    {tag}
-                  </Link>
+            {item.children && (
+              <ul className="absolute left-0 top-full min-w-48 py-2 bg-black border border-neutral-800 shadow-2xl invisible opacity-0 translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-0 transition-all duration-150">
+                {item.children.map((child) => (
+                  <li key={child.href}>
+                    <Link
+                      href={child.href}
+                      className="block px-5 py-2.5 text-xs tracking-[0.15em] uppercase text-neutral-400 hover:text-white hover:bg-neutral-900 transition-colors"
+                    >
+                      {child.label}
+                    </Link>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
-          </div>
-        ) : (
-          <Link href="/coleccion" className="inline-block py-3 hover:text-neutral-400 transition-colors uppercase">
-            Drops
-          </Link>
-        )}
+          </li>
+        ))}
+      </ul>
 
-        {/* SEGUIMIENTO DE PEDIDO */}
-        <Link href="/seguimiento" className="inline-block py-3 hover:text-neutral-400 transition-colors uppercase">
-          Mi pedido
-        </Link>
-
-        {/* ÍCONO DEL CARRITO */}
-        <button 
+      {/* ACCIONES (a la derecha; acá se pueden sumar más íconos a futuro) */}
+      <div className="flex items-center justify-end gap-1">
+        <button
           onClick={() => setIsCartOpen(true)}
-          className="relative p-2 hover:text-neutral-400 transition-colors cursor-pointer"
-          aria-label="Carrito de compras"
+          aria-label={`Carrito de compras, ${totalItems} ${totalItems === 1 ? "producto" : "productos"}`}
+          className="relative -mr-2 p-2 hover:text-neutral-400 transition-colors cursor-pointer"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-          </svg>
-          {cart.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-white text-black font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-              {cart.length}
+          <ShoppingBag size={24} strokeWidth={1.5} />
+          {totalItems > 0 && (
+            <span className="absolute top-0.5 right-0 min-w-4 h-4 px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center">
+              {totalItems}
             </span>
           )}
         </button>
+      </div>
 
+      {/* PANEL DEL MENÚ (celular) */}
+      <div
+        id="menu-movil"
+        className={`md:hidden fixed inset-0 z-[60] transition-opacity duration-300 ${menuOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        aria-hidden={!menuOpen}
+      >
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeMenu} />
+
+        <div
+          className={`absolute left-0 top-0 h-full w-[85%] max-w-sm bg-black border-r border-neutral-900 flex flex-col transition-transform duration-300 ${
+            menuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="h-16 px-4 flex items-center justify-between border-b border-neutral-900">
+            <span className="font-bebas text-2xl tracking-widest">MENÚ</span>
+            <button onClick={closeMenu} aria-label="Cerrar menú" className="-mr-2 p-2 hover:text-neutral-400 transition-colors cursor-pointer">
+              <X size={24} strokeWidth={1.5} />
+            </button>
+          </div>
+
+          <ul className="flex-1 overflow-y-auto py-2">
+            {navItems.map((item) => {
+              const expanded = openSection === item.label;
+              return (
+                <li key={item.label} className="border-b border-neutral-900">
+                  {item.children ? (
+                    <>
+                      <button
+                        onClick={() => setOpenSection(expanded ? null : item.label)}
+                        aria-expanded={expanded}
+                        className="w-full px-6 py-4 flex items-center justify-between font-bebas text-3xl tracking-wider uppercase cursor-pointer"
+                      >
+                        {item.label}
+                        <ChevronDown size={20} className={`text-neutral-500 transition-transform ${expanded ? "rotate-180" : ""}`} />
+                      </button>
+                      {expanded && (
+                        <ul className="pb-3">
+                          {item.children.map((child) => (
+                            <li key={child.href}>
+                              <Link
+                                href={child.href}
+                                onClick={closeMenu}
+                                className="block px-8 py-3 text-sm tracking-[0.15em] uppercase text-neutral-400 active:text-white"
+                              >
+                                {child.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </>
+                  ) : (
+                    <Link href={item.href ?? "#"} onClick={closeMenu} className="block px-6 py-4 font-bebas text-3xl tracking-wider uppercase">
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="px-6 py-5 border-t border-neutral-900 flex gap-6 text-xs tracking-[0.15em] uppercase text-neutral-400">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white py-2">
+              Instagram
+            </a>
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white py-2">
+              WhatsApp
+            </a>
+          </div>
+        </div>
       </div>
     </nav>
   );

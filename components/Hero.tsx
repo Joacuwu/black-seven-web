@@ -195,7 +195,7 @@ export default function Hero({ slides = FALLBACK_HERO.slides, showProducts = tru
 
   return (
     <section
-      className="relative h-[calc(100svh-8rem)] min-h-[560px] bg-black"
+      className="relative h-[calc(100svh-6.6rem)] md:h-[calc(100svh-6rem)] min-h-[560px] bg-black"
       aria-roledescription="carrusel"
       aria-label="Novedades de BLACK SEVEN"
       onMouseEnter={() => pauseAutoplay()}
