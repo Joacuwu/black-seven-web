@@ -6,7 +6,7 @@ export const BANK_DETAILS = {
   cbu: "0000168300000022305789",
   alias: "estampados.7",
   /** Nombre del titular, si se quiere mostrar (ej: "Juan Pérez"). Con null no se muestra. */
-  holder: null as string | null,
+  holder: "Matias Ariel Colman" as string | null,
 };
 
 /** Número de WhatsApp para mandar el comprobante (sin + ni espacios). */
