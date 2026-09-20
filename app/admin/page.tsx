@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import OrdersPanel from "@/components/admin/OrdersPanel";
 import ProductsPanel from "@/components/admin/ProductsPanel";
+import HeroPanel from "@/components/admin/HeroPanel";
 
-type Tab = "pedidos" | "productos";
+type Tab = "pedidos" | "productos" | "portada";
 
 export default function AdminPage() {
   const [authState, setAuthState] = useState<"loading" | "out" | "in">("loading");
@@ -75,11 +76,11 @@ export default function AdminPage() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-md p-1">
-            {(["pedidos", "productos"] as const).map((t) => (
+            {(["pedidos", "productos", "portada"] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`px-5 py-2 rounded font-bebas text-2xl tracking-wider uppercase transition-colors cursor-pointer ${
+                className={`px-3 sm:px-5 py-2 rounded font-bebas text-xl sm:text-2xl tracking-wider uppercase transition-colors cursor-pointer ${
                   tab === t ? "bg-white text-black" : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -92,11 +93,9 @@ export default function AdminPage() {
           </button>
         </div>
 
-        {tab === "pedidos" ? (
-          <OrdersPanel onUnauthorized={handleUnauthorized} />
-        ) : (
-          <ProductsPanel onUnauthorized={handleUnauthorized} />
-        )}
+        {tab === "pedidos" && <OrdersPanel onUnauthorized={handleUnauthorized} />}
+        {tab === "productos" && <ProductsPanel onUnauthorized={handleUnauthorized} />}
+        {tab === "portada" && <HeroPanel onUnauthorized={handleUnauthorized} />}
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ Todo se maneja desde el celular. No hace falta instalar nada.
 
 1. Abrí en el navegador: **tu-sitio.com/admin** (la misma dirección de la tienda, agregando `/admin`).
 2. Escribí la contraseña y tocá **Entrar**.
-3. Arriba vas a ver dos pestañas: **Pedidos** y **Productos**.
+3. Arriba vas a ver tres pestañas: **Pedidos**, **Productos** y **Portada**.
 
 > La sesión dura 12 horas. Si vence, te pide la contraseña de nuevo. Tocá **Salir** cuando termines si usás un celular compartido.
 
@@ -88,13 +88,31 @@ Tocá **Eliminar** y confirmá. Se borra **para siempre**, con sus fotos. Si ten
 
 ---
 
-## 4. Cosas para tener en cuenta
+## 4. Portada (las fotos grandes de arriba)
+
+Son las fotos que se deslizan al entrar a la tienda. En la pestaña **Portada** podés:
+
+- **Agregar una foto:** tocá **+ Agregar foto**, elegí la imagen de tu galería y guardá. Opcionalmente podés escribir un **título**, un **texto**, y un **botón** (por ejemplo “Ver ahora” que lleve a un producto o a la colección). Si dejás todo vacío, se muestra solo la foto.
+- **Foto para celular (opcional):** si querés una versión vertical especial para el celular, subila en ese campo. Si no, en el celular se usa la foto principal.
+- **Cambiar el orden:** con las flechas **↑ ↓**. La primera es la que se ve primero.
+- **Ocultar:** la saca de la tienda sin borrarla. Con **Mostrar** vuelve.
+- **Eliminar:** la borra para siempre.
+- **Productos en el carrusel:** el tilde “Mostrar también productos de la tienda” agrega, después de tus fotos, hasta 4 productos con su precio y botón. Sacalo si querés que solo se vean tus fotos.
+
+**Consejos para las fotos de portada**
+- En computadora se ven **horizontales**; en celular, **verticales**. Lo ideal es cargar las dos versiones.
+- Si le ponés título o texto, elegí una foto que no sea muy clara en la parte de abajo, para que se lea.
+- Se avanzan solas cada 6 segundos y también se pueden deslizar con el dedo.
+
+---
+
+## 5. Cosas para tener en cuenta
 
 - **Los precios que se cobran son siempre los del panel.** Aunque alguien tenga la página vieja abierta, se cobra el precio actual.
 - Si un cliente tiene en el carrito un producto que ocultaste o eliminaste, al confirmar el pedido le va a aparecer un aviso de que ya no está disponible.
 - No compartas la contraseña por WhatsApp ni la anotes en lugares públicos.
 
-## 5. Si algo no anda
+## 6. Si algo no anda
 
 | Problema | Qué hacer |
 |---|---|

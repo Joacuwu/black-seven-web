@@ -113,15 +113,17 @@ export async function deleteProduct(id: number): Promise<boolean> {
   if (error) throw new Error(`No se pudo eliminar el producto: ${error.message}`);
   if (!data || data.length === 0) return false;
 
-  // Solo se borran las fotos subidas al panel (las de /public no son del bucket).
-  const prefix = `${publicImagesBase()}/`;
-  const paths = (data[0].images as string[])
-    .filter((url) => url.startsWith(prefix))
-    .map((url) => url.slice(prefix.length));
-  if (paths.length > 0) {
-    await supabase.storage.from(PRODUCT_IMAGES_BUCKET).remove(paths);
-  }
+  await removeStoredImages(data[0].images as string[]);
   return true;
+}
+
+/** Borra del almacenamiento las fotos subidas desde el panel (las de /public no son del bucket y se ignoran). */
+export async function removeStoredImages(urls: string[]): Promise<void> {
+  const prefix = `${publicImagesBase()}/`;
+  const paths = urls.filter((url) => url.startsWith(prefix)).map((url) => url.slice(prefix.length));
+  if (paths.length > 0) {
+    await getSupabase().storage.from(PRODUCT_IMAGES_BUCKET).remove(paths);
+  }
 }
 
 export function publicImagesBase(): string {
@@ -153,7 +155,7 @@ const textList = (value: unknown, maxItems: number, maxLength: number): string[]
     ? value.map((v) => text(v, maxLength)).filter(Boolean).slice(0, maxItems)
     : [];
 
-function isAllowedImage(url: string): boolean {
+export function isAllowedImage(url: string): boolean {
   if (url.startsWith("/") && !url.startsWith("//")) return true; // fotos del sitio (/public)
   return url.startsWith(`${publicImagesBase()}/`); // fotos subidas desde el panel
 }

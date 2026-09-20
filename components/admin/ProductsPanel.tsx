@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { formatPrice, type Product } from "@/lib/catalog-types";
+import { compressImage, uploadBlob } from "@/components/admin/imageTools";
 
 const SIZE_PRESETS = ["XS", "S", "M", "L", "XL", "XXL"];
 const DEFAULT_CATEGORIES = ["remeras", "hoodies", "camperas", "conjuntos", "pantalones"];
 const MAX_IMAGES = 8;
-const MAX_IMAGE_SIDE = 1600;
 
 interface FormState {
   id?: number;
@@ -63,25 +63,6 @@ const payloadFromProduct = (p: Product, patch: Partial<Product>) => ({
   ...patch,
   tag: (patch.tag ?? p.tag) || "",
 });
-
-/** Achica la foto (los celulares sacan fotos de 5 MB+) y la pasa a JPG antes de subirla. */
-async function compressImage(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("No se pudo procesar la foto.");
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-
-  return new Promise((resolve, reject) =>
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("No se pudo procesar la foto."))), "image/jpeg", 0.85)
-  );
-}
 
 const inputClass =
   "w-full bg-black border border-neutral-800 rounded p-2.5 text-base md:text-sm text-white focus:border-white outline-none";
@@ -183,11 +164,7 @@ export default function ProductsPanel({ onUnauthorized }: { onUnauthorized: () =
       try {
         const blob = await compressImage(file);
         const { uploadUrl, publicUrl } = await request("/api/admin/upload", "POST", { contentType: "image/jpeg" });
-        const body = new FormData();
-        body.append("cacheControl", "31536000");
-        body.append("", blob);
-        const res = await fetch(uploadUrl, { method: "PUT", body });
-        if (!res.ok) throw new Error("No se pudo subir la foto.");
+        await uploadBlob(uploadUrl, blob);
         setForm((f) => (f ? { ...f, images: [...f.images, publicUrl] } : f));
       } catch (error) {
         setFormError(error instanceof Error ? error.message : "No se pudo subir la foto.");

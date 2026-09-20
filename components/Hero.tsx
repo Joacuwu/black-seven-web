@@ -6,64 +6,70 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useProducts } from "@/context/ProductsContext";
 import { formatPrice, type Product } from "@/lib/catalog-types";
+import { FALLBACK_HERO, type HeroSlide } from "@/lib/hero-types";
 
 const AUTOPLAY_MS = 6000;
 const RESUME_AFTER_TOUCH_MS = 10000;
 const MAX_FEATURED = 4;
 
-function BrandSlide() {
+// Diapositiva propia cargada desde el panel (foto + texto y botón opcionales)
+function CustomSlide({ slide, first }: { slide: HeroSlide; first: boolean }) {
+  const hasText = Boolean(slide.eyebrow || slide.title || slide.subtitle || (slide.buttonLabel && slide.buttonUrl));
+  const Title = first ? "h1" : "h2";
+
   return (
     <div className="relative flex-none w-full h-full snap-center flex items-center justify-center overflow-hidden">
-      {/* IMAGEN PARA DESKTOP (se oculta en celular) */}
-      <div className="hidden md:block absolute inset-0">
-        <Image
-          src="/hero-bg.jpg"
-          alt="BLACK SEVEN"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center opacity-40"
-        />
-      </div>
+      {/* FOTO PARA COMPUTADORA */}
+      <Image
+        src={slide.imageUrl}
+        alt={slide.title ?? "BLACK SEVEN"}
+        fill
+        priority={first}
+        sizes="100vw"
+        className="hidden md:block object-cover object-center"
+      />
+      {/* FOTO PARA CELULAR (si no hay una propia, se usa la principal) */}
+      <Image
+        src={slide.mobileImageUrl ?? slide.imageUrl}
+        alt={slide.title ?? "BLACK SEVEN"}
+        fill
+        priority={first}
+        sizes="100vw"
+        className="md:hidden object-cover object-center"
+      />
 
-      {/* IMAGEN PARA CELULAR */}
-      <div className="block md:hidden absolute inset-0">
-        <Image
-          src="/hero-bg-mobile.jpg"
-          alt="BLACK SEVEN"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center opacity-50"
-        />
-      </div>
+      {/* Sin texto se ve la foto casi pura; con texto se oscurece para que se lea */}
+      <div
+        className={`absolute inset-0 pointer-events-none ${
+          hasText ? "bg-gradient-to-t from-black/90 via-black/55 to-black/40" : "bg-gradient-to-t from-black/50 via-transparent to-transparent"
+        }`}
+      />
 
-      {/* OVERLAY DEGRADADO BORDÓ/NEGRO */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-950/40 via-black/80 to-black pointer-events-none" />
-
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
-        <p className="text-red-600 font-montserrat text-xs sm:text-sm tracking-[0.3em] uppercase mb-4 font-bold flex items-center justify-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-red-600 animate-ping" />
-          New Drop Available
-        </p>
-
-        <h1 className="font-bebas text-7xl sm:text-9xl tracking-tight leading-none text-white uppercase drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
-          BLACK SEVEN
-        </h1>
-
-        <p className="mt-4 text-neutral-300 font-montserrat max-w-lg mx-auto text-sm sm:text-base drop-shadow-md">
-          Streetwear & Underground Culture. Diseños exclusivos de edición limitada.
-        </p>
-
-        <div className="mt-8">
-          <Link
-            href="/coleccion"
-            className="inline-block px-10 py-4 bg-red-600 hover:bg-red-700 text-white font-bebas text-xl md:text-2xl tracking-wider uppercase transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500/50"
-          >
-            Ver Colección
-          </Link>
+      {hasText && (
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+          {slide.eyebrow && (
+            <p className="text-red-500 font-montserrat text-xs sm:text-sm tracking-[0.3em] uppercase mb-4 font-bold">{slide.eyebrow}</p>
+          )}
+          {slide.title && (
+            <Title className="font-bebas text-6xl sm:text-9xl tracking-tight leading-none text-white uppercase drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+              {slide.title}
+            </Title>
+          )}
+          {slide.subtitle && (
+            <p className="mt-4 text-neutral-200 font-montserrat max-w-lg mx-auto text-sm sm:text-base drop-shadow-md">{slide.subtitle}</p>
+          )}
+          {slide.buttonLabel && slide.buttonUrl && (
+            <div className="mt-8">
+              <Link
+                href={slide.buttonUrl}
+                className="inline-block px-10 py-4 bg-red-600 hover:bg-red-700 text-white font-bebas text-xl md:text-2xl tracking-wider uppercase transition-all duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500/50"
+              >
+                {slide.buttonLabel}
+              </Link>
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -117,19 +123,28 @@ function ProductSlide({ product }: { product: Product }) {
   );
 }
 
-export default function Hero() {
+interface HeroProps {
+  /** Diapositivas propias (fotos cargadas desde el panel). Si no hay ninguna, se usa la portada de respaldo. */
+  slides?: HeroSlide[];
+  /** Si además se muestran productos del catálogo dentro del carrusel. */
+  showProducts?: boolean;
+}
+
+export default function Hero({ slides = FALLBACK_HERO.slides, showProducts = true }: HeroProps) {
   const { products } = useProducts();
+  const ownSlides = useMemo(() => (slides.length > 0 ? slides : FALLBACK_HERO.slides), [slides]);
   const trackRef = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(false);
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [index, setIndex] = useState(0);
 
-  // Diapositivas: la de la marca + hasta 4 productos (primero los que tienen etiqueta NEW, HOT, etc.)
+  // Diapositivas: las fotos propias del panel + hasta 4 productos (primero los que tienen etiqueta NEW, HOT, etc.)
   const featured = useMemo(() => {
+    if (!showProducts) return [];
     const withPhoto = products.filter((p) => p.images.length > 0);
     return [...withPhoto.filter((p) => p.tag), ...withPhoto.filter((p) => !p.tag)].slice(0, MAX_FEATURED);
-  }, [products]);
-  const total = 1 + featured.length;
+  }, [products, showProducts]);
+  const total = ownSlides.length + featured.length;
 
   const goTo = useCallback((target: number) => {
     const track = trackRef.current;
@@ -196,7 +211,9 @@ export default function Hero() {
         tabIndex={0}
         className="flex h-full overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus:outline-none"
       >
-        <BrandSlide />
+        {ownSlides.map((slide, i) => (
+          <CustomSlide key={slide.id} slide={slide} first={i === 0} />
+        ))}
         {featured.map((product) => (
           <ProductSlide key={product.id} product={product} />
         ))}
