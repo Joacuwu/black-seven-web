@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
+import { getProductById, formatPrice } from "@/data/products";
 
 export interface CartItem {
   id: number;
@@ -28,7 +29,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
 
   // Inicialización de estado con función callback para localStorage
-  const [cart, setCart] = useState<CartItem[]>(() => {
+  const [storedCart, setCart] = useState<CartItem[]>(() => {
     if (typeof window === "undefined") return [];
     try {
       const savedCart = localStorage.getItem("cart_blackseven");
@@ -41,8 +42,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Guardar cambios en localStorage
   useEffect(() => {
-    localStorage.setItem("cart_blackseven", JSON.stringify(cart));
-  }, [cart]);
+    localStorage.setItem("cart_blackseven", JSON.stringify(storedCart));
+  }, [storedCart]);
+
+  // Los precios siempre salen del catálogo: así un carrito guardado con precios viejos se corrige solo.
+  const cart = useMemo(
+    () =>
+      storedCart.map((item) => {
+        const product = getProductById(item.id);
+        return product ? { ...item, price: formatPrice(product.price) } : item;
+      }),
+    [storedCart]
+  );
 
   const addToCart = (newItem: CartItem) => {
     setCart((prevCart) => {
@@ -75,8 +86,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
   const totalPrice = cart.reduce((acc, item) => {
-    const numericPrice = Number(item.price.replace(/[^0-9.-]+/g, "")) || 0;
-    return acc + numericPrice * (item.quantity || 1);
+    const unitPrice = getProductById(item.id)?.price ?? 0;
+    return acc + unitPrice * (item.quantity || 1);
   }, 0);
 
   return (
