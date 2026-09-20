@@ -11,6 +11,16 @@ export type OrderStatus =
   | "delivered"
   | "cancelled";
 
+export const ORDER_STATUSES: OrderStatus[] = [
+  "pending_payment",
+  "pending_transfer",
+  "paid",
+  "preparing",
+  "shipped",
+  "delivered",
+  "cancelled",
+];
+
 export interface CustomerData {
   nombre: string;
   apellido: string;
@@ -150,4 +160,34 @@ export async function setProviderPaymentId(orderNumber: number, providerPaymentI
     .update({ provider_payment_id: providerPaymentId })
     .eq("order_number", orderNumber);
   if (error) throw new Error(`Error guardando el pago del pedido: ${error.message}`);
+}
+
+const ORDER_SELECT = "*, order_items(product_id, name, size, unit_price, quantity)";
+
+/** Últimos pedidos, más nuevos primero (uso del panel de administración). */
+export async function listOrders(limit = 200): Promise<OrderRow[]> {
+  const { data, error } = await getSupabase()
+    .from("orders")
+    .select(ORDER_SELECT)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(`Error listando pedidos: ${error.message}`);
+  return (data as OrderRow[]) ?? [];
+}
+
+/** Actualiza estado y/o código de seguimiento de un pedido (uso del panel de administración). */
+export async function updateOrder(
+  id: string,
+  patch: { status?: OrderStatus; tracking_code?: string | null }
+): Promise<OrderRow | null> {
+  const { data, error } = await getSupabase()
+    .from("orders")
+    .update(patch)
+    .eq("id", id)
+    .select(ORDER_SELECT)
+    .maybeSingle();
+
+  if (error) throw new Error(`Error actualizando el pedido: ${error.message}`);
+  return (data as OrderRow | null) ?? null;
 }
