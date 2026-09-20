@@ -68,13 +68,17 @@ export async function sendOrderEmails(order: OrderRow) {
     from: FROM,
     to: [order.customer_email],
     replyTo: process.env.ADMIN_EMAIL || undefined,
-    subject: `✅ Confirmación de tu Pedido #${order.order_number} - BLACK SEVEN`,
+    subject: `✅ Recibimos tu Pedido #${order.order_number} - BLACK SEVEN`,
     html: `
       <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px;">
-          <h1 style="color: #dc2626; text-align: center; margin-bottom: 20px;">¡Gracias por tu compra, ${escapeHtml(order.customer_name)}!</h1>
+          <h1 style="color: #dc2626; text-align: center; margin-bottom: 20px;">¡Gracias por tu pedido, ${escapeHtml(order.customer_name)}!</h1>
           <p style="color: #374151; line-height: 1.6; margin-bottom: 20px;">
-            Recibimos tu pedido correctamente. Nos pondremos en contacto a la brevedad para coordinar el envío.
+            ${
+              isTransfer
+                ? "Recibimos tu pedido y lo reservamos hasta que hagas la transferencia. Cuando recibamos el comprobante, lo confirmamos y coordinamos el envío."
+                : "Recibimos tu pedido correctamente. Nos pondremos en contacto a la brevedad para coordinar el envío."
+            }
           </p>
           <div style="background-color: #f0fdf4; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #16a34a;">
             <p style="margin: 8px 0;"><strong>📌 Nº de Orden:</strong> #${order.order_number}</p>
