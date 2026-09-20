@@ -44,8 +44,8 @@ export default function CheckoutPage() {
         : finalTotal;
 
     try {
-      // Disparar la API Route de envío de e-mails
-      const res = await fetch("/api/send-order", {
+      // ✅ RUTA CORREGIDA: /api/checkout/send-order (NO /api/send-order)
+      const res = await fetch("/api/checkout/send-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
