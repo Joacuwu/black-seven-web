@@ -40,7 +40,7 @@ function OrderCard({
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
-  const save = async (patch: { status?: OrderStatus; tracking_code?: string }) => {
+  const save = async (patch: { status?: OrderStatus; tracking_code?: string; notify?: boolean }) => {
     setSaving(true);
     setMessage("");
     try {
@@ -55,7 +55,13 @@ function OrderCard({
         setMessage(data.error || "No se pudo guardar.");
       } else {
         onUpdated(data.order);
-        setMessage("Guardado ✓");
+        setMessage(
+          data.emailSent === true
+            ? "Guardado ✓ · Se le avisó al cliente por mail"
+            : data.emailSent === false
+              ? "Guardado ✓ · pero NO se pudo enviar el mail al cliente"
+              : "Guardado ✓"
+        );
       }
     } catch {
       setMessage("Error de conexión.");
@@ -127,7 +133,19 @@ function OrderCard({
           <select
             value={order.status}
             disabled={saving}
-            onChange={(e) => save({ status: e.target.value as OrderStatus })}
+            onChange={(e) => {
+              const status = e.target.value as OrderStatus;
+              if (status === "shipped") {
+                const ok = window.confirm(
+                  `¿Marcar el pedido #${order.order_number} como ENVIADO?
+
+Se le va a mandar un mail a ${order.customer_email} avisándole${tracking.trim() ? " (con el código de seguimiento)" : " (todavía sin código de seguimiento)"}.`
+                );
+                if (!ok) return;
+                return save({ status, tracking_code: tracking, notify: true });
+              }
+              save({ status });
+            }}
             className="mt-1 w-full bg-black border border-neutral-800 rounded p-2.5 text-sm text-white normal-case tracking-normal focus:border-white outline-none"
           >
             {STATUS_ORDER.map((status) => (
@@ -149,7 +167,13 @@ function OrderCard({
               className="min-w-0 flex-1 bg-black border border-neutral-800 rounded p-2.5 text-sm text-white normal-case tracking-normal focus:border-white outline-none"
             />
             <button
-              onClick={() => save({ tracking_code: tracking })}
+              onClick={() => {
+                const notify =
+                  order.status === "shipped" &&
+                  tracking.trim() !== "" &&
+                  window.confirm("¿Avisarle al cliente por mail con este código de seguimiento?");
+                save({ tracking_code: tracking, notify });
+              }}
               disabled={saving || !trackingChanged}
               className="px-4 bg-white text-black text-xs font-bold rounded disabled:opacity-30 hover:bg-neutral-200 transition-colors cursor-pointer disabled:cursor-not-allowed"
             >

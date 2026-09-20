@@ -5,6 +5,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { CartProvider } from "@/context/CartContext";
 import { ProductsProvider } from "@/context/ProductsContext";
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
 import { Bebas_Neue, Montserrat } from "next/font/google";
 import "./globals.css";
 
@@ -20,20 +21,14 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "BLACK SEVEN | Official Store",
   description: "Streetwear & Underground Culture. Drops exclusivos de edición limitada.",
   openGraph: {
     title: "BLACK SEVEN | Official Store",
     description: "Streetwear & Underground Culture.",
-    url: "https://blackseven.com",
+    url: "/",
     siteName: "BLACK SEVEN",
-    images: [
-      {
-        url: "/remera1.jpg",
-        width: 1200,
-        height: 630,
-      },
-    ],
     locale: "es_AR",
     type: "website",
   },

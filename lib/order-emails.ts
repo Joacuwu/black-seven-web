@@ -99,3 +99,37 @@ export async function sendOrderEmails(order: OrderRow) {
     `,
   });
 }
+
+/** Avisa al cliente que su pedido salió, con el código de seguimiento si hay uno. */
+export async function sendShippedEmail(order: OrderRow) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const trackingBlock = order.tracking_code
+    ? `<div style="background-color: #eff6ff; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #2563eb;">
+         <p style="margin: 0;"><strong>📦 Código de seguimiento:</strong> ${escapeHtml(order.tracking_code)}</p>
+       </div>`
+    : "";
+
+  await resend.emails.send({
+    from: FROM,
+    to: [order.customer_email],
+    subject: `📦 Tu Pedido #${order.order_number} ya está en camino - BLACK SEVEN`,
+    html: `
+      <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px;">
+          <h1 style="color: #dc2626; text-align: center; margin-bottom: 20px;">¡Tu pedido está en camino, ${escapeHtml(order.customer_name)}!</h1>
+          <p style="color: #374151; line-height: 1.6;">
+            Despachamos tu pedido <strong>#${order.order_number}</strong> a ${escapeHtml(order.shipping_address)}, ${escapeHtml(order.shipping_city)}.
+          </p>
+          ${trackingBlock}
+          <p style="text-align: center; margin: 24px 0;">
+            <a href="${SITE_URL}/seguimiento?order=${order.order_number}" style="background-color: #dc2626; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Ver el estado de mi pedido</a>
+          </p>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+          <p style="color: #6b7280; text-align: center; font-size: 12px;">
+            <strong>BLACK SEVEN TEAM</strong>
+          </p>
+        </div>
+      </div>
+    `,
+  });
+}

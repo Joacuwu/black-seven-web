@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
+import { sendShippedEmail } from "@/lib/order-emails";
 import { ORDER_STATUSES, updateOrder, type OrderStatus } from "@/lib/orders";
 
 const MAX_TRACKING_LENGTH = 100;
@@ -40,7 +41,20 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
   try {
     const order = await updateOrder(id, patch);
     if (!order) return NextResponse.json({ error: "Pedido no encontrado." }, { status: 404 });
-    return NextResponse.json({ order });
+
+    // Aviso opcional al cliente (el panel lo pide y confirma antes de enviarlo).
+    let emailSent: boolean | undefined;
+    if (body?.notify === true && order.status === "shipped") {
+      try {
+        await sendShippedEmail(order);
+        emailSent = true;
+      } catch (error) {
+        console.error("Error enviando el aviso de envío:", error);
+        emailSent = false;
+      }
+    }
+
+    return NextResponse.json({ order, emailSent });
   } catch (error) {
     console.error("Error actualizando pedido:", error);
     return NextResponse.json({ error: "No se pudo actualizar el pedido." }, { status: 500 });
