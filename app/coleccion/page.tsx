@@ -205,22 +205,31 @@ function ColeccionContent() {
                   </div>
                 </Link>
 
-                {/* BOTÓN RÁPIDO CARRITO */}
+                {/* BOTÓN: con varios talles hay que elegirlo en la ficha; con uno solo se agrega directo */}
                 <div className="p-4 pt-0">
-                  <button
-                    onClick={() =>
-                      addToCart({
-                        id: product.id,
-                        name: product.name,
-                        price: formatPrice(product.price),
-                        size: product.sizes[0] || "M",
-                        img: product.images[0],
-                      })
-                    }
-                    className="w-full bg-white text-black py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
-                  >
-                    Agregar
-                  </button>
+                  {product.sizes.length === 1 ? (
+                    <button
+                      onClick={() =>
+                        addToCart({
+                          id: product.id,
+                          name: product.name,
+                          price: formatPrice(product.price),
+                          size: product.sizes[0],
+                          img: product.images[0],
+                        })
+                      }
+                      className="w-full bg-white text-black py-3 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
+                    >
+                      Agregar
+                    </button>
+                  ) : (
+                    <Link
+                      href={`/producto/${product.id}`}
+                      className="block w-full text-center bg-white text-black py-3 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors"
+                    >
+                      Elegir talle
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}

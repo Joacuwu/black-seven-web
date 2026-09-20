@@ -22,19 +22,19 @@ export default function Navbar() {
     <nav className="bg-black text-white px-4 md:px-8 py-3 flex justify-between items-center border-b border-neutral-800 relative z-40">
       
       {/* LOGO EN IMAGEN AGRANDADO */}
-      <Link href="/" className="flex items-center py-1">
+      <Link href="/" className="flex items-center py-1 shrink-0">
         <Image
           src="/logo.png"
           alt="BLACK SEVEN Logo"
           width={280}
           height={70}
-          className="h-14 md:h-16 w-auto object-contain transition-transform hover:scale-105"
+          className="h-12 md:h-16 w-auto object-contain transition-transform hover:scale-105"
           priority
         />
       </Link>
 
       {/* MENÚ DE NAVEGACIÓN */}
-      <div className="flex gap-6 md:gap-8 items-center font-medium text-sm tracking-wide">
+      <div className="flex gap-4 md:gap-8 items-center font-medium text-xs sm:text-sm tracking-wide whitespace-nowrap">
         
         {/* DROPDOWN: COLECCIÓN */}
         <div 
@@ -42,7 +42,7 @@ export default function Navbar() {
           onMouseEnter={() => setIsColeccionOpen(true)}
           onMouseLeave={() => setIsColeccionOpen(false)}
         >
-          <Link href="/coleccion" className="hover:text-neutral-400 transition-colors uppercase">
+          <Link href="/coleccion" className="inline-block py-3 hover:text-neutral-400 transition-colors uppercase">
             Colección
           </Link>
 
@@ -55,7 +55,7 @@ export default function Navbar() {
                 Ver Todo
               </Link>
               {categories.map((category) => (
-                <Link key={category} href={`/coleccion?categoria=${encodeURIComponent(category)}`} className={dropdownItem}>
+                <Link key={category} href={`/coleccion?categoria=${encodeURIComponent(category)}`} onClick={() => setIsColeccionOpen(false)} className={dropdownItem}>
                   {categoryLabel(category)}
                 </Link>
               ))}
@@ -70,12 +70,14 @@ export default function Navbar() {
             onMouseEnter={() => setIsDropsOpen(true)}
             onMouseLeave={() => setIsDropsOpen(false)}
           >
-            <span className="hover:text-neutral-400 transition-colors uppercase">Drops</span>
+            <button type="button" onClick={() => setIsDropsOpen((open) => !open)} className="py-3 hover:text-neutral-400 transition-colors uppercase cursor-pointer">
+              Drops
+            </button>
 
             {isDropsOpen && (
               <div className="absolute top-full right-0 w-48 bg-neutral-900 border border-neutral-800 rounded-md shadow-xl py-2 flex flex-col z-50">
                 {tags.map((tag) => (
-                  <Link key={tag} href={`/coleccion?etiqueta=${encodeURIComponent(tag)}`} className={dropdownItem}>
+                  <Link key={tag} href={`/coleccion?etiqueta=${encodeURIComponent(tag)}`} onClick={() => setIsDropsOpen(false)} className={dropdownItem}>
                     {tag}
                   </Link>
                 ))}
@@ -83,13 +85,13 @@ export default function Navbar() {
             )}
           </div>
         ) : (
-          <Link href="/coleccion" className="hover:text-neutral-400 transition-colors uppercase">
+          <Link href="/coleccion" className="inline-block py-3 hover:text-neutral-400 transition-colors uppercase">
             Drops
           </Link>
         )}
 
         {/* SEGUIMIENTO DE PEDIDO */}
-        <Link href="/seguimiento" className="hover:text-neutral-400 transition-colors uppercase">
+        <Link href="/seguimiento" className="inline-block py-3 hover:text-neutral-400 transition-colors uppercase">
           Mi pedido
         </Link>
 

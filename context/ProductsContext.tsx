@@ -13,9 +13,10 @@ interface ProductsContextType {
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
-export function ProductsProvider({ children }: { children: ReactNode }) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+// `initialProducts` viene ya cargado desde el servidor: la grilla se ve completa desde el primer momento.
+export function ProductsProvider({ children, initialProducts }: { children: ReactNode; initialProducts?: Product[] }) {
+  const [products, setProducts] = useState<Product[]>(initialProducts ?? []);
+  const [loading, setLoading] = useState(!initialProducts);
   const [error, setError] = useState(false);
 
   useEffect(() => {

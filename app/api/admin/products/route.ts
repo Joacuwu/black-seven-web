@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
+import { refreshCatalog } from "@/lib/catalog-cache";
 import { createProduct, InvalidProductError, listProducts, parseProductInput } from "@/lib/catalog";
 
 export async function GET() {
@@ -20,7 +21,9 @@ export async function POST(request: Request) {
   }
   try {
     const input = parseProductInput(await request.json().catch(() => null));
-    return NextResponse.json({ product: await createProduct(input) }, { status: 201 });
+    const product = await createProduct(input);
+    refreshCatalog();
+    return NextResponse.json({ product }, { status: 201 });
   } catch (error) {
     if (error instanceof InvalidProductError) {
       return NextResponse.json({ error: error.message }, { status: 400 });

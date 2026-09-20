@@ -76,20 +76,16 @@ function ProductDetail({ product }: { product: Product }) {
     updateZoomCoords(e.clientX, e.clientY, e.currentTarget);
   };
 
+  // En celular: un toque no hace nada (así se puede scrollear la página con el dedo sobre la foto);
+  // doble toque activa/desactiva el zoom, y con el zoom activo se arrastra el dedo para recorrer la foto.
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300; // ms
 
-    // Detección de Doble Tap en celis
-    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY && e.touches.length === 1) {
+      const touch = e.touches[0];
+      updateZoomCoords(touch.clientX, touch.clientY, e.currentTarget);
       setIsZoomed((prev) => !prev);
-    } else {
-      // Tap simple / Inicio de arrastre
-      if (e.touches.length === 1) {
-        const touch = e.touches[0];
-        updateZoomCoords(touch.clientX, touch.clientY, e.currentTarget);
-        setIsZoomed(true);
-      }
     }
     lastTapRef.current = now;
   };
@@ -101,11 +97,8 @@ function ProductDetail({ product }: { product: Product }) {
     }
   };
 
-  const handleTouchEnd = () => {
-    // Si no fue doble tap sostenido, se desactiva al soltar
-    // Si preferís que se mantenga fijo tras tocar, podés quitar esta línea.
-    setIsZoomed(false);
-  };
+  // El zoom por mouse es solo para pantallas con mouse: los celulares simulan "mouseenter" al tocar.
+  const hasMouse = () => window.matchMedia("(hover: hover)").matches;
 
   const handleAddToCart = () => {
     addToCart({
@@ -114,14 +107,16 @@ function ProductDetail({ product }: { product: Product }) {
       price: formatPrice(product.price),
       size: activeSize,
       img: activeImage,
+      quantity,
     });
+    setQuantity(1);
     
     setAddedAnimation(true);
     setTimeout(() => setAddedAnimation(false), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-8 pb-20 px-4 md:px-6 font-montserrat">
+    <div className="min-h-screen bg-black text-white pt-8 pb-32 md:pb-20 px-4 md:px-6 font-montserrat">
       <div className="max-w-7xl mx-auto">
         
         {/* BREADCRUMB */}
@@ -166,12 +161,12 @@ function ProductDetail({ product }: { product: Product }) {
                   ? "border-red-600/60 shadow-[0_0_25px_rgba(220,38,38,0.3)]" 
                   : "border-neutral-900"
               }`}
-              onMouseEnter={() => setIsZoomed(true)}
+              onMouseEnter={() => hasMouse() && setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
               onMouseMove={handleMouseMove}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
+              style={{ touchAction: isZoomed ? "none" : "pan-y" }}
             >
               <Image
                 src={activeImage}
@@ -198,7 +193,7 @@ function ProductDetail({ product }: { product: Product }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
                 </svg>
                 <span className="hidden md:inline">Hover para Zoom</span>
-                <span className="inline md:hidden">Mantén o Toca 2 veces</span>
+                <span className="inline md:hidden">{isZoomed ? "Tocá 2 veces para salir" : "Tocá 2 veces para ampliar"}</span>
               </div>
 
               {/* MIRA TÁCTICA Y LENTE FLOTANTE */}
@@ -243,7 +238,7 @@ function ProductDetail({ product }: { product: Product }) {
             {/* SELECTOR DE TALLES */}
             <div>
               <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">Talle:</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">Talle: <span className="text-white">{activeSize}</span></span>
                 <button 
                   type="button"
                   onClick={() => setIsGuiaOpen(true)}
@@ -252,12 +247,12 @@ function ProductDetail({ product }: { product: Product }) {
                   Guía de talles
                 </button>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 {product.sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`w-12 h-12 text-sm font-bold border transition-all cursor-pointer ${
+                    className={`w-12 h-12 md:w-12 text-sm font-bold border transition-all cursor-pointer ${
                       activeSize === size
                         ? "bg-white text-black border-white"
                         : "bg-black text-neutral-400 border-neutral-800 hover:border-neutral-500"
@@ -273,15 +268,17 @@ function ProductDetail({ product }: { product: Product }) {
             <div className="flex gap-4 pt-2">
               <div className="flex items-center border border-neutral-800 bg-neutral-950">
                 <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-3 text-sm text-neutral-400 hover:text-white cursor-pointer"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  aria-label="Menos"
+                  className="px-5 py-3 text-sm text-neutral-400 hover:text-white cursor-pointer"
                 >
                   -
                 </button>
                 <span className="px-4 py-3 text-sm font-bold">{quantity}</span>
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-3 text-sm text-neutral-400 hover:text-white cursor-pointer"
+                  onClick={() => setQuantity((q) => Math.min(10, q + 1))}
+                  aria-label="Más"
+                  className="px-5 py-3 text-sm text-neutral-400 hover:text-white cursor-pointer"
                 >
                   +
                 </button>
@@ -317,6 +314,22 @@ function ProductDetail({ product }: { product: Product }) {
 
         </div>
 
+      </div>
+
+      {/* BARRA DE COMPRA FIJA (solo celular): el botón siempre queda a mano sin scrollear hasta el final */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur border-t border-neutral-800 pl-4 pr-24 py-3 flex items-center gap-3">
+        <div className="min-w-0">
+          <p className="font-bold text-lg leading-none">{formatPrice(product.price)}</p>
+          <p className="text-[11px] text-neutral-400 mt-1">Talle {activeSize}</p>
+        </div>
+        <button
+          onClick={handleAddToCart}
+          className={`flex-1 font-bebas tracking-wider text-lg py-3 transition-all uppercase cursor-pointer ${
+            addedAnimation ? "bg-green-600 text-white" : "bg-red-600 active:bg-red-700 text-white"
+          }`}
+        >
+          {addedAnimation ? "✓ AGREGADO" : "AGREGAR"}
+        </button>
       </div>
 
       {/* MODAL GUÍA DE TALLES */}

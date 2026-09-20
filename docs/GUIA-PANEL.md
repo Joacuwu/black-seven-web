@@ -1,0 +1,105 @@
+# Guía del panel de BLACK SEVEN
+
+Todo se maneja desde el celular. No hace falta instalar nada.
+
+## 1. Cómo entrar
+
+1. Abrí en el navegador: **tu-sitio.com/admin** (la misma dirección de la tienda, agregando `/admin`).
+2. Escribí la contraseña y tocá **Entrar**.
+3. Arriba vas a ver dos pestañas: **Pedidos** y **Productos**.
+
+> La sesión dura 12 horas. Si vence, te pide la contraseña de nuevo. Tocá **Salir** cuando termines si usás un celular compartido.
+
+---
+
+## 2. Pedidos
+
+Cada tarjeta es una compra. Los más nuevos aparecen arriba. Ahí ves quién compró, qué compró, el total y su dirección. Si tocás **WhatsApp** al lado del teléfono, se abre un chat con esa persona.
+
+### El camino de un pedido
+
+| Estado | Cuándo usarlo |
+|---|---|
+| **Esperando transferencia** | El cliente hizo el pedido y todavía no pagó (así arranca). |
+| **Pagado** | Ya te llegó la plata. |
+| **Preparando** | Estás armando el paquete. |
+| **Enviado** | Ya lo despachaste. |
+| **Entregado** | El cliente ya lo recibió. |
+| **Cancelado** | Se cayó la compra. |
+
+Para cambiarlo: en la tarjeta, tocá el desplegable **Estado** y elegí el nuevo.
+
+### Cuando despachás un pedido
+
+1. (Opcional) Escribí el **código de seguimiento** del correo y tocá **Guardar**.
+2. Cambiá el estado a **Enviado**.
+3. El panel te pregunta si querés avisarle al cliente por mail. Tocá **Aceptar**.
+4. El cliente recibe un mail con el código y un botón para ver su pedido.
+
+Si cargás el código **después** de haber marcado “Enviado”, al tocar Guardar el panel te pregunta si querés avisarle de nuevo con el código.
+
+### Qué ve el cliente
+
+En la tienda, en **Mi pedido**, el cliente pone su número de pedido y su email, y ve una línea con los pasos (recibido, pagado, preparando, enviado, entregado) y el código de seguimiento. **Cada cambio que hagas en el panel aparece ahí.**
+
+---
+
+## 3. Productos
+
+### Cambiar un precio
+
+1. Pestaña **Productos**.
+2. Tocá **Editar** en el producto.
+3. Cambiá el número en **Precio** (solo números, sin puntos: `35000`).
+4. Tocá **Guardar producto**.
+
+El nuevo precio aparece en la tienda enseguida (a veces hay que recargar la página). Los pedidos que ya se hicieron **no cambian**.
+
+### Agregar un producto nuevo
+
+1. Tocá **+ Nuevo producto**.
+2. Completá:
+   - **Nombre** (ej: `REMERA 777 BLACK`).
+   - **Precio.**
+   - **Categoría:** elegí una de la lista o escribí una nueva (ej: `pantalones`). Se agrega sola al menú de la tienda.
+   - **Etiqueta** (opcional): `NEW`, `HOT`, `DROP`… Aparece en la foto y arma el menú **Drops**.
+   - **Talles:** tocá los que hay disponibles.
+   - **Fotos:** tocá **+ Agregar fotos** y elegí de tu galería.
+   - **Descripción** y **Detalles** (una línea por detalle).
+3. Tocá **Guardar producto**.
+
+**Consejos para las fotos**
+- Mejor **verticales** (más altas que anchas): así se ven completas.
+- La **primera** foto es la principal. La **segunda** se muestra cuando el cliente pasa el dedo/mouse por encima. Podés cambiar el orden con las flechas ← →.
+- No hace falta achicarlas: el panel las optimiza solas.
+- Podés subir hasta 8 fotos por producto. Esperá a que termine de decir “Subiendo…” antes de guardar.
+
+### Talle agotado
+
+**Editar** → tocá el talle para sacarle el tilde → **Guardar producto**. Ese talle deja de poder comprarse. Cuando vuelva a haber, lo volvés a marcar.
+
+### Que un producto no se vea (sin borrarlo)
+
+Tocá **Ocultar**. Queda guardado con todas sus fotos pero la tienda no lo muestra ni se puede comprar. Con **Mostrar** vuelve.
+
+### Eliminar un producto
+
+Tocá **Eliminar** y confirmá. Se borra **para siempre**, con sus fotos. Si tenés dudas, mejor **Ocultar**.
+
+---
+
+## 4. Cosas para tener en cuenta
+
+- **Los precios que se cobran son siempre los del panel.** Aunque alguien tenga la página vieja abierta, se cobra el precio actual.
+- Si un cliente tiene en el carrito un producto que ocultaste o eliminaste, al confirmar el pedido le va a aparecer un aviso de que ya no está disponible.
+- No compartas la contraseña por WhatsApp ni la anotes en lugares públicos.
+
+## 5. Si algo no anda
+
+| Problema | Qué hacer |
+|---|---|
+| “Contraseña incorrecta” | Revisá mayúsculas y espacios. Si la olvidaste, hay que cambiarla en Vercel (avisale a quien te armó la web). |
+| “Tu sesión venció” | Volvé a entrar con la contraseña. |
+| No se sube una foto | Probá con otra (JPG, PNG o WebP). Si pasa siempre, avisá. |
+| El cliente dice que no le llegó el mail | Pedile que revise **spam / no deseados**. |
+| Un cambio no se ve en la tienda | Recargá la página (deslizá hacia abajo). Si sigue igual, esperá unos minutos. |

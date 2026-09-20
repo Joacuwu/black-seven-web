@@ -17,6 +17,7 @@ interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: number, size: string) => void;
+  updateQuantity: (id: number, size: string, delta: 1 | -1) => void;
   clearCart: () => void;
   totalPrice: number;
   totalItems: number;
@@ -30,22 +31,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const { getProduct } = useProducts();
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
 
-  // Inicialización de estado con función callback para localStorage
-  const [storedCart, setCart] = useState<CartItem[]>(() => {
-    if (typeof window === "undefined") return [];
+  // El carrito arranca vacío (igual que en el servidor) y se carga desde localStorage al montar:
+  // así no hay diferencias entre el HTML del servidor y el del celular.
+  const [storedCart, setCart] = useState<CartItem[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
     try {
       const savedCart = localStorage.getItem("cart_blackseven");
-      return savedCart ? (JSON.parse(savedCart) as CartItem[]) : [];
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (savedCart) setCart(JSON.parse(savedCart) as CartItem[]);
     } catch (e) {
       console.error("Error al leer localStorage:", e);
-      return [];
     }
-  });
+    setHydrated(true);
+  }, []);
 
-  // Guardar cambios en localStorage
+  // Guardar cambios en localStorage (recién después de haber cargado lo guardado)
   useEffect(() => {
-    localStorage.setItem("cart_blackseven", JSON.stringify(storedCart));
-  }, [storedCart]);
+    if (!hydrated) return;
+    try {
+      localStorage.setItem("cart_blackseven", JSON.stringify(storedCart));
+    } catch {
+      // Sin almacenamiento disponible (modo privado): el carrito funciona igual mientras la página esté abierta.
+    }
+  }, [storedCart, hydrated]);
 
   // Los precios siempre salen del catálogo: así un carrito guardado con precios viejos se corrige solo.
   const cart = useMemo(
@@ -80,6 +90,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const updateQuantity = (id: number, size: string, delta: 1 | -1) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === id && item.size === size
+          ? { ...item, quantity: Math.min(10, Math.max(1, (item.quantity || 1) + delta)) }
+          : item
+      )
+    );
+  };
+
   const clearCart = () => {
     setCart([]);
   };
@@ -89,7 +109,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalPrice = cart.reduce((acc, item) => {
     // Mientras carga el catálogo se usa el precio guardado en el carrito ("$35.000" -> 35000).
-    const unitPrice = getProduct(item.id)?.price ?? (Number(item.price.replace(/D/g, "")) || 0);
+    const unitPrice = getProduct(item.id)?.price ?? (Number(item.price.replace(/\D/g, "")) || 0);
     return acc + unitPrice * (item.quantity || 1);
   }, 0);
 
@@ -99,6 +119,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cart,
         addToCart,
         removeFromCart,
+        updateQuantity,
         clearCart,
         totalPrice,
         totalItems,

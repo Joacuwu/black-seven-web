@@ -4,6 +4,7 @@ import CartDrawer from "@/components/CartDrawer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { CartProvider } from "@/context/CartContext";
 import { ProductsProvider } from "@/context/ProductsContext";
+import { getCachedCatalog } from "@/lib/catalog-cache";
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site";
 import { Bebas_Neue, Montserrat } from "next/font/google";
@@ -34,15 +35,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Si la base de datos no responde, la tienda igual abre y el navegador reintenta por su cuenta.
+  const initialProducts = await getCachedCatalog().catch(() => undefined);
+
   return (
     <html lang="es" className={`${bebas.variable} ${montserrat.variable}`}>
       <body className="bg-black text-white font-sans antialiased selection:bg-red-600 selection:text-white">
-        <ProductsProvider>
+        <ProductsProvider initialProducts={initialProducts}>
         <CartProvider>
           {/* BLOQUE SUPERIOR FIJO */}
           <header className="sticky top-0 z-50 w-full bg-black">

@@ -146,7 +146,7 @@ Se le va a mandar un mail a ${order.customer_email} avisándole${tracking.trim()
               }
               save({ status });
             }}
-            className="mt-1 w-full bg-black border border-neutral-800 rounded p-2.5 text-sm text-white normal-case tracking-normal focus:border-white outline-none"
+            className="mt-1 w-full bg-black border border-neutral-800 rounded p-3 text-base md:text-sm text-white normal-case tracking-normal focus:border-white outline-none"
           >
             {STATUS_ORDER.map((status) => (
               <option key={status} value={status}>
@@ -164,7 +164,7 @@ Se le va a mandar un mail a ${order.customer_email} avisándole${tracking.trim()
               onChange={(e) => setTracking(e.target.value)}
               placeholder="Ej: AB123456789AR"
               maxLength={100}
-              className="min-w-0 flex-1 bg-black border border-neutral-800 rounded p-2.5 text-sm text-white normal-case tracking-normal focus:border-white outline-none"
+              className="min-w-0 flex-1 bg-black border border-neutral-800 rounded p-3 text-base md:text-sm text-white normal-case tracking-normal focus:border-white outline-none"
             />
             <button
               onClick={() => {
@@ -175,7 +175,7 @@ Se le va a mandar un mail a ${order.customer_email} avisándole${tracking.trim()
                 save({ tracking_code: tracking, notify });
               }}
               disabled={saving || !trackingChanged}
-              className="px-4 bg-white text-black text-xs font-bold rounded disabled:opacity-30 hover:bg-neutral-200 transition-colors cursor-pointer disabled:cursor-not-allowed"
+              className="px-5 bg-white text-black text-sm md:text-xs font-bold rounded disabled:opacity-30 hover:bg-neutral-200 transition-colors cursor-pointer disabled:cursor-not-allowed"
             >
               Guardar
             </button>
@@ -222,6 +222,17 @@ export default function OrdersPanel({ onUnauthorized }: { onUnauthorized: () => 
 
   return (
     <div>
+      <details className="mb-4 bg-neutral-950 border border-neutral-900 rounded-md text-sm">
+        <summary className="px-4 py-3 cursor-pointer font-bold">¿Cómo se usa esta pantalla?</summary>
+        <ol className="px-4 pb-4 pt-1 list-decimal list-inside space-y-1.5 text-neutral-300 text-xs leading-relaxed">
+          <li>Cada tarjeta es un pedido. Los más nuevos están arriba.</li>
+          <li>Cuando el cliente te paga, cambiá el <b>Estado</b> a “Pagado” y después a “Preparando”.</li>
+          <li>Al despachar, elegí <b>Enviado</b>: el sistema le manda un mail al cliente (con el código si ya lo cargaste).</li>
+          <li>Para cargar el <b>código de seguimiento</b>, escribilo y tocá Guardar.</li>
+          <li>El cliente ve todos estos cambios en “Mi pedido” de la tienda.</li>
+        </ol>
+      </details>
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-wrap gap-2 text-xs">
           {(["todos", ...STATUS_ORDER] as const).map((status) => {

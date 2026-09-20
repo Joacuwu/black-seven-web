@@ -24,10 +24,10 @@ export default function Footer() {
         <div className="flex flex-col gap-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-200">Colección</h4>
           <ul className="flex flex-col gap-2 text-xs text-neutral-400">
-            <li><Link href="/coleccion" className="hover:text-white transition-colors">Ver todo</Link></li>
+            <li><Link href="/coleccion" className="inline-block py-1.5 hover:text-white transition-colors">Ver todo</Link></li>
             {categories.map((category) => (
               <li key={category}>
-                <Link href={`/coleccion?categoria=${encodeURIComponent(category)}`} className="hover:text-white transition-colors">
+                <Link href={`/coleccion?categoria=${encodeURIComponent(category)}`} className="inline-block py-1.5 hover:text-white transition-colors">
                   {categoryLabel(category)}
                 </Link>
               </li>
@@ -39,9 +39,9 @@ export default function Footer() {
         <div className="flex flex-col gap-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-200">Ayuda</h4>
           <ul className="flex flex-col gap-2 text-xs text-neutral-400">
-            <li><Link href="/seguimiento" className="hover:text-white transition-colors">Seguimiento de Pedido</Link></li>
-            <li><Link href="/#preguntas-frecuentes" className="hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
-            <li><a href="https://wa.me/5491127035976" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Contacto por WhatsApp</a></li>
+            <li><Link href="/seguimiento" className="inline-block py-1.5 hover:text-white transition-colors">Seguimiento de Pedido</Link></li>
+            <li><Link href="/#preguntas-frecuentes" className="inline-block py-1.5 hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
+            <li><a href="https://wa.me/5491127035976" target="_blank" rel="noopener noreferrer" className="inline-block py-1.5 hover:text-white transition-colors">Contacto por WhatsApp</a></li>
           </ul>
         </div>
 

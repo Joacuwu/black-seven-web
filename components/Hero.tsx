@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden pt-20 bg-black">
+    <section className="relative min-h-[100svh] h-screen flex items-center justify-center overflow-hidden pt-20 bg-black">
       
       {/* 1. IMAGEN PARA DESKTOP (Se oculta en mobile) */}
       <div className="hidden md:block absolute inset-0">

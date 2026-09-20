@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import { listProducts } from "@/lib/catalog";
+import { getCachedCatalog } from "@/lib/catalog-cache";
 
-// Catálogo público (solo productos activos). El navegador/CDN lo guarda 1 minuto.
+// Catálogo público (solo productos activos). Ya viene cacheado del lado del servidor y se renueva
+// al instante cuando se edita algo en el panel, por eso el navegador/CDN no lo guarda.
 export async function GET() {
   try {
-    const products = await listProducts(true);
+    const products = await getCachedCatalog();
     return NextResponse.json(
       { products },
-      { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } }
+      { headers: { "Cache-Control": "no-cache" } }
     );
   } catch (error) {
     console.error("Error listando productos:", error);

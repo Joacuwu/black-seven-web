@@ -84,7 +84,7 @@ async function compressImage(file: File): Promise<Blob> {
 }
 
 const inputClass =
-  "w-full bg-black border border-neutral-800 rounded p-2.5 text-sm text-white focus:border-white outline-none";
+  "w-full bg-black border border-neutral-800 rounded p-2.5 text-base md:text-sm text-white focus:border-white outline-none";
 const labelClass = "block text-xs text-neutral-400 uppercase tracking-wider mb-1";
 
 export default function ProductsPanel({ onUnauthorized }: { onUnauthorized: () => void }) {
@@ -345,6 +345,17 @@ export default function ProductsPanel({ onUnauthorized }: { onUnauthorized: () =
   // ---------------- LISTA ----------------
   return (
     <div>
+      <details className="mb-4 bg-neutral-950 border border-neutral-900 rounded-md text-sm">
+        <summary className="px-4 py-3 cursor-pointer font-bold">¿Cómo se usa esta pantalla?</summary>
+        <ul className="px-4 pb-4 pt-1 list-disc list-inside space-y-1.5 text-neutral-300 text-xs leading-relaxed">
+          <li><b>Cambiar un precio o un dato:</b> tocá Editar, cambialo y Guardar producto. En la tienda se ve enseguida.</li>
+          <li><b>Producto nuevo:</b> tocá “+ Nuevo producto”, completá los datos y subí las fotos desde tu celular.</li>
+          <li><b>Talle agotado:</b> en Editar, sacale el tilde a ese talle.</li>
+          <li><b>Que no se vea (sin borrarlo):</b> tocá Ocultar. Con Mostrar vuelve.</li>
+          <li><b>Eliminar</b> lo borra para siempre, con sus fotos.</li>
+        </ul>
+      </details>
+
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-neutral-400">{products.length} productos</p>
         <button
@@ -353,7 +364,7 @@ export default function ProductsPanel({ onUnauthorized }: { onUnauthorized: () =
             setFormError("");
             setForm(emptyForm);
           }}
-          className="bg-white text-black text-xs font-bold px-4 py-2.5 rounded hover:bg-neutral-200 transition-colors cursor-pointer"
+          className="bg-white text-black text-sm md:text-xs font-bold px-4 py-3 md:py-2.5 rounded hover:bg-neutral-200 transition-colors cursor-pointer"
         >
           + Nuevo producto
         </button>
@@ -382,14 +393,14 @@ export default function ProductsPanel({ onUnauthorized }: { onUnauthorized: () =
                   setFormError("");
                   setForm(formFromProduct(product));
                 }}
-                className="border border-neutral-700 px-3 py-2 rounded hover:border-white transition-colors cursor-pointer"
+                className="border border-neutral-700 px-4 py-2.5 rounded hover:border-white transition-colors cursor-pointer"
               >
                 Editar
               </button>
-              <button onClick={() => toggleActive(product)} className="border border-neutral-800 px-3 py-2 rounded hover:border-white transition-colors cursor-pointer">
+              <button onClick={() => toggleActive(product)} className="border border-neutral-800 px-4 py-2.5 rounded hover:border-white transition-colors cursor-pointer">
                 {product.active ? "Ocultar" : "Mostrar"}
               </button>
-              <button onClick={() => handleDelete(product)} className="border border-red-900 text-red-400 px-3 py-2 rounded hover:bg-red-950 transition-colors cursor-pointer">
+              <button onClick={() => handleDelete(product)} className="border border-red-900 text-red-400 px-4 py-2.5 rounded hover:bg-red-950 transition-colors cursor-pointer">
                 Eliminar
               </button>
             </div>

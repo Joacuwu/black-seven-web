@@ -1,11 +1,12 @@
 "use client";
 
 import { useCart } from "../context/CartContext";
-import { X, Trash2, CreditCard } from "lucide-react";
+import { X, Trash2, CreditCard, Minus, Plus } from "lucide-react";
+import { formatPrice } from "@/lib/catalog-types";
 import Link from "next/link";
 
 export default function CartDrawer() {
-  const { cart, removeFromCart, isCartOpen, setIsCartOpen } = useCart();
+  const { cart, removeFromCart, updateQuantity, totalPrice, isCartOpen, setIsCartOpen } = useCart();
 
   const PHONE_NUMBER = "5491127035976";
 
@@ -42,7 +43,7 @@ export default function CartDrawer() {
             <h2 className="font-bebas text-3xl tracking-wider text-white">TU CARRITO ({cart.length})</h2>
             <button 
               onClick={() => setIsCartOpen(false)} 
-              className="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+              aria-label="Cerrar carrito" className="p-3 -m-3 text-neutral-400 hover:text-white transition-colors cursor-pointer"
             >
               <X size={24} />
             </button>
@@ -59,8 +60,27 @@ export default function CartDrawer() {
                     <h4 className="font-bebas text-lg text-white leading-none">{item.name}</h4>
                     <p className="text-xs text-red-500 mt-1">Talle: {item.size}</p>
                     <p className="text-xs text-neutral-300 font-bold mt-1">{item.price}</p>
+                    <div className="flex items-center gap-1 mt-2">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.size, -1)}
+                        disabled={(item.quantity || 1) <= 1}
+                        aria-label="Quitar una unidad"
+                        className="w-9 h-9 flex items-center justify-center border border-neutral-700 text-white disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="w-8 text-center text-sm font-bold">{item.quantity || 1}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.size, 1)}
+                        disabled={(item.quantity || 1) >= 10}
+                        aria-label="Agregar una unidad"
+                        className="w-9 h-9 flex items-center justify-center border border-neutral-700 text-white disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
                   </div>
-                  <button onClick={() => removeFromCart(item.id, item.size)} className="text-neutral-500 hover:text-red-500 transition-colors cursor-pointer">
+                  <button onClick={() => removeFromCart(item.id, item.size)} aria-label="Quitar del carrito" className="p-3 text-neutral-500 hover:text-red-500 transition-colors cursor-pointer">
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -72,6 +92,11 @@ export default function CartDrawer() {
         {/* ACCIONES Y BOTONES */}
         {cart.length > 0 && (
           <div className="pt-4 border-t border-neutral-800 flex flex-col gap-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-neutral-400 uppercase tracking-wider">Subtotal</span>
+              <span className="font-bebas text-2xl">{formatPrice(totalPrice)}</span>
+            </div>
+            <p className="text-[11px] text-neutral-500 -mt-2">El envío se calcula en el siguiente paso.</p>
             
             {/* BOTÓN 1: FINALIZAR COMPRA EN LA WEB */}
               <Link
@@ -80,7 +105,7 @@ export default function CartDrawer() {
                     className="w-full bg-white hover:bg-neutral-200 text-black font-bebas text-xl py-3 tracking-widest uppercase transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                   <CreditCard size={20} />
-                    PAGAR ONLINE (TARJETA / MP)
+                    FINALIZAR COMPRA
               </Link>
 
             {/* BOTÓN 2: COMPRAR POR WHATSAPP */}

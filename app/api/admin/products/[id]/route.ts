@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
+import { refreshCatalog } from "@/lib/catalog-cache";
 import { deleteProduct, InvalidProductError, parseProductInput, updateProduct } from "@/lib/catalog";
 
 async function parseId(ctx: { params: Promise<{ id: string }> }): Promise<number | null> {
@@ -18,6 +19,7 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
     const input = parseProductInput(await request.json().catch(() => null));
     const product = await updateProduct(id, input);
     if (!product) return NextResponse.json({ error: "Producto no encontrado." }, { status: 404 });
+    refreshCatalog();
     return NextResponse.json({ product });
   } catch (error) {
     if (error instanceof InvalidProductError) {
@@ -38,6 +40,7 @@ export async function DELETE(_request: Request, ctx: { params: Promise<{ id: str
   try {
     const deleted = await deleteProduct(id);
     if (!deleted) return NextResponse.json({ error: "Producto no encontrado." }, { status: 404 });
+    refreshCatalog();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error eliminando producto:", error);

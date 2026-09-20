@@ -5,6 +5,8 @@ import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST, TRANSFER_DISCOUNT_RATE } from "@/lib/pricing-constants";
+import { formatPrice } from "@/lib/catalog-types";
 
 export default function CheckoutPage() {
   const { cart, totalPrice, clearCart } = useCart();
@@ -23,8 +25,9 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
 
-  // Cálculo de envío gratis arriba de $50.000
-  const shippingCost = totalPrice > 50000 || cart.length === 0 ? 0 : 4500;
+  // El servidor recalcula todo al confirmar; esto es solo el resumen que ve el cliente.
+  const shippingCost = totalPrice > FREE_SHIPPING_THRESHOLD || cart.length === 0 ? 0 : SHIPPING_COST;
+  const transferDiscount = formData.metodoPago === "transferencia" ? Math.round(totalPrice * TRANSFER_DISCOUNT_RATE) : 0;
   const finalTotal = totalPrice + shippingCost;
 
   const handleChange = (
@@ -111,38 +114,42 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   name="nombre"
+                  autoComplete="given-name"
                   placeholder="Nombre *"
                   required
                   value={formData.nombre}
                   onChange={handleChange}
-                  className="bg-black border border-neutral-800 p-3 text-sm rounded focus:border-white outline-none"
+                  className="bg-black border border-neutral-800 p-3 text-base md:text-sm rounded focus:border-white outline-none"
                 />
                 <input
                   type="text"
                   name="apellido"
+                  autoComplete="family-name"
                   placeholder="Apellido *"
                   required
                   value={formData.apellido}
                   onChange={handleChange}
-                  className="bg-black border border-neutral-800 p-3 text-sm rounded focus:border-white outline-none"
+                  className="bg-black border border-neutral-800 p-3 text-base md:text-sm rounded focus:border-white outline-none"
                 />
                 <input
                   type="email"
                   name="email"
+                  autoComplete="email" inputMode="email"
                   placeholder="Email *"
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="bg-black border border-neutral-800 p-3 text-sm rounded focus:border-white outline-none"
+                  className="bg-black border border-neutral-800 p-3 text-base md:text-sm rounded focus:border-white outline-none"
                 />
                 <input
                   type="tel"
                   name="telefono"
+                  autoComplete="tel" inputMode="tel"
                   placeholder="Teléfono / WhatsApp *"
                   required
                   value={formData.telefono}
                   onChange={handleChange}
-                  className="bg-black border border-neutral-800 p-3 text-sm rounded focus:border-white outline-none"
+                  className="bg-black border border-neutral-800 p-3 text-base md:text-sm rounded focus:border-white outline-none"
                 />
               </div>
             </div>
@@ -155,29 +162,32 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   name="direccion"
+                  autoComplete="street-address"
                   placeholder="Calle y número *"
                   required
                   value={formData.direccion}
                   onChange={handleChange}
-                  className="bg-black border border-neutral-800 p-3 text-sm rounded focus:border-white outline-none md:col-span-2"
+                  className="bg-black border border-neutral-800 p-3 text-base md:text-sm rounded focus:border-white outline-none md:col-span-2"
                 />
                 <input
                   type="text"
                   name="ciudad"
+                  autoComplete="address-level2"
                   placeholder="Ciudad / Localidad *"
                   required
                   value={formData.ciudad}
                   onChange={handleChange}
-                  className="bg-black border border-neutral-800 p-3 text-sm rounded focus:border-white outline-none"
+                  className="bg-black border border-neutral-800 p-3 text-base md:text-sm rounded focus:border-white outline-none"
                 />
                 <input
                   type="text"
                   name="codigoPostal"
+                  autoComplete="postal-code" inputMode="numeric"
                   placeholder="Código Postal *"
                   required
                   value={formData.codigoPostal}
                   onChange={handleChange}
-                  className="bg-black border border-neutral-800 p-3 text-sm rounded focus:border-white outline-none"
+                  className="bg-black border border-neutral-800 p-3 text-base md:text-sm rounded focus:border-white outline-none"
                 />
               </div>
             </div>
@@ -255,7 +265,7 @@ export default function CheckoutPage() {
                         Talle: {item.size} | Cant: {item.quantity || 1}
                       </p>
                     </div>
-                    <p className="font-bold">{item.price}</p>
+                    <p className="font-bold">{formatPrice((Number(item.price.replace(/\D/g, "")) || 0) * (item.quantity || 1))}</p>
                   </div>
                 ))}
               </div>
@@ -263,7 +273,7 @@ export default function CheckoutPage() {
               <div className="flex flex-col gap-2 text-xs text-neutral-400 border-t border-neutral-900 pt-3">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span>${totalPrice.toLocaleString("es-AR")}</span>
+                  <span>{formatPrice(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Envío:</span>
@@ -275,8 +285,8 @@ export default function CheckoutPage() {
                 </div>
                 {formData.metodoPago === "transferencia" && (
                   <div className="flex justify-between text-green-500 font-semibold">
-                    <span>Descuento Transferencia (10%):</span>
-                    <span>-${(totalPrice * 0.1).toLocaleString("es-AR")}</span>
+                    <span>Descuento Transferencia ({Math.round(TRANSFER_DISCOUNT_RATE * 100)}%):</span>
+                    <span>-{formatPrice(transferDiscount)}</span>
                   </div>
                 )}
               </div>
@@ -285,13 +295,7 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between items-center font-bold text-base">
                 <span>TOTAL:</span>
-                <span className="text-xl text-white">
-                  $
-                  {(formData.metodoPago === "transferencia"
-                    ? finalTotal - totalPrice * 0.1
-                    : finalTotal
-                  ).toLocaleString("es-AR")}
-                </span>
+                <span className="text-xl text-white">{formatPrice(finalTotal - transferDiscount)}</span>
               </div>
 
               <button
@@ -301,6 +305,9 @@ export default function CheckoutPage() {
               >
                 {loading ? "PROCESANDO PEDIDO..." : "CONFIRMAR PEDIDO"}
               </button>
+              <p className="text-[11px] text-neutral-500 text-center">
+                Te mandamos un mail con tu número de pedido para que lo sigas cuando quieras.
+              </p>
             </div>
           </div>
         </form>

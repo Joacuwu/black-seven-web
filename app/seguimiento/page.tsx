@@ -23,6 +23,58 @@ const ORDER_STATUS_LABEL: Record<string, string> = {
   cancelled: "Cancelado",
 };
 
+const STEPS = ["Pedido recibido", "Pago confirmado", "Preparando tu pedido", "Enviado", "Entregado"];
+
+// Último paso completado según el estado del pedido
+const STEP_DONE: Record<string, number> = {
+  pending_payment: 0,
+  pending_transfer: 0,
+  paid: 1,
+  preparing: 2,
+  shipped: 3,
+  delivered: 4,
+};
+
+// Qué significa cada estado y qué tiene que hacer el cliente
+const STATUS_HELP: Record<string, string> = {
+  pending_payment: "Estamos esperando que se acredite tu pago.",
+  pending_transfer: "Hacé la transferencia y respondé el mail de confirmación con el comprobante. Cuando lo revisemos, pasa al siguiente paso.",
+  paid: "Recibimos tu pago. En breve empezamos a preparar tu pedido.",
+  preparing: "Estamos armando tu pedido. Te avisamos cuando salga.",
+  shipped: "Tu pedido ya salió. Con el código de seguimiento podés ver dónde está.",
+  delivered: "Tu pedido fue entregado. ¡Gracias por comprar en BLACK SEVEN!",
+  cancelled: "Este pedido fue cancelado. Si creés que es un error, escribinos por WhatsApp.",
+};
+
+function OrderProgress({ status }: { status: string }) {
+  if (status === "cancelled") return null;
+  const done = STEP_DONE[status] ?? 0;
+
+  return (
+    <ol className="mt-4 space-y-0">
+      {STEPS.map((label, index) => {
+        const completed = index <= done;
+        const current = index === done;
+        return (
+          <li key={label} className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <span
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold border ${
+                  completed ? "bg-red-600 border-red-600 text-white" : "border-zinc-700 text-zinc-600"
+                }`}
+              >
+                {completed ? "✓" : index + 1}
+              </span>
+              {index < STEPS.length - 1 && <span className={`w-px h-6 ${index < done ? "bg-red-600" : "bg-zinc-800"}`} />}
+            </div>
+            <p className={`text-sm pt-0.5 ${current ? "text-white font-bold" : completed ? "text-zinc-300" : "text-zinc-600"}`}>{label}</p>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function SeguimientoContent() {
   const searchParams = useSearchParams();
   const status = searchParams.get("status");
@@ -116,7 +168,7 @@ function SeguimientoContent() {
           value={orderNumber}
           onChange={(e) => setOrderNumber(e.target.value)}
           placeholder="Nº de pedido (ej: 482913)"
-          className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-red-600 transition-colors text-center tracking-widest font-mono"
+          className="w-full px-4 py-3 text-base md:text-sm bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-red-600 transition-colors text-center tracking-widest font-mono"
         />
         <input
           type="email"
@@ -124,7 +176,7 @@ function SeguimientoContent() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Tu email"
-          className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-red-600 transition-colors text-center"
+          className="w-full px-4 py-3 text-base md:text-sm bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-red-600 transition-colors text-center"
         />
         <button
           type="submit"
@@ -143,6 +195,8 @@ function SeguimientoContent() {
           <p className="text-lg font-bold text-white mt-1">
             {ORDER_STATUS_LABEL[order.status] ?? order.status}
           </p>
+          <p className="text-zinc-400 text-xs mt-1 leading-relaxed">{STATUS_HELP[order.status]}</p>
+          <OrderProgress status={order.status} />
           {order.trackingCode && (
             <p className="text-zinc-300 mt-1">
               Código de seguimiento: <span className="font-mono">{order.trackingCode}</span>
