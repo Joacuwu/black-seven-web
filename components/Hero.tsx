@@ -81,7 +81,7 @@ function ProductSlide({ product }: { product: Product }) {
     <div className="relative flex-none w-full h-full snap-center overflow-hidden">
       {/* CELULAR: foto a pantalla completa */}
       {photo && (
-        <Image src={photo} alt={product.name} fill sizes="100vw" className="object-cover object-top md:hidden" />
+        <Image src={photo} alt={product.name} fill sizes="100vw" className="object-contain object-top md:hidden" />
       )}
       {/* DESKTOP: la misma foto desenfocada de fondo */}
       {photo && (
@@ -114,8 +114,8 @@ function ProductSlide({ product }: { product: Product }) {
         </div>
 
         {photo && (
-          <div className="hidden md:block relative h-[72%] max-h-[620px] aspect-[4/5] border border-neutral-800 shadow-2xl">
-            <Image src={photo} alt={product.name} fill sizes="(min-width: 768px) 30vw, 0px" className="object-cover" />
+          <div className="hidden md:block relative h-[72%] max-h-[620px] aspect-[4/5] bg-black border border-neutral-800 shadow-2xl">
+            <Image src={photo} alt={product.name} fill sizes="(min-width: 768px) 30vw, 0px" className="object-contain" />
           </div>
         )}
       </div>
