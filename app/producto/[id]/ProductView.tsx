@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import GuiaTallesModal from "@/components/GuiaTallesModal";
 import { useProducts } from "@/context/ProductsContext";
-import { formatPrice, type Product } from "@/lib/catalog-types";
+import { availableSizes, formatPrice, isSoldOut, type Product } from "@/lib/catalog-types";
+import FavoriteButton from "@/components/FavoriteButton";
 
 
 
@@ -52,7 +53,10 @@ function ProductDetail({ product }: { product: Product }) {
   const lastTapRef = useRef<number>(0);
 
   const activeImage = selectedImage ?? product.images[0] ?? "/remera777.jpg";
-  const activeSize = selectedSize ?? product.sizes[0] ?? "M";
+  // Solo se pueden elegir los talles que no están agotados
+  const soldOut = isSoldOut(product);
+  const activeSize =
+    selectedSize && !product.soldOutSizes.includes(selectedSize) ? selectedSize : (availableSizes(product)[0] ?? product.sizes[0] ?? "M");
 
   const { addToCart } = useCart();
 
@@ -101,6 +105,7 @@ function ProductDetail({ product }: { product: Product }) {
   const hasMouse = () => window.matchMedia("(hover: hover)").matches;
 
   const handleAddToCart = () => {
+    if (soldOut) return;
     addToCart({
       id: product.id,
       name: product.name,
@@ -224,9 +229,12 @@ function ProductDetail({ product }: { product: Product }) {
             
             <div>
               <span className="text-xs font-bold text-red-600 tracking-widest uppercase">EDICIÓN LIMITADA</span>
-              <h1 className="text-3xl font-black font-bebas tracking-wide mt-1 uppercase text-white">
-                {product.name}
-              </h1>
+              <div className="flex items-start justify-between gap-3">
+                <h1 className="text-3xl font-black font-bebas tracking-wide mt-1 uppercase text-white">
+                  {product.name}
+                </h1>
+                <FavoriteButton productId={product.id} productName={product.name} className="flex-shrink-0 border border-neutral-800" />
+              </div>
               <p className="text-2xl font-bold mt-2 text-neutral-200">
                 {formatPrice(product.price)}
               </p>
@@ -252,10 +260,14 @@ function ProductDetail({ product }: { product: Product }) {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`w-12 h-12 md:w-12 text-sm font-bold border transition-all cursor-pointer ${
-                      activeSize === size
-                        ? "bg-white text-black border-white"
-                        : "bg-black text-neutral-400 border-neutral-800 hover:border-neutral-500"
+                    disabled={product.soldOutSizes.includes(size)}
+                    title={product.soldOutSizes.includes(size) ? "Agotado" : undefined}
+                    className={`w-12 h-12 md:w-12 text-sm font-bold border transition-all ${
+                      product.soldOutSizes.includes(size)
+                        ? "bg-black text-neutral-700 border-neutral-900 line-through cursor-not-allowed"
+                        : activeSize === size
+                          ? "bg-white text-black border-white cursor-pointer"
+                          : "bg-black text-neutral-400 border-neutral-800 hover:border-neutral-500 cursor-pointer"
                     }`}
                   >
                     {size}
@@ -286,13 +298,16 @@ function ProductDetail({ product }: { product: Product }) {
 
               <button
                 onClick={handleAddToCart}
-                className={`flex-1 font-bebas tracking-wider text-lg py-3 px-6 transition-all uppercase cursor-pointer ${
-                  addedAnimation
-                    ? "bg-green-600 text-white"
-                    : "bg-red-600 hover:bg-red-700 text-white"
+                disabled={soldOut}
+                className={`flex-1 font-bebas tracking-wider text-lg py-3 px-6 transition-all uppercase ${
+                  soldOut
+                    ? "bg-neutral-800 text-neutral-500 cursor-not-allowed"
+                    : addedAnimation
+                      ? "bg-green-600 text-white cursor-pointer"
+                      : "bg-red-600 hover:bg-red-700 text-white cursor-pointer"
                 }`}
               >
-                {addedAnimation ? "✓ AGREGADO AL CARRITO" : "AGREGAR AL CARRITO"}
+                {soldOut ? "AGOTADO" : addedAnimation ? "✓ AGREGADO AL CARRITO" : "AGREGAR AL CARRITO"}
               </button>
             </div>
 
@@ -320,15 +335,16 @@ function ProductDetail({ product }: { product: Product }) {
       <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur border-t border-neutral-800 pl-4 pr-24 py-3 flex items-center gap-3">
         <div className="min-w-0">
           <p className="font-bold text-lg leading-none">{formatPrice(product.price)}</p>
-          <p className="text-[11px] text-neutral-400 mt-1">Talle {activeSize}</p>
+          <p className="text-[11px] text-neutral-400 mt-1">{soldOut ? "Sin stock" : `Talle ${activeSize}`}</p>
         </div>
         <button
           onClick={handleAddToCart}
-          className={`flex-1 font-bebas tracking-wider text-lg py-3 transition-all uppercase cursor-pointer ${
-            addedAnimation ? "bg-green-600 text-white" : "bg-red-600 active:bg-red-700 text-white"
+          disabled={soldOut}
+          className={`flex-1 font-bebas tracking-wider text-lg py-3 transition-all uppercase ${
+            soldOut ? "bg-neutral-800 text-neutral-500" : addedAnimation ? "bg-green-600 text-white" : "bg-red-600 active:bg-red-700 text-white"
           }`}
         >
-          {addedAnimation ? "✓ AGREGADO" : "AGREGAR"}
+          {soldOut ? "AGOTADO" : addedAnimation ? "✓ AGREGADO" : "AGREGAR"}
         </button>
       </div>
 

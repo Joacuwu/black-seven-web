@@ -1,6 +1,7 @@
 import { randomInt } from "node:crypto";
 import { getSupabase } from "@/lib/supabase";
 import type { PaymentMethod, PricedLine, Totals } from "@/lib/pricing";
+import type { StockLine } from "@/lib/stock";
 
 export type OrderStatus =
   | "pending_payment"
@@ -120,6 +121,27 @@ export async function createOrder(params: {
   }
 
   throw new Error("No se pudo generar un número de pedido único.");
+}
+
+/** Los productos de un pedido en el formato que usa el control de stock. */
+export function orderStockLines(order: OrderRow): StockLine[] {
+  return order.order_items.map((item) => ({
+    productId: item.product_id,
+    name: item.name,
+    size: item.size,
+    quantity: item.quantity,
+  }));
+}
+
+export async function getOrderById(id: string): Promise<OrderRow | null> {
+  const { data, error } = await getSupabase()
+    .from("orders")
+    .select("*, order_items(product_id, name, size, unit_price, quantity)")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw new Error(`Error consultando el pedido: ${error.message}`);
+  return (data as OrderRow | null) ?? null;
 }
 
 export async function getOrderByNumber(orderNumber: number): Promise<OrderRow | null> {

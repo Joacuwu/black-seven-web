@@ -4,6 +4,7 @@ import CartDrawer from "@/components/CartDrawer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { CartProvider } from "@/context/CartContext";
 import { ProductsProvider } from "@/context/ProductsContext";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 import { getCachedCatalog } from "@/lib/catalog-cache";
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site";
@@ -47,6 +48,7 @@ export default async function RootLayout({
     <html lang="es" className={`${bebas.variable} ${montserrat.variable}`}>
       <body className="bg-black text-white font-sans antialiased selection:bg-red-600 selection:text-white">
         <ProductsProvider initialProducts={initialProducts}>
+        <FavoritesProvider>
         <CartProvider>
           {/* BLOQUE SUPERIOR FIJO */}
           <header className="sticky top-0 z-50 w-full bg-black">
@@ -59,6 +61,7 @@ export default async function RootLayout({
           {/* BOTÓN FLOTANTE DE WHATSAPP */}
           <WhatsAppButton />
         </CartProvider>
+        </FavoritesProvider>
         </ProductsProvider>
       </body>
     </html>

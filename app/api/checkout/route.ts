@@ -3,10 +3,14 @@ import { computeTotals, InvalidCartError, priceCart, type PaymentMethod } from "
 import {
   createOrder,
   setProviderPaymentId,
+  orderStockLines,
   transitionOrderStatus,
   type CustomerData,
 } from "@/lib/orders";
 import { sendOrderEmails } from "@/lib/order-emails";
+import { allowRequest, clientIp, TOO_MANY_REQUESTS } from "@/lib/rate-limit";
+import { OutOfStockError, releaseStock, reserveStock, type StockLine } from "@/lib/stock";
+import { sendLowStockEmail } from "@/lib/order-emails";
 import { getPaymentProvider, PaymentNotConfiguredError } from "@/lib/payments";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -36,6 +40,11 @@ function parseCustomer(raw: unknown): CustomerData | null {
 }
 
 export async function POST(request: Request) {
+  // 15 pedidos por hora por dirección IP
+  if (!(await allowRequest(`checkout:${clientIp(request)}`, 15, 3600))) {
+    return NextResponse.json(TOO_MANY_REQUESTS, { status: 429 });
+  }
+
   try {
     const body = await request.json();
     const customer = parseCustomer(body?.formData);
@@ -51,7 +60,24 @@ export async function POST(request: Request) {
     // Los precios y totales se calculan SIEMPRE en el servidor con el catálogo.
     const lines = await priceCart(body?.items);
     const totals = computeTotals(lines, method);
-    const order = await createOrder({ customer, method, lines, totals });
+
+    // Se descuenta el stock ANTES de crear el pedido; si algo falla después, se devuelve.
+    const stockLines: StockLine[] = lines.map((l) => ({ productId: l.productId, name: l.name, size: l.size, quantity: l.quantity }));
+    const lowStock = await reserveStock(stockLines);
+
+    let order;
+    try {
+      order = await createOrder({ customer, method, lines, totals });
+    } catch (error) {
+      await releaseStock(stockLines);
+      throw error;
+    }
+
+    // Aviso al admin si a algún talle le quedan pocas unidades (no frena la compra si falla)
+    const lowAlerts = lowStock.filter((a) => a.remaining <= 2);
+    if (lowAlerts.length > 0) {
+      sendLowStockEmail(lowAlerts).catch((error) => console.error("No se pudo enviar el aviso de stock bajo:", error));
+    }
 
     if (method === "transferencia") {
       await sendOrderEmails(order);
@@ -91,10 +117,15 @@ export async function POST(request: Request) {
       });
     } catch (error) {
       // No se pudo iniciar el cobro: el pedido no debe quedar colgado como pendiente.
-      await transitionOrderStatus(order.order_number, ["pending_payment"], "cancelled");
+      if (await transitionOrderStatus(order.order_number, ["pending_payment"], "cancelled")) {
+        await releaseStock(orderStockLines(order));
+      }
       throw error;
     }
   } catch (error) {
+    if (error instanceof OutOfStockError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     if (error instanceof InvalidCartError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

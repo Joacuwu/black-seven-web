@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin-auth";
 import { sendShippedEmail } from "@/lib/order-emails";
-import { ORDER_STATUSES, updateOrder, type OrderStatus } from "@/lib/orders";
+import { getOrderById, orderStockLines, ORDER_STATUSES, updateOrder, type OrderStatus } from "@/lib/orders";
+import { OutOfStockError, releaseStock, reserveStock } from "@/lib/stock";
 
 const MAX_TRACKING_LENGTH = 100;
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -39,8 +40,29 @@ export async function PATCH(request: Request, ctx: { params: Promise<{ id: strin
   }
 
   try {
+    // Cancelar devuelve el stock (después de guardar); reactivar un pedido cancelado lo vuelve a descontar (antes).
+    let releaseAfterSave: ReturnType<typeof orderStockLines> | null = null;
+    if (patch.status) {
+      const current = await getOrderById(id);
+      if (!current) return NextResponse.json({ error: "Pedido no encontrado." }, { status: 404 });
+
+      if (current.status !== "cancelled" && patch.status === "cancelled") {
+        releaseAfterSave = orderStockLines(current);
+      } else if (current.status === "cancelled" && patch.status !== "cancelled") {
+        try {
+          await reserveStock(orderStockLines(current));
+        } catch (error) {
+          if (error instanceof OutOfStockError) {
+            return NextResponse.json({ error: "No se puede reactivar el pedido: " + error.message }, { status: 409 });
+          }
+          throw error;
+        }
+      }
+    }
+
     const order = await updateOrder(id, patch);
     if (!order) return NextResponse.json({ error: "Pedido no encontrado." }, { status: 404 });
+    if (releaseAfterSave) await releaseStock(releaseAfterSave);
 
     // Aviso opcional al cliente (el panel lo pide y confirma antes de enviarlo).
     let emailSent: boolean | undefined;

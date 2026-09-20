@@ -5,7 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductsContext";
-import { formatPrice } from "@/lib/catalog-types";
+import { availableSizes, formatPrice, isSoldOut } from "@/lib/catalog-types";
+import FavoriteButton from "@/components/FavoriteButton";
 
 export default function ProductGrid() {
   const { addToCart } = useCart();
@@ -42,6 +43,8 @@ export default function ProductGrid() {
                   </span>
                 )}
                 
+                <FavoriteButton productId={product.id} productName={product.name} className="absolute top-2 right-2 z-10" size={18} />
+
                 {/* IMAGEN CON HOVER SUAVE */}
                 <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-900">
                   <Image
@@ -76,9 +79,13 @@ export default function ProductGrid() {
 
               {/* BOTÓN: con varios talles hay que elegirlo en la ficha; con uno solo se agrega directo */}
               <div className="p-4 pt-0">
-                {product.sizes.length === 1 ? (
+                {isSoldOut(product) ? (
+                  <span className="block w-full text-center border border-neutral-800 text-neutral-500 py-3 rounded-md text-xs font-bold uppercase tracking-wider">
+                    Agotado
+                  </span>
+                ) : availableSizes(product).length === 1 ? (
                   <button
-                    onClick={() => addToCart({ id: product.id, name: product.name, price: formatPrice(product.price), size: product.sizes[0], img: product.images[0] })}
+                    onClick={() => addToCart({ id: product.id, name: product.name, price: formatPrice(product.price), size: availableSizes(product)[0], img: product.images[0] })}
                     className="w-full bg-white text-black py-3 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors cursor-pointer"
                   >
                     Agregar al Carrito

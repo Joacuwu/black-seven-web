@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useProducts } from "@/context/ProductsContext";
-import { formatPrice, type Product } from "@/lib/catalog-types";
+import { formatPrice, isSoldOut, type Product } from "@/lib/catalog-types";
 import { FALLBACK_HERO, type HeroSlide } from "@/lib/hero-types";
 
 const AUTOPLAY_MS = 6000;
@@ -141,7 +141,7 @@ export default function Hero({ slides = FALLBACK_HERO.slides, showProducts = tru
   // Diapositivas: las fotos propias del panel + hasta 4 productos (primero los que tienen etiqueta NEW, HOT, etc.)
   const featured = useMemo(() => {
     if (!showProducts) return [];
-    const withPhoto = products.filter((p) => p.images.length > 0);
+    const withPhoto = products.filter((p) => p.images.length > 0 && !isSoldOut(p));
     return [...withPhoto.filter((p) => p.tag), ...withPhoto.filter((p) => !p.tag)].slice(0, MAX_FEATURED);
   }, [products, showProducts]);
   const total = ownSlides.length + featured.length;

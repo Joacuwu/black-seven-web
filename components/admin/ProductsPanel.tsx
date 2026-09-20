@@ -15,6 +15,8 @@ interface FormState {
   price: string;
   tag: string;
   sizes: string[];
+  /** Unidades por talle, como texto (vacío = sin límite). */
+  stock: Record<string, string>;
   images: string[];
   description: string;
   detailsText: string;
@@ -27,6 +29,7 @@ const emptyForm: FormState = {
   price: "",
   tag: "",
   sizes: [],
+  stock: {},
   images: [],
   description: "",
   detailsText: "",
@@ -40,6 +43,7 @@ const formFromProduct = (p: Product): FormState => ({
   price: String(p.price),
   tag: p.tag ?? "",
   sizes: p.sizes,
+  stock: Object.fromEntries(Object.entries(p.stock ?? {}).map(([size, units]) => [size, String(units)])),
   images: p.images,
   description: p.description,
   detailsText: p.details.join("\n"),
@@ -52,6 +56,9 @@ const payloadFromForm = (f: FormState) => ({
   price: Number(f.price),
   tag: f.tag,
   sizes: f.sizes,
+  stock: Object.fromEntries(
+    Object.entries(f.stock).filter(([size, units]) => f.sizes.includes(size) && units.trim() !== "").map(([size, units]) => [size, Number(units)])
+  ),
   images: f.images,
   description: f.description,
   details: f.detailsText.split("\n"),
@@ -269,6 +276,32 @@ export default function ProductsPanel({ onUnauthorized }: { onUnauthorized: () =
           </div>
         </div>
 
+        {form.sizes.length > 0 && (
+          <div>
+            <label className={labelClass}>Stock por talle (opcional)</label>
+            <div className="flex flex-wrap gap-3">
+              {form.sizes.map((size) => (
+                <label key={size} className="flex items-center gap-2 text-xs">
+                  <span className="w-8 font-bold">{size}</span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    step={1}
+                    value={form.stock[size] ?? ""}
+                    onChange={(e) => setForm({ ...form, stock: { ...form.stock, [size]: e.target.value } })}
+                    placeholder="sin límite"
+                    className="w-24 bg-black border border-neutral-800 rounded p-2 text-base md:text-sm text-white focus:border-white outline-none"
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="text-[11px] text-neutral-500 mt-1.5">
+              Escribí cuántas unidades hay. Al llegar a 0 el talle aparece como “Agotado” solo. Si lo dejás vacío, no se controla y se puede vender siempre.
+            </p>
+          </div>
+        )}
+
         <div>
           <label className={labelClass}>Fotos * (la 1ª es la principal, la 2ª se ve al pasar el mouse)</label>
           <div className="flex flex-wrap gap-3">
@@ -359,7 +392,7 @@ export default function ProductsPanel({ onUnauthorized }: { onUnauthorized: () =
             <div className="min-w-0 flex-1">
               <p className="font-bold text-sm truncate">{product.name}</p>
               <p className="text-xs text-neutral-400">
-                {formatPrice(product.price)} · {product.category} · Talles: {product.sizes.join(", ")}
+                {formatPrice(product.price)} · {product.category} · Talles: {product.sizes.map((size) => (product.stock && size in product.stock ? `${size} (${product.stock[size] > 0 ? product.stock[size] : "agotado"})` : size)).join(", ")}
               </p>
               {!product.active && <span className="inline-block mt-1 text-[10px] font-bold text-amber-300 border border-amber-700/50 bg-amber-900/30 px-1.5 py-0.5 rounded">OCULTO</span>}
             </div>

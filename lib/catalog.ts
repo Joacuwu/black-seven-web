@@ -17,9 +17,11 @@ interface ProductRow {
   details: string[];
   active: boolean;
   sort_order: number;
+  stock?: Record<string, number> | null;
 }
 
-const toProduct = (row: ProductRow): Product => ({
+// `includeStock`: las cantidades exactas solo las ve el panel; la tienda recibe únicamente qué talles están agotados.
+const toProduct = (row: ProductRow, includeStock = false): Product => ({
   id: row.id,
   name: row.name,
   category: row.category,
@@ -31,6 +33,8 @@ const toProduct = (row: ProductRow): Product => ({
   details: row.details,
   active: row.active,
   sortOrder: row.sort_order,
+  soldOutSizes: row.stock ? row.sizes.filter((size) => size in row.stock! && row.stock![size] <= 0) : [],
+  stock: includeStock ? (row.stock ?? null) : null,
 });
 
 const toRow = (input: ProductInput) => ({
@@ -43,8 +47,16 @@ const toRow = (input: ProductInput) => ({
   description: input.description,
   details: input.details,
   active: input.active,
+  stock: input.stock,
   ...(input.sortOrder !== undefined ? { sort_order: input.sortOrder } : {}),
 });
+
+// Mientras no se haya corrido supabase/stock-y-limites.sql, la columna "stock" no existe:
+// en ese caso los productos se guardan igual (sin control de stock) en vez de fallar.
+const isMissingStockColumn = (error: { code?: string; message?: string } | null) =>
+  !!error && (error.code === "PGRST204" || error.code === "42703") && /stock/i.test(error.message ?? "");
+
+const withoutStock = <T extends { stock?: unknown }>({ stock: _stock, ...rest }: T) => rest;
 
 /** Productos visibles al público (`onlyActive`) o todos (panel de administración). */
 export async function listProducts(onlyActive = true): Promise<Product[]> {
@@ -53,7 +65,7 @@ export async function listProducts(onlyActive = true): Promise<Product[]> {
 
   const { data, error } = await query;
   if (error) throw new Error(`Error listando productos: ${error.message}`);
-  return (data as ProductRow[]).map(toProduct);
+  return (data as ProductRow[]).map((row) => toProduct(row, !onlyActive));
 }
 
 /** Productos activos por id, para valuar un carrito con los precios reales. */
@@ -65,7 +77,7 @@ export async function getActiveProductsByIds(ids: number[]): Promise<Map<number,
     .eq("active", true);
 
   if (error) throw new Error(`Error consultando productos: ${error.message}`);
-  return new Map((data as ProductRow[]).map((row) => [row.id, toProduct(row)]));
+  return new Map((data as ProductRow[]).map((row) => [row.id, toProduct(row)] as const));
 }
 
 export async function createProduct(input: ProductInput): Promise<Product> {
@@ -83,26 +95,34 @@ export async function createProduct(input: ProductInput): Promise<Product> {
     sortOrder = (last?.sort_order ?? 0) + 10;
   }
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("products")
     .insert({ ...toRow(input), sort_order: sortOrder })
     .select()
     .single();
 
+  if (isMissingStockColumn(error)) {
+    ({ data, error } = await supabase
+      .from("products")
+      .insert({ ...withoutStock(toRow(input)), sort_order: sortOrder })
+      .select()
+      .single());
+  }
+
   if (error) throw new Error(`No se pudo crear el producto: ${error.message}`);
-  return toProduct(data as ProductRow);
+  return toProduct(data as ProductRow, true);
 }
 
 export async function updateProduct(id: number, input: ProductInput): Promise<Product | null> {
-  const { data, error } = await getSupabase()
-    .from("products")
-    .update(toRow(input))
-    .eq("id", id)
-    .select()
-    .maybeSingle();
+  const supabase = getSupabase();
+  let { data, error } = await supabase.from("products").update(toRow(input)).eq("id", id).select().maybeSingle();
+
+  if (isMissingStockColumn(error)) {
+    ({ data, error } = await supabase.from("products").update(withoutStock(toRow(input))).eq("id", id).select().maybeSingle());
+  }
 
   if (error) throw new Error(`No se pudo actualizar el producto: ${error.message}`);
-  return data ? toProduct(data as ProductRow) : null;
+  return data ? toProduct(data as ProductRow, true) : null;
 }
 
 /** Borra el producto y, si se puede, sus fotos del almacenamiento. Devuelve false si no existía. */
@@ -182,6 +202,19 @@ export function parseProductInput(raw: unknown): ProductInput {
   if (images.length === 0) throw new InvalidProductError("Subí al menos una foto.");
   if (!images.every(isAllowedImage)) throw new InvalidProductError("Hay una foto con una dirección inválida.");
 
+  // Stock por talle (opcional): solo talles ofrecidos, enteros de 0 a 100000; un talle sin número no tiene límite.
+  const stockInput = body.stock && typeof body.stock === "object" ? (body.stock as Record<string, unknown>) : {};
+  const stock: Record<string, number> = {};
+  for (const size of new Set(sizes)) {
+    const raw = stockInput[size];
+    if (raw === undefined || raw === null || raw === "") continue;
+    const units = Number(raw);
+    if (!Number.isInteger(units) || units < 0 || units > 100000) {
+      throw new InvalidProductError(`El stock del talle ${size} tiene que ser un número entero (0 o más).`);
+    }
+    stock[size] = units;
+  }
+
   return {
     name,
     category,
@@ -192,5 +225,6 @@ export function parseProductInput(raw: unknown): ProductInput {
     description: text(body.description, LIMITS.description),
     details: textList(body.details, LIMITS.details, LIMITS.detail),
     active: body.active !== false,
+    stock: Object.keys(stock).length > 0 ? stock : null,
   };
 }

@@ -133,3 +133,28 @@ export async function sendShippedEmail(order: OrderRow) {
     `,
   });
 }
+
+/** Avisa al admin que a un talle le quedan pocas unidades después de una venta. */
+export async function sendLowStockEmail(alerts: { name: string; size: string; remaining: number }[]) {
+  if (alerts.length === 0) return;
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const rows = alerts
+    .map((a) => `<li style="padding: 6px 0;"><strong>${escapeHtml(a.name)}</strong> · talle ${escapeHtml(a.size)}: ${a.remaining === 0 ? "<strong style=\"color:#dc2626\">AGOTADO</strong>" : `quedan ${a.remaining}`}</li>`)
+    .join("");
+
+  await resend.emails.send({
+    from: FROM,
+    to: [process.env.ADMIN_EMAIL || "admin@blackseven.com"],
+    subject: "⚠️ Stock bajo - BLACK SEVEN",
+    html: `
+      <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px;">
+          <h1 style="color: #dc2626; text-align: center; margin-bottom: 20px;">Poco stock</h1>
+          <p style="color: #374151;">Después de la última venta, estos talles están por agotarse:</p>
+          <ul style="list-style: none; padding: 0;">${rows}</ul>
+          <p style="color: #6b7280; font-size: 12px;">Podés actualizar las cantidades desde el panel, en Productos.</p>
+        </div>
+      </div>
+    `,
+  });
+}

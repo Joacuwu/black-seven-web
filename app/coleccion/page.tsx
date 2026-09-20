@@ -6,7 +6,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductsContext";
-import { formatPrice, categoryLabel } from "@/lib/catalog-types";
+import FavoriteButton from "@/components/FavoriteButton";
+import { normalizeText } from "@/components/SearchOverlay";
+import { availableSizes as sizesInStock, formatPrice, categoryLabel, isSoldOut } from "@/lib/catalog-types";
 
 
 function ColeccionContent() {
@@ -19,6 +21,7 @@ function ColeccionContent() {
   const categoryParam = searchParams.get("categoria");
   const selectedCategory = categoryParam ? categoryParam.toLowerCase() : "todas";
   const tagParam = searchParams.get("etiqueta")?.toUpperCase() ?? null;
+  const searchParam = searchParams.get("buscar")?.trim() ?? "";
 
   // ESTADOS DE FILTROS LOCALES
   const [selectedSize, setSelectedSize] = useState<string>("todos");
@@ -37,7 +40,7 @@ function ColeccionContent() {
   const categories = useMemo(() => [...new Set(ALL_PRODUCTS.map((p) => p.category))], [ALL_PRODUCTS]);
   const availableSizes = useMemo(() => {
     const order = ["XS", "S", "M", "L", "XL", "XXL"];
-    const sizes = [...new Set(ALL_PRODUCTS.flatMap((p) => p.sizes))];
+    const sizes = [...new Set(ALL_PRODUCTS.flatMap((p) => sizesInStock(p)))];
     return sizes.sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
   }, [ALL_PRODUCTS]);
 
@@ -47,17 +50,19 @@ function ColeccionContent() {
       const matchCategory =
         selectedCategory === "todas" || product.category === selectedCategory;
       const matchTag = !tagParam || product.tag === tagParam;
+      const matchSearch =
+        !searchParam || normalizeText(`${product.name} ${product.category} ${product.tag ?? ""}`).includes(normalizeText(searchParam));
 
       const matchSize =
-        selectedSize === "todos" || product.sizes.includes(selectedSize);
+        selectedSize === "todos" || sizesInStock(product).includes(selectedSize);
 
-      return matchCategory && matchSize && matchTag;
+      return matchCategory && matchSize && matchTag && matchSearch;
     }).sort((a, b) => {
       if (sortBy === "precio-bajo") return a.price - b.price;
       if (sortBy === "precio-alto") return b.price - a.price;
       return a.sortOrder - b.sortOrder || a.id - b.id;
     });
-  }, [ALL_PRODUCTS, selectedCategory, selectedSize, sortBy, tagParam]);
+  }, [ALL_PRODUCTS, selectedCategory, selectedSize, sortBy, tagParam, searchParam]);
 
   return (
     <div className="min-h-screen bg-black text-white pt-8 pb-24 px-4 md:px-8 font-montserrat">
@@ -95,6 +100,15 @@ function ColeccionContent() {
               </button>
             ))}
           </div>
+
+          {searchParam && (
+            <button
+              onClick={() => router.push("/coleccion")}
+              className="px-3 py-2 border border-red-600 text-red-500 text-xs font-bold uppercase cursor-pointer hover:bg-red-600 hover:text-white transition-colors max-w-full truncate"
+            >
+              Búsqueda: {searchParam} ✕
+            </button>
+          )}
 
           {tagParam && (
             <button
@@ -171,6 +185,8 @@ function ColeccionContent() {
                     </span>
                   )}
 
+                  <FavoriteButton productId={product.id} productName={product.name} className="absolute top-2 right-2 z-10" size={18} />
+
                   {/* IMAGEN CON HOVER SUAVE */}
                   <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-900">
                     <Image
@@ -207,14 +223,18 @@ function ColeccionContent() {
 
                 {/* BOTÓN: con varios talles hay que elegirlo en la ficha; con uno solo se agrega directo */}
                 <div className="p-4 pt-0">
-                  {product.sizes.length === 1 ? (
+                  {isSoldOut(product) ? (
+                    <span className="block w-full text-center border border-neutral-800 text-neutral-500 py-3 text-xs font-bold uppercase tracking-wider">
+                      Agotado
+                    </span>
+                  ) : sizesInStock(product).length === 1 ? (
                     <button
                       onClick={() =>
                         addToCart({
                           id: product.id,
                           name: product.name,
                           price: formatPrice(product.price),
-                          size: product.sizes[0],
+                          size: sizesInStock(product)[0],
                           img: product.images[0],
                         })
                       }

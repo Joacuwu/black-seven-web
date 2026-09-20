@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getPaymentProvider, PaymentNotConfiguredError } from "@/lib/payments";
-import { getOrderByNumber, transitionOrderStatus } from "@/lib/orders";
+import { getOrderByNumber, orderStockLines, transitionOrderStatus } from "@/lib/orders";
 import { sendOrderEmails } from "@/lib/order-emails";
+import { releaseStock } from "@/lib/stock";
 
 // Naranja X avisa acá cuando cambia el estado de un pago.
 export async function POST(request: Request) {
@@ -19,7 +20,11 @@ export async function POST(request: Request) {
         if (order) await sendOrderEmails(order);
       }
     } else if (event.status === "rejected") {
-      await transitionOrderStatus(orderNumber, ["pending_payment"], "cancelled");
+      // Pago rechazado: se cancela el pedido y se devuelve el stock (una sola vez).
+      if (await transitionOrderStatus(orderNumber, ["pending_payment"], "cancelled")) {
+        const order = await getOrderByNumber(orderNumber);
+        if (order) await releaseStock(orderStockLines(order));
+      }
     }
 
     return NextResponse.json({ received: true });

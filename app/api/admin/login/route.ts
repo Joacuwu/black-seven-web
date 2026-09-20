@@ -7,6 +7,7 @@ import {
   isAdminConfigured,
   isAdminRequest,
 } from "@/lib/admin-auth";
+import { allowRequest, clientIp, TOO_MANY_REQUESTS } from "@/lib/rate-limit";
 
 const FAILED_LOGIN_DELAY_MS = 1000;
 
@@ -20,6 +21,11 @@ export async function POST(request: Request) {
       { error: "El panel no está configurado (falta ADMIN_PASSWORD)." },
       { status: 503 }
     );
+  }
+
+  // 8 intentos cada 15 minutos por dirección IP
+  if (!(await allowRequest(`login:${clientIp(request)}`, 8, 900))) {
+    return NextResponse.json(TOO_MANY_REQUESTS, { status: 429 });
   }
 
   const body = await request.json().catch(() => null);

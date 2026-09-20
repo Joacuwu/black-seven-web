@@ -11,11 +11,15 @@ interface ProductsContextType {
   getProduct: (id: number | string) => Product | undefined;
 }
 
+// Tolera datos guardados con un formato anterior (por ejemplo, sin el campo de talles agotados).
+const withDefaults = (products: Product[]): Product[] =>
+  products.map((p) => ({ ...p, soldOutSizes: p.soldOutSizes ?? [], stock: p.stock ?? null }));
+
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
 // `initialProducts` viene ya cargado desde el servidor: la grilla se ve completa desde el primer momento.
 export function ProductsProvider({ children, initialProducts }: { children: ReactNode; initialProducts?: Product[] }) {
-  const [products, setProducts] = useState<Product[]>(initialProducts ?? []);
+  const [products, setProducts] = useState<Product[]>(() => withDefaults(initialProducts ?? []));
   const [loading, setLoading] = useState(!initialProducts);
   const [error, setError] = useState(false);
 
@@ -24,7 +28,7 @@ export function ProductsProvider({ children, initialProducts }: { children: Reac
     fetch("/api/products")
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
       .then((data: { products: Product[] }) => {
-        if (!cancelled) setProducts(data.products);
+        if (!cancelled) setProducts(withDefaults(data.products));
       })
       .catch(() => {
         if (!cancelled) setError(true);

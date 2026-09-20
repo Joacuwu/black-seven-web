@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, Menu, ShoppingBag, X } from "lucide-react";
+import { ChevronDown, Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductsContext";
+import { useFavorites } from "../context/FavoritesContext";
+import SearchOverlay from "./SearchOverlay";
 import { categoryLabel } from "@/lib/catalog-types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -34,6 +36,8 @@ const WHATSAPP_URL = "https://wa.me/5491127035976";
 export default function Navbar() {
   const { totalItems, setIsCartOpen } = useCart();
   const { products } = useProducts();
+  const { count: favoritesCount } = useFavorites();
+  const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
 
@@ -139,6 +143,27 @@ export default function Navbar() {
       {/* ACCIONES (a la derecha; acá se pueden sumar más íconos a futuro) */}
       <div className="flex items-center justify-end gap-1">
         <button
+          onClick={() => setSearchOpen(true)}
+          aria-label="Buscar productos"
+          className="p-2 hover:text-neutral-400 transition-colors cursor-pointer"
+        >
+          <Search size={22} strokeWidth={1.5} />
+        </button>
+
+        <Link
+          href="/favoritos"
+          aria-label={`Favoritos, ${favoritesCount}`}
+          className="hidden md:block relative p-2 hover:text-neutral-400 transition-colors"
+        >
+          <Heart size={22} strokeWidth={1.5} />
+          {favoritesCount > 0 && (
+            <span className="absolute top-0.5 right-0 min-w-4 h-4 px-1 rounded-full bg-white text-black text-[10px] font-bold flex items-center justify-center">
+              {favoritesCount}
+            </span>
+          )}
+        </Link>
+
+        <button
           onClick={() => setIsCartOpen(true)}
           aria-label={`Carrito de compras, ${totalItems} ${totalItems === 1 ? "producto" : "productos"}`}
           className="relative -mr-2 p-2 hover:text-neutral-400 transition-colors cursor-pointer"
@@ -151,6 +176,8 @@ export default function Navbar() {
           )}
         </button>
       </div>
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* PANEL DEL MENÚ (celular) */}
       <div
@@ -211,6 +238,12 @@ export default function Navbar() {
                 </li>
               );
             })}
+            <li className="border-b border-neutral-900">
+              <Link href="/favoritos" onClick={closeMenu} className="px-6 py-4 flex items-center justify-between font-bebas text-3xl tracking-wider uppercase">
+                Favoritos
+                {favoritesCount > 0 && <span className="text-base font-montserrat font-bold text-neutral-400">{favoritesCount}</span>}
+              </Link>
+            </li>
           </ul>
 
           <div className="px-6 py-5 border-t border-neutral-900 flex gap-6 text-xs tracking-[0.15em] uppercase text-neutral-400">

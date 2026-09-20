@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { getOrderByNumber } from "@/lib/orders";
+import { allowRequest, clientIp, TOO_MANY_REQUESTS } from "@/lib/rate-limit";
 
 // Consulta pública de estado: exige Nº de pedido + email para no exponer pedidos ajenos.
 export async function POST(request: Request) {
+  // 30 consultas cada 15 minutos por dirección IP (evita adivinar números de pedido)
+  if (!(await allowRequest(`lookup:${clientIp(request)}`, 30, 900))) {
+    return NextResponse.json(TOO_MANY_REQUESTS, { status: 429 });
+  }
+
   try {
     const body = await request.json();
     const orderNumber = Number(String(body?.orderNumber ?? "").replace(/\D/g, ""));

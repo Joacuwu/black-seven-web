@@ -74,9 +74,20 @@ El nuevo precio aparece en la tienda enseguida (a veces hay que recargar la pág
 - No hace falta achicarlas: el panel las optimiza solas.
 - Podés subir hasta 8 fotos por producto. Esperá a que termine de decir “Subiendo…” antes de guardar.
 
-### Talle agotado
+### Stock por talle (cuántas unidades hay)
 
-**Editar** → tocá el talle para sacarle el tilde → **Guardar producto**. Ese talle deja de poder comprarse. Cuando vuelva a haber, lo volvés a marcar.
+Al **Editar** un producto, debajo de los talles aparece **Stock por talle**. Escribí cuántas unidades tenés de cada uno.
+
+- **Se descuenta solo** cada vez que alguien compra, y el sistema no deja vender más de lo que hay (aunque dos personas compren a la vez).
+- **Al llegar a 0**, ese talle aparece como **Agotado** en la tienda y no se puede elegir. Si el producto completo se agota, se muestra “Agotado”.
+- **Si cancelás un pedido** desde la pestaña Pedidos, las unidades **vuelven al stock** solas.
+- **Aviso por mail:** cuando a un talle le quedan 2 unidades o menos, te llega un mail de “Stock bajo”.
+- **Sin límite:** si dejás el número vacío, ese talle no se controla y se puede vender siempre.
+- Podés corregir los números cuando quieras (por ejemplo, cuando entra mercadería nueva).
+
+### Talle agotado a mano
+
+Si no querés controlar cantidades, en **Editar** sacale el tilde al talle y ya no se puede comprar. También podés poner el stock en **0**.
 
 ### Que un producto no se vea (sin borrarlo)
 
@@ -108,6 +119,7 @@ Son las fotos que se deslizan al entrar a la tienda. En la pestaña **Portada** 
 
 ## 5. Cosas para tener en cuenta
 
+- **Buscador y favoritos:** la tienda tiene un buscador (la lupa de arriba) y el corazón para guardar productos. Los favoritos se guardan en el celular de cada cliente, no hace falta cuenta.
 - **Los precios que se cobran son siempre los del panel.** Aunque alguien tenga la página vieja abierta, se cobra el precio actual.
 - Si un cliente tiene en el carrito un producto que ocultaste o eliminaste, al confirmar el pedido le va a aparecer un aviso de que ya no está disponible.
 - No compartas la contraseña por WhatsApp ni la anotes en lugares públicos.
