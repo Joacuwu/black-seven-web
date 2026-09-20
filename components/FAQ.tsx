@@ -25,9 +25,9 @@ const FAQ_DATA: FAQItem[] = [
       "En cada ficha de producto contamos con la opción 'Ver Guía de Talles' con las medidas exactas expresadas en centímetros sobre la prenda plana. Te recomendamos comparar esas medidas con una prenda propia.",
   },
   {
-    question: "¿QUÉ MEDIOS DE PAGO ACEPTAN Y HAY CUOTAS?",
+    question: "¿QUÉ MEDIOS DE PAGO ACEPTAN?",
     answer:
-      "Aceptamos todas las tarjetas de crédito y débito mediante la pasarela segura de Naranja X. Ofrecemos opciones de 3 y 6 cuotas sin interés en productos seleccionados.",
+      "Por ahora aceptamos transferencia bancaria (desde cualquier banco o billetera virtual) con 10% de descuento. Al terminar tu pedido te mostramos el alias y el CBU, y nos mandás el comprobante por WhatsApp para confirmarlo. Muy pronto vamos a sumar pago con tarjeta.",
   },
   {
     question: "¿CÓMO HAGO EL SEGUIMIENTO DE MI PEDIDO?",

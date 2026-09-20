@@ -4,6 +4,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import BankTransferBox from "@/components/BankTransferBox";
 
 interface OrderInfo {
   orderNumber: number;
@@ -38,7 +39,7 @@ const STEP_DONE: Record<string, number> = {
 // Qué significa cada estado y qué tiene que hacer el cliente
 const STATUS_HELP: Record<string, string> = {
   pending_payment: "Estamos esperando que se acredite tu pago.",
-  pending_transfer: "Hacé la transferencia y respondé el mail de confirmación con el comprobante. Cuando lo revisemos, pasa al siguiente paso.",
+  pending_transfer: "Hacé la transferencia con los datos de abajo y mandanos el comprobante por WhatsApp. Cuando lo revisemos, pasa al siguiente paso.",
   paid: "Recibimos tu pago. En breve empezamos a preparar tu pedido.",
   preparing: "Estamos armando tu pedido. Te avisamos cuando salga.",
   shipped: "Tu pedido ya salió. Con el código de seguimiento podés ver dónde está.",
@@ -210,6 +211,11 @@ function SeguimientoContent() {
             ))}
           </ul>
           <p className="mt-3 text-zinc-300">Total: ${order.total.toLocaleString("es-AR")}</p>
+          {order.status === "pending_transfer" && (
+            <div className="mt-4">
+              <BankTransferBox orderNumber={order.orderNumber} total={order.total} />
+            </div>
+          )}
         </div>
       )}
 

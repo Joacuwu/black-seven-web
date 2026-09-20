@@ -15,8 +15,8 @@ const STEPS = [
   },
   {
     icon: CreditCard,
-    title: "Elegí cómo pagar",
-    text: `Con transferencia tenés ${Math.round(TRANSFER_DISCOUNT_RATE * 100)}% de descuento. Te mandamos un mail con tu número de pedido.`,
+    title: "Pagá por transferencia",
+    text: `Tenés ${Math.round(TRANSFER_DISCOUNT_RATE * 100)}% de descuento. Al terminar te mostramos el alias y el CBU, y nos mandás el comprobante por WhatsApp.`,
   },
   {
     icon: Truck,

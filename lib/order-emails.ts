@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import type { OrderRow } from "@/lib/orders";
+import { BANK_DETAILS, proofWhatsAppUrl } from "@/lib/payment-config";
 
 const FROM = "BLACK SEVEN <noreply@resend.dev>";
 
@@ -66,6 +67,7 @@ export async function sendOrderEmails(order: OrderRow) {
   await resend.emails.send({
     from: FROM,
     to: [order.customer_email],
+    replyTo: process.env.ADMIN_EMAIL || undefined,
     subject: `✅ Confirmación de tu Pedido #${order.order_number} - BLACK SEVEN`,
     html: `
       <div style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
@@ -80,8 +82,13 @@ export async function sendOrderEmails(order: OrderRow) {
           </div>
           ${
             isTransfer
-              ? `<div style="background-color: #fef3c7; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #f59e0b;">
-                   <p style="margin: 0;"><strong>⚠️ Importante:</strong> Podés responder a este mail adjuntando el comprobante de la transferencia para acelerar el proceso.</p>
+              ? `<div style="background-color: #fef3c7; padding: 18px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                   <p style="margin: 0 0 10px 0;"><strong>Para confirmar tu pedido, transferí ${money(order.total)}:</strong></p>
+                   <p style="margin: 6px 0;"><strong>Alias:</strong> ${escapeHtml(BANK_DETAILS.alias)}</p>
+                   <p style="margin: 6px 0;"><strong>CBU / CVU:</strong> ${escapeHtml(BANK_DETAILS.cbu)}</p>
+                   ${BANK_DETAILS.holder ? `<p style="margin: 6px 0;"><strong>Titular:</strong> ${escapeHtml(BANK_DETAILS.holder)}</p>` : ""}
+                   <p style="margin: 12px 0 0 0; font-size: 13px;">Poné <strong>#${order.order_number}</strong> en el concepto si podés, y mandanos el comprobante por WhatsApp o respondiendo este mail.</p>
+                   <p style="text-align: center; margin: 16px 0 0 0;"><a href="${proofWhatsAppUrl(order.order_number)}" style="background-color: #16a34a; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">Enviar comprobante por WhatsApp</a></p>
                  </div>`
               : ""
           }

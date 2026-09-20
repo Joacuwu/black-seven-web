@@ -238,7 +238,7 @@ function ProductDetail({ product }: { product: Product }) {
               <p className="text-2xl font-bold mt-2 text-neutral-200">
                 {formatPrice(product.price)}
               </p>
-              <p className="text-xs text-neutral-500 mt-1">3 y 6 cuotas sin interés en toda la web</p>
+              <p className="text-xs text-neutral-500 mt-1">10% de descuento pagando por transferencia</p>
             </div>
 
             <hr className="border-neutral-900" />

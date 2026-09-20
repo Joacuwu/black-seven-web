@@ -65,11 +65,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
         <p>© {new Date().getFullYear()} BLACK SEVEN. Todos los derechos reservados.</p>
         <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-neutral-400">
-          <span>Naranja X</span>
-          <span>•</span>
-          <span>Tarjetas de Crédito / Débito</span>
-          <span>•</span>
-          <span>Efectivo</span>
+          <span>Transferencia bancaria</span>
         </div>
       </div>
     </footer>

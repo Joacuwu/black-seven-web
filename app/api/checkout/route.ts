@@ -8,6 +8,7 @@ import {
   type CustomerData,
 } from "@/lib/orders";
 import { sendOrderEmails } from "@/lib/order-emails";
+import { ONLINE_PAYMENT_ENABLED } from "@/lib/payment-config";
 import { allowRequest, clientIp, TOO_MANY_REQUESTS } from "@/lib/rate-limit";
 import { OutOfStockError, releaseStock, reserveStock, type StockLine } from "@/lib/stock";
 import { sendLowStockEmail } from "@/lib/order-emails";
@@ -53,6 +54,10 @@ export async function POST(request: Request) {
         ? body.formData.metodoPago
         : null;
 
+    if (method === "naranjax" && !ONLINE_PAYMENT_ENABLED) {
+      return NextResponse.json({ error: "Por ahora aceptamos solo transferencia bancaria." }, { status: 400 });
+    }
+
     if (!customer || !method) {
       return NextResponse.json({ error: "Completá todos los datos del formulario." }, { status: 400 });
     }
@@ -81,7 +86,7 @@ export async function POST(request: Request) {
 
     if (method === "transferencia") {
       await sendOrderEmails(order);
-      return NextResponse.json({ success: true, orderNumber: order.order_number });
+      return NextResponse.json({ success: true, orderNumber: order.order_number, total: order.total });
     }
 
     // Pago online: se crea el cobro en Naranja X y se redirige al cliente.

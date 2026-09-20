@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST, TRANSFER_DISCOUNT_RATE } from "@/lib/pricing-constants";
 import { formatPrice } from "@/lib/catalog-types";
+import { ONLINE_PAYMENT_ENABLED } from "@/lib/payment-config";
 
 export default function CheckoutPage() {
   const { cart, totalPrice, clearCart } = useCart();
@@ -66,7 +67,7 @@ export default function CheckoutPage() {
       }
 
       clearCart();
-      router.push(`/checkout/exito?order=${data.orderNumber}`);
+      router.push(`/checkout/exito?order=${data.orderNumber}&total=${data.total}`);
     } catch (error) {
       console.error("Error al enviar el pedido:", error);
       alert("Ocurrió un error de conexión al enviar el pedido.");
@@ -211,27 +212,29 @@ export default function CheckoutPage() {
                       Transferencia Bancaria (-10% OFF)
                     </p>
                     <p className="text-xs text-neutral-500">
-                      Recibirás los datos bancarios al finalizar
+                      Al confirmar te mostramos el CBU y el alias para transferir
                     </p>
                   </div>
                 </label>
 
-                <label className="flex items-center gap-3 p-3 border border-neutral-800 rounded bg-black cursor-pointer hover:border-neutral-700">
-                  <input
-                    type="radio"
-                    name="metodoPago"
-                    value="naranjax"
-                    checked={formData.metodoPago === "naranjax"}
-                    onChange={handleChange}
-                    className="accent-red-600"
-                  />
-                  <div>
-                    <p className="text-sm font-bold">Naranja X / Tarjetas</p>
-                    <p className="text-xs text-neutral-500">
-                      Tarjeta Naranja X, crédito o débito
-                    </p>
-                  </div>
-                </label>
+                {ONLINE_PAYMENT_ENABLED && (
+                  <label className="flex items-center gap-3 p-3 border border-neutral-800 rounded bg-black cursor-pointer hover:border-neutral-700">
+                    <input
+                      type="radio"
+                      name="metodoPago"
+                      value="naranjax"
+                      checked={formData.metodoPago === "naranjax"}
+                      onChange={handleChange}
+                      className="accent-red-600"
+                    />
+                    <div>
+                      <p className="text-sm font-bold">Naranja X / Tarjetas</p>
+                      <p className="text-xs text-neutral-500">
+                        Tarjeta Naranja X, crédito o débito
+                      </p>
+                    </div>
+                  </label>
+                )}
               </div>
             </div>
           </div>

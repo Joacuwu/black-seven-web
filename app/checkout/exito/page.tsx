@@ -3,9 +3,12 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import BankTransferBox from "@/components/BankTransferBox";
 
 function ExitoContent() {
-  const orderNumber = useSearchParams().get("order") ?? "------";
+  const params = useSearchParams();
+  const orderNumber = params.get("order") ?? "------";
+  const total = Number(params.get("total")) || null; // solo para mostrar el importe; el cobro real lo calcula el servidor
 
   return (
     <div className="min-h-[80vh] bg-black text-white flex flex-col items-center justify-center p-6 text-center font-montserrat">
@@ -22,11 +25,21 @@ function ExitoContent() {
       </span>
       
       <h1 className="text-4xl md:text-5xl font-bebas tracking-wider mb-2">
-        PEDIDO #{orderNumber} CONFIRMADO
+        PEDIDO #{orderNumber} RECIBIDO
       </h1>
       
-      <p className="text-neutral-400 text-sm max-w-md mb-8 leading-relaxed">
-        Recibirás los detalles de tu pedido y el código de seguimiento por correo electrónico una vez despachado. También podés consultar el estado cuando quieras con tu número de pedido y tu email.
+      <p className="text-neutral-400 text-sm max-w-md mb-6 leading-relaxed">
+        Reservamos tu pedido. Para confirmarlo, hacé la transferencia con los datos de abajo y mandanos el comprobante.
+      </p>
+
+      {orderNumber !== "------" && (
+        <div className="w-full mb-8">
+          <BankTransferBox orderNumber={orderNumber} total={total} />
+        </div>
+      )}
+
+      <p className="text-neutral-500 text-xs max-w-md mb-8 leading-relaxed">
+        También te mandamos estos datos por mail. Podés consultar el estado de tu pedido cuando quieras en “Mi pedido”, con tu número y tu email.
       </p>
 
       {/* BOTONES DE ACCIÓN */}
