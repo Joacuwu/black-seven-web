@@ -3,7 +3,7 @@ export default function AnnouncementBar({ messages }: { messages: string[] }) {
 
   // Velocidad pareja sin importar cuántos mensajes haya: más texto, más segundos de vuelta.
   const totalChars = messages.join(" ").length;
-  const duration = Math.max(15, totalChars * 0.35);
+  const duration = Math.max(9, totalChars * 0.2);
 
   const track = (hidden: boolean) => (
     <div className="flex shrink-0" aria-hidden={hidden || undefined}>
