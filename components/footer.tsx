@@ -41,6 +41,7 @@ export default function Footer() {
           <ul className="flex flex-col gap-2 text-xs text-neutral-400">
             <li><Link href="/seguimiento" className="inline-block py-1.5 hover:text-white transition-colors">Seguimiento de Pedido</Link></li>
             <li><Link href="/#preguntas-frecuentes" className="inline-block py-1.5 hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
+            <li><Link href="/envios-y-devoluciones" className="inline-block py-1.5 hover:text-white transition-colors">Envíos y Devoluciones</Link></li>
             <li><a href="https://wa.me/5491127035976" target="_blank" rel="noopener noreferrer" className="inline-block py-1.5 hover:text-white transition-colors">Contacto por WhatsApp</a></li>
           </ul>
         </div>
@@ -53,7 +54,7 @@ export default function Footer() {
             <a href="https://www.instagram.com/black.sevenn7/" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-300 hover:text-white uppercase tracking-wider underline">
               Instagram
             </a>
-            <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-300 hover:text-white uppercase tracking-wider underline">
+            <a href="https://www.tiktok.com/@black.seven777" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-300 hover:text-white uppercase tracking-wider underline">
               TikTok
             </a>
           </div>
@@ -63,7 +64,13 @@ export default function Footer() {
 
       {/* FOOTER INFERIOR: MEDIOS DE PAGO Y COPYRIGHT */}
       <div className="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
-        <p>© {new Date().getFullYear()} BLACK SEVEN. Todos los derechos reservados.</p>
+        <div className="flex flex-col md:flex-row items-center gap-1 md:gap-4 text-center">
+          <p>© {new Date().getFullYear()} BLACK SEVEN. Todos los derechos reservados.</p>
+          <div className="flex items-center gap-3">
+            <Link href="/terminos" className="hover:text-white transition-colors">Términos y Condiciones</Link>
+            <Link href="/privacidad" className="hover:text-white transition-colors">Privacidad</Link>
+          </div>
+        </div>
         <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-neutral-400">
           <span>Transferencia bancaria</span>
         </div>
