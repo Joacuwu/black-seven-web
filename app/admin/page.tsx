@@ -4,8 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 import OrdersPanel from "@/components/admin/OrdersPanel";
 import ProductsPanel from "@/components/admin/ProductsPanel";
 import HeroPanel from "@/components/admin/HeroPanel";
+import AnnouncementsPanel from "@/components/admin/AnnouncementsPanel";
 
-type Tab = "pedidos" | "productos" | "portada";
+type Tab = "pedidos" | "productos" | "portada" | "cartel";
 
 export default function AdminPage() {
   const [authState, setAuthState] = useState<"loading" | "out" | "in">("loading");
@@ -74,13 +75,13 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-black text-white py-8 px-4 md:px-8 font-montserrat">
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-md p-1">
-            {(["pedidos", "productos", "portada"] as const).map((t) => (
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-md p-1 overflow-x-auto">
+            {(["pedidos", "productos", "portada", "cartel"] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`px-3 sm:px-5 py-2 rounded font-bebas text-xl sm:text-2xl tracking-wider uppercase transition-colors cursor-pointer ${
+                className={`px-2.5 sm:px-5 py-2 rounded font-bebas text-lg sm:text-2xl tracking-wider uppercase whitespace-nowrap transition-colors cursor-pointer ${
                   tab === t ? "bg-white text-black" : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -88,7 +89,7 @@ export default function AdminPage() {
               </button>
             ))}
           </div>
-          <button onClick={handleLogout} className="border border-neutral-800 px-3 py-2 rounded text-xs hover:border-white transition-colors cursor-pointer">
+          <button onClick={handleLogout} className="flex-shrink-0 border border-neutral-800 px-3 py-2 rounded text-xs hover:border-white transition-colors cursor-pointer">
             Salir
           </button>
         </div>
@@ -96,6 +97,7 @@ export default function AdminPage() {
         {tab === "pedidos" && <OrdersPanel onUnauthorized={handleUnauthorized} />}
         {tab === "productos" && <ProductsPanel onUnauthorized={handleUnauthorized} />}
         {tab === "portada" && <HeroPanel onUnauthorized={handleUnauthorized} />}
+        {tab === "cartel" && <AnnouncementsPanel onUnauthorized={handleUnauthorized} />}
       </div>
     </div>
   );

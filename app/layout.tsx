@@ -6,6 +6,8 @@ import { CartProvider } from "@/context/CartContext";
 import { ProductsProvider } from "@/context/ProductsContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { getCachedCatalog } from "@/lib/catalog-cache";
+import { getCachedAnnouncements } from "@/lib/announcements-cache";
+import { FALLBACK_ANNOUNCEMENTS } from "@/lib/announcements-types";
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site";
 import { Bebas_Neue, Montserrat } from "next/font/google";
@@ -43,6 +45,7 @@ export default async function RootLayout({
 }>) {
   // Si la base de datos no responde, la tienda igual abre y el navegador reintenta por su cuenta.
   const initialProducts = await getCachedCatalog().catch(() => undefined);
+  const announcements = await getCachedAnnouncements().catch(() => FALLBACK_ANNOUNCEMENTS);
 
   return (
     <html lang="es" className={`${bebas.variable} ${montserrat.variable}`}>
@@ -52,7 +55,7 @@ export default async function RootLayout({
         <CartProvider>
           {/* BLOQUE SUPERIOR FIJO */}
           <header className="sticky top-0 z-50 w-full bg-black">
-            <AnnouncementBar />
+            <AnnouncementBar messages={announcements.map((a) => a.text)} />
             <Navbar />
           </header>
           {/* CARRITO LATERAL GLOBAL */}
