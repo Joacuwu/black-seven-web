@@ -1,24 +1,26 @@
-"use client";
-
-import { useState, useEffect } from "react";
-
 export default function AnnouncementBar({ messages }: { messages: string[] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (messages.length < 2) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % messages.length);
-    }, 4000); // Cambia cada 4 segundos
-
-    return () => clearInterval(interval);
-  }, [messages.length]);
-
   if (messages.length === 0) return null;
 
+  // Velocidad pareja sin importar cuántos mensajes haya: más texto, más segundos de vuelta.
+  const totalChars = messages.join(" ").length;
+  const duration = Math.max(15, totalChars * 0.35);
+
+  const track = (hidden: boolean) => (
+    <div className="flex shrink-0" aria-hidden={hidden || undefined}>
+      {messages.map((message, index) => (
+        <span key={index} className="px-8 whitespace-nowrap">
+          {message}
+        </span>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="bg-red-600 text-white text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase py-1.5 px-4 text-center">
-      <p className="animate-fade-in">{messages[currentIndex % messages.length]}</p>
+    <div className="bg-red-600 text-white text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase py-1.5 overflow-hidden">
+      <div className="flex w-max animate-marquee" style={{ animationDuration: `${duration}s` }}>
+        {track(false)}
+        {track(true)}
+      </div>
     </div>
   );
 }
