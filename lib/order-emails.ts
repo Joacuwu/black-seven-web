@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import type { OrderRow } from "@/lib/orders";
 import { BANK_DETAILS, proofWhatsAppUrl } from "@/lib/payment-config";
 
-const FROM = "BLACK SEVEN <noreply@resend.dev>";
+const FROM = "BLACK SEVEN <pedidos@blackseven.com.ar>";
 
 const escapeHtml = (value: string) =>
   value
