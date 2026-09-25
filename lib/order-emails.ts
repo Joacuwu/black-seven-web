@@ -21,6 +21,12 @@ const PAYMENT_LABEL = {
   naranjax: "Naranja X",
 } as const;
 
+/** Envía un mail y deja registrado en los logs si Resend lo rechaza (la API no tira excepción sola). */
+async function send(resend: Resend, payload: Parameters<Resend["emails"]["send"]>[0]) {
+  const { error } = await resend.emails.send(payload);
+  if (error) console.error(`Error enviando mail "${payload.subject}" a ${payload.to}:`, error);
+}
+
 /** Envía el mail al admin y la confirmación al cliente. */
 export async function sendOrderEmails(order: OrderRow) {
   const resend = new Resend(process.env.RESEND_API_KEY);
@@ -32,7 +38,7 @@ export async function sendOrderEmails(order: OrderRow) {
     )
     .join("");
 
-  await resend.emails.send({
+  await send(resend, {
     from: FROM,
     to: [process.env.ADMIN_EMAIL || "admin@blackseven.com"],
     subject: `🚨 NUEVO PEDIDO #${order.order_number} - BLACK SEVEN`,
@@ -64,7 +70,7 @@ export async function sendOrderEmails(order: OrderRow) {
 
   const isTransfer = order.payment_method === "transferencia";
 
-  await resend.emails.send({
+  await send(resend, {
     from: FROM,
     to: [order.customer_email],
     replyTo: process.env.ADMIN_EMAIL || undefined,
@@ -120,7 +126,7 @@ export async function sendShippedEmail(order: OrderRow) {
        </div>`
     : "";
 
-  await resend.emails.send({
+  await send(resend, {
     from: FROM,
     to: [order.customer_email],
     subject: `📦 Tu Pedido #${order.order_number} ya está en camino - BLACK SEVEN`,
@@ -153,7 +159,7 @@ export async function sendLowStockEmail(alerts: { name: string; size: string; re
     .map((a) => `<li style="padding: 6px 0;"><strong>${escapeHtml(a.name)}</strong> · talle ${escapeHtml(a.size)}: ${a.remaining === 0 ? "<strong style=\"color:#dc2626\">AGOTADO</strong>" : `quedan ${a.remaining}`}</li>`)
     .join("");
 
-  await resend.emails.send({
+  await send(resend, {
     from: FROM,
     to: [process.env.ADMIN_EMAIL || "admin@blackseven.com"],
     subject: "⚠️ Stock bajo - BLACK SEVEN",
