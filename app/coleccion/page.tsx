@@ -3,10 +3,10 @@
 import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductsContext";
 import FavoriteButton from "@/components/FavoriteButton";
+import ProductCardImage from "@/components/ProductCardImage";
 import { normalizeText } from "@/components/SearchOverlay";
 import { availableSizes as sizesInStock, formatPrice, categoryLabel, isSoldOut } from "@/lib/catalog-types";
 
@@ -26,7 +26,6 @@ function ColeccionContent() {
   // ESTADOS DE FILTROS LOCALES
   const [selectedSize, setSelectedSize] = useState<string>("todos");
   const [sortBy, setSortBy] = useState<string>("destacados");
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   const handleCategoryChange = (cat: string) => {
     if (cat === "todas") {
@@ -173,11 +172,9 @@ function ColeccionContent() {
               <div
                 key={product.id}
                 className="group relative flex flex-col bg-neutral-950 border border-neutral-900 overflow-hidden transition-all duration-300 hover:border-neutral-700"
-                onMouseEnter={() => setHoveredId(product.id)}
-                onMouseLeave={() => setHoveredId(null)}
               >
                 <Link href={`/producto/${product.id}`} className="flex flex-col flex-grow">
-                  
+
                   {/* TAG */}
                   {product.tag && (
                     <span className="absolute top-3 left-3 bg-white text-black font-extrabold text-[10px] px-2 py-0.5 rounded-sm uppercase tracking-wider z-10">
@@ -187,25 +184,7 @@ function ColeccionContent() {
 
                   <FavoriteButton productId={product.id} productName={product.name} className="absolute top-2 right-2 z-10" size={18} />
 
-                  {/* IMAGEN CON HOVER SUAVE */}
-                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-900">
-                    <Image
-                      src={product.images[0]}
-                      alt={product.name}
-                      fill
-                      className={`object-cover transition-opacity duration-500 ${
-                        hoveredId === product.id ? "opacity-0" : "opacity-100"
-                      }`}
-                    />
-                    <Image
-                      src={product.images[1] ?? product.images[0]}
-                      alt={`${product.name} hover`}
-                      fill
-                      className={`object-cover transition-opacity duration-500 absolute top-0 left-0 ${
-                        hoveredId === product.id ? "opacity-100 scale-105" : "opacity-0"
-                      }`}
-                    />
-                  </div>
+                  <ProductCardImage product={product} aspect="aspect-[3/4]" />
 
                   {/* DATOS */}
                   <div className="p-4 flex flex-col flex-grow">
