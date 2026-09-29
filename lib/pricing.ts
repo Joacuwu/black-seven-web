@@ -1,4 +1,4 @@
-import { getActiveProductsByIds } from "@/lib/catalog";
+import { getActiveProductsByIds, isAllowedImage } from "@/lib/catalog";
 
 import {
   FREE_SHIPPING_THRESHOLD,
@@ -13,6 +13,8 @@ export interface CartLineInput {
   id?: number | string;
   size?: string;
   quantity?: number;
+  /** Diseño que el cliente ubicó sobre la remera en /personalizar (opcional). */
+  designUrl?: string;
 }
 
 export interface PricedLine {
@@ -21,6 +23,7 @@ export interface PricedLine {
   size: string;
   unitPrice: number;
   quantity: number;
+  designUrl: string | null;
 }
 
 export interface Totals {
@@ -53,12 +56,16 @@ export async function priceCart(items: unknown): Promise<PricedLine[]> {
       throw new InvalidCartError("Cantidad inválida.");
     }
 
+    // El diseño es opcional; si viene una dirección rara (no es una foto del sitio ni del panel), se ignora.
+    const designUrl = typeof item.designUrl === "string" && isAllowedImage(item.designUrl) ? item.designUrl : null;
+
     return {
       productId: product.id,
       name: product.name,
       size: item.size,
       unitPrice: product.price,
       quantity,
+      designUrl,
     };
   });
 }

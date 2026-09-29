@@ -34,7 +34,11 @@ export async function sendOrderEmails(order: OrderRow) {
   const itemsList = order.order_items
     .map(
       (item) =>
-        `<li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><strong>${escapeHtml(item.name)}</strong> - Talle: ${escapeHtml(item.size)} - Cantidad: ${item.quantity} - ${money(item.unit_price)}</li>`
+        `<li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;"><strong>${escapeHtml(item.name)}</strong> - Talle: ${escapeHtml(item.size)} - Cantidad: ${item.quantity} - ${money(item.unit_price)}${
+          item.design_url
+            ? ` - <a href="${escapeHtml(item.design_url)}" style="color:#dc2626;">Ver diseño</a>`
+            : ""
+        }</li>`
     )
     .join("");
 

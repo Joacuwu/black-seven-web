@@ -48,7 +48,7 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           formData,
-          items: cart.map(({ id, size, quantity }) => ({ id, size, quantity })),
+          items: cart.map(({ id, size, quantity, designUrl }) => ({ id, size, quantity, designUrl })),
         }),
       });
 

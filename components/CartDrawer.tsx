@@ -16,6 +16,7 @@ export default function CartDrawer() {
     let message = "¡Hola *BLACK SEVEN*! Quiero realizar el siguiente pedido:\n\n";
     cart.forEach((item, index) => {
       message += `${index + 1}. *${item.name}* - Talle: ${item.size} - ${item.price}\n`;
+      if (item.designUrl) message += `   Diseño: ${item.designUrl}\n`;
     });
     message += "\n¿Tienen stock disponible para coordinar el pago y envío?";
 
@@ -59,6 +60,7 @@ export default function CartDrawer() {
                   <div className="flex-1 ml-4">
                     <h4 className="font-bebas text-lg text-white leading-none">{item.name}</h4>
                     <p className="text-xs text-red-500 mt-1">Talle: {item.size}</p>
+                    {item.designUrl && <p className="text-[10px] text-neutral-400 uppercase tracking-wide mt-0.5">Con diseño personalizado</p>}
                     <p className="text-xs text-neutral-300 font-bold mt-1">{item.price}</p>
                     <div className="flex items-center gap-1 mt-2">
                       <button

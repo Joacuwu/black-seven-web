@@ -11,6 +11,8 @@ export interface CartItem {
   size: string;
   img: string;
   quantity?: number;
+  /** Diseño que el cliente ubicó sobre la remera en /personalizar (opcional). */
+  designUrl?: string;
 }
 
 interface CartContextType {
@@ -69,8 +71,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = (newItem: CartItem) => {
     setCart((prevCart) => {
+      // Con diseño, cada uno es su propia línea (dos remeras iguales con distinto diseño no se mezclan).
       const existingIndex = prevCart.findIndex(
-        (item) => item.id === newItem.id && item.size === newItem.size
+        (item) => item.id === newItem.id && item.size === newItem.size && item.designUrl === newItem.designUrl
       );
 
       if (existingIndex > -1) {
