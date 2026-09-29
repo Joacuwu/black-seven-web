@@ -39,9 +39,9 @@ const CUTS: Cut[] = [
 
 const whatsappUrl = (text: string) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 
-// Ancho fijo del "lienzo" final (alto = ancho * 5/4, mismo aspecto que la foto de la remera).
-const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = 1250;
+// Tamaño del "lienzo" final: mismo aspecto panorámico que la foto (frente y espalda lado a lado).
+const CANVAS_WIDTH = 1200;
+const CANVAS_HEIGHT = 800;
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -90,8 +90,9 @@ export default function PersonalizarPage() {
 
   // Diseño que el cliente sube y ubica sobre la remera.
   const [designObjectUrl, setDesignObjectUrl] = useState<string | null>(null);
-  const [designPos, setDesignPos] = useState({ x: 50, y: 42 });
-  const [designScale, setDesignScale] = useState(35);
+  // Por default se ubica centrado sobre la remera de adelante (mitad izquierda del lienzo).
+  const [designPos, setDesignPos] = useState({ x: 25, y: 45 });
+  const [designScale, setDesignScale] = useState(20);
   const [dragging, setDragging] = useState(false);
   const mockupRef = useRef<HTMLDivElement>(null);
 
@@ -121,8 +122,8 @@ export default function PersonalizarPage() {
     setActionError("");
     if (designObjectUrl) URL.revokeObjectURL(designObjectUrl);
     setDesignObjectUrl(URL.createObjectURL(file));
-    setDesignPos({ x: 50, y: 42 });
-    setDesignScale(35);
+    setDesignPos({ x: 25, y: 45 });
+    setDesignScale(20);
   };
 
   const removeDesign = () => {
@@ -247,71 +248,71 @@ export default function PersonalizarPage() {
                 Esta opción todavía no está cargada. Escribinos por WhatsApp y te ayudamos igual.
               </p>
             ) : (
-              <div className="grid sm:grid-cols-[minmax(200px,280px)_1fr] gap-6 items-start">
-                {/* LIENZO: remera + diseño arrastrable */}
-                <div>
-                  <div
-                    ref={mockupRef}
-                    className="relative aspect-[4/5] w-full bg-neutral-900 rounded overflow-hidden select-none"
-                  >
-                    <Image src={product.images[0]} alt={product.name} fill className="object-cover pointer-events-none" />
-                    {designObjectUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={designObjectUrl}
-                        alt="Tu diseño"
-                        draggable={false}
-                        onPointerDown={handlePointerDown}
-                        onPointerMove={handlePointerMove}
-                        onPointerUp={() => setDragging(false)}
-                        className="absolute cursor-move touch-none drop-shadow-lg"
-                        style={{
-                          left: `${designPos.x}%`,
-                          top: `${designPos.y}%`,
-                          width: `${designScale}%`,
-                          transform: "translate(-50%, -50%)",
-                        }}
-                      />
-                    )}
-                  </div>
+              <div>
+                {/* LIENZO GRANDE: remera de frente y espalda, con el diseño arrastrable */}
+                <div
+                  ref={mockupRef}
+                  className="relative aspect-[3/2] w-full bg-neutral-900 rounded overflow-hidden select-none"
+                >
+                  <Image src={product.images[0]} alt={product.name} fill className="object-contain pointer-events-none" />
+                  {designObjectUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={designObjectUrl}
+                      alt="Tu diseño"
+                      draggable={false}
+                      onPointerDown={handlePointerDown}
+                      onPointerMove={handlePointerMove}
+                      onPointerUp={() => setDragging(false)}
+                      className="absolute cursor-move touch-none drop-shadow-lg"
+                      style={{
+                        left: `${designPos.x}%`,
+                        top: `${designPos.y}%`,
+                        width: `${designScale}%`,
+                        transform: "translate(-50%, -50%)",
+                      }}
+                    />
+                  )}
+                </div>
+                <p className="text-[11px] text-neutral-500 mt-2 text-center">
+                  Remera de frente a la izquierda, de espalda a la derecha — arrastrá tu diseño a cualquiera de las dos.
+                </p>
 
-                  <div className="mt-3">
-                    <label className="inline-block text-xs border border-neutral-700 px-4 py-2.5 rounded hover:border-white transition-colors cursor-pointer">
-                      {designObjectUrl ? "Cambiar diseño" : "Subir mi diseño"}
+                <div className="mt-4 flex flex-col items-center">
+                  <label className="inline-block text-xs border border-neutral-700 px-4 py-2.5 rounded hover:border-white transition-colors cursor-pointer">
+                    {designObjectUrl ? "Cambiar diseño" : "Subir mi diseño"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        handleDesignFile(e.target.files?.[0]);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {designObjectUrl && (
+                    <button onClick={removeDesign} className="mt-2 text-xs text-neutral-400 underline hover:text-white cursor-pointer">
+                      Quitar diseño
+                    </button>
+                  )}
+                  {designObjectUrl && (
+                    <div className="mt-3 w-full max-w-xs">
+                      <label className="text-[11px] text-neutral-400 uppercase tracking-wide">Tamaño del diseño</label>
                       <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          handleDesignFile(e.target.files?.[0]);
-                          e.target.value = "";
-                        }}
+                        type="range"
+                        min={8}
+                        max={45}
+                        value={designScale}
+                        onChange={(e) => setDesignScale(Number(e.target.value))}
+                        className="w-full accent-red-600"
                       />
-                    </label>
-                    {designObjectUrl && (
-                      <button onClick={removeDesign} className="ml-3 text-xs text-neutral-400 underline hover:text-white cursor-pointer">
-                        Quitar
-                      </button>
-                    )}
-                    {designObjectUrl && (
-                      <div className="mt-3">
-                        <label className="text-[11px] text-neutral-400 uppercase tracking-wide">Tamaño del diseño</label>
-                        <input
-                          type="range"
-                          min={10}
-                          max={70}
-                          value={designScale}
-                          onChange={(e) => setDesignScale(Number(e.target.value))}
-                          className="w-full accent-red-600"
-                        />
-                        <p className="text-[11px] text-neutral-500">Arrastrá el diseño sobre la remera para ubicarlo.</p>
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* DATOS DE COMPRA */}
-                <div>
+                <div className="mt-8 border-t border-neutral-900 pt-6">
                   <h2 className="font-bebas text-2xl tracking-wider uppercase">{selectedCut.label}</h2>
                   <p className="text-lg font-black tracking-tighter text-white mt-1">{formatPrice(product.price)}</p>
                   <p className="text-xs text-neutral-500 mt-1">10% de descuento pagando por transferencia</p>
