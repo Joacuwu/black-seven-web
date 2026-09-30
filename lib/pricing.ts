@@ -1,4 +1,5 @@
-import { getActiveProductsByIds, isAllowedImage } from "@/lib/catalog";
+import { getActiveProductsByIds } from "@/lib/catalog";
+import { SHIRT_CUTS } from "@/lib/catalog-types";
 
 import {
   FREE_SHIPPING_THRESHOLD,
@@ -13,8 +14,8 @@ export interface CartLineInput {
   id?: number | string;
   size?: string;
   quantity?: number;
-  /** Diseño que el cliente ubicó sobre la remera en /personalizar (opcional). */
-  designUrl?: string;
+  /** Corte de remera elegido (opcional; solo tiene sentido en la categoría "remeras"). */
+  cut?: string;
 }
 
 export interface PricedLine {
@@ -23,7 +24,7 @@ export interface PricedLine {
   size: string;
   unitPrice: number;
   quantity: number;
-  designUrl: string | null;
+  cut: string | null;
 }
 
 export interface Totals {
@@ -56,8 +57,8 @@ export async function priceCart(items: unknown): Promise<PricedLine[]> {
       throw new InvalidCartError("Cantidad inválida.");
     }
 
-    // El diseño es opcional; si viene una dirección rara (no es una foto del sitio ni del panel), se ignora.
-    const designUrl = typeof item.designUrl === "string" && isAllowedImage(item.designUrl) ? item.designUrl : null;
+    // El corte es opcional y solo válido si es uno de los tres definidos; cualquier otra cosa se ignora.
+    const cut = typeof item.cut === "string" && (SHIRT_CUTS as readonly string[]).includes(item.cut) ? item.cut : null;
 
     return {
       productId: product.id,
@@ -65,7 +66,7 @@ export async function priceCart(items: unknown): Promise<PricedLine[]> {
       size: item.size,
       unitPrice: product.price,
       quantity,
-      designUrl,
+      cut,
     };
   });
 }

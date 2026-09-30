@@ -39,3 +39,9 @@ export function availableSizes(product: Pick<Product, "sizes" | "soldOutSizes">)
 export function isSoldOut(product: Pick<Product, "sizes" | "soldOutSizes">): boolean {
   return availableSizes(product).length === 0;
 }
+
+/** Cortes de remera a elegir en la ficha del producto (solo aplica a la categoría "remeras"). */
+export const SHIRT_CUTS = ["Oversize", "Clásico", "Boxy Fit"] as const;
+export type ShirtCut = (typeof SHIRT_CUTS)[number];
+
+export const isShirtCategory = (category: string) => category.toLowerCase() === "remeras";

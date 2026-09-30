@@ -38,8 +38,8 @@ export interface OrderItemRow {
   size: string;
   unit_price: number;
   quantity: number;
-  /** Diseño que el cliente ubicó en /personalizar sobre la remera, si eligió uno. */
-  design_url: string | null;
+  /** Corte de remera elegido (Oversize / Clásico / Boxy Fit), si el producto es una remera. */
+  cut: string | null;
 }
 
 export interface OrderRow {
@@ -107,7 +107,7 @@ export async function createOrder(params: {
       size: l.size,
       unit_price: l.unitPrice,
       quantity: l.quantity,
-      design_url: l.designUrl,
+      cut: l.cut,
     }));
 
     const { error: itemsError } = await supabase
@@ -139,7 +139,7 @@ export function orderStockLines(order: OrderRow): StockLine[] {
 export async function getOrderById(id: string): Promise<OrderRow | null> {
   const { data, error } = await getSupabase()
     .from("orders")
-    .select("*, order_items(product_id, name, size, unit_price, quantity, design_url)")
+    .select("*, order_items(product_id, name, size, unit_price, quantity, cut)")
     .eq("id", id)
     .maybeSingle();
 
@@ -150,7 +150,7 @@ export async function getOrderById(id: string): Promise<OrderRow | null> {
 export async function getOrderByNumber(orderNumber: number): Promise<OrderRow | null> {
   const { data, error } = await getSupabase()
     .from("orders")
-    .select("*, order_items(product_id, name, size, unit_price, quantity, design_url)")
+    .select("*, order_items(product_id, name, size, unit_price, quantity, cut)")
     .eq("order_number", orderNumber)
     .maybeSingle();
 
@@ -187,7 +187,7 @@ export async function setProviderPaymentId(orderNumber: number, providerPaymentI
   if (error) throw new Error(`Error guardando el pago del pedido: ${error.message}`);
 }
 
-const ORDER_SELECT = "*, order_items(product_id, name, size, unit_price, quantity, design_url)";
+const ORDER_SELECT = "*, order_items(product_id, name, size, unit_price, quantity, cut)";
 
 /** Últimos pedidos, más nuevos primero (uso del panel de administración). */
 export async function listOrders(limit = 200): Promise<OrderRow[]> {

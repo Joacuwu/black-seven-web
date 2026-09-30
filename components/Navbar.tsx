@@ -62,7 +62,6 @@ export default function Navbar() {
         href: "/coleccion",
         children: tags.length ? tags.map((t) => ({ label: t, href: `/coleccion?etiqueta=${encodeURIComponent(t)}` })) : undefined,
       },
-      { label: "Personalizar", href: "/personalizar" },
       { label: "Mi pedido", href: "/seguimiento" },
     ];
   }, [products]);

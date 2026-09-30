@@ -8,7 +8,7 @@ import { useProducts } from "@/context/ProductsContext";
 import FavoriteButton from "@/components/FavoriteButton";
 import ProductCardImage from "@/components/ProductCardImage";
 import { normalizeText } from "@/components/SearchOverlay";
-import { availableSizes as sizesInStock, formatPrice, categoryLabel, isSoldOut } from "@/lib/catalog-types";
+import { availableSizes as sizesInStock, formatPrice, categoryLabel, isShirtCategory, isSoldOut, SHIRT_CUTS } from "@/lib/catalog-types";
 
 
 function ColeccionContent() {
@@ -215,6 +215,7 @@ function ColeccionContent() {
                           price: formatPrice(product.price),
                           size: sizesInStock(product)[0],
                           img: product.images[0],
+                          cut: isShirtCategory(product.category) ? SHIRT_CUTS[0] : undefined,
                         })
                       }
                       className="w-full bg-white text-black py-3 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors cursor-pointer"

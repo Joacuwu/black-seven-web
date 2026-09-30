@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import GuiaTallesModal from "@/components/GuiaTallesModal";
 import { useProducts } from "@/context/ProductsContext";
-import { availableSizes, formatPrice, isSoldOut, type Product } from "@/lib/catalog-types";
+import { availableSizes, formatPrice, isShirtCategory, isSoldOut, SHIRT_CUTS, type Product } from "@/lib/catalog-types";
 import FavoriteButton from "@/components/FavoriteButton";
 
 
@@ -39,6 +39,8 @@ export default function ProductView({ initialProduct }: { initialProduct: Produc
 function ProductDetail({ product }: { product: Product }) {
   
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const isShirt = isShirtCategory(product.category);
+  const [selectedCut, setSelectedCut] = useState<string>(SHIRT_CUTS[0]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [addedAnimation, setAddedAnimation] = useState<boolean>(false);
@@ -113,6 +115,7 @@ function ProductDetail({ product }: { product: Product }) {
       size: activeSize,
       img: activeImage,
       quantity,
+      cut: isShirt ? selectedCut : undefined,
     });
     setQuantity(1);
     
@@ -276,6 +279,31 @@ function ProductDetail({ product }: { product: Product }) {
               </div>
             </div>
 
+            {/* SELECTOR DE CORTE (solo remeras) */}
+            {isShirt && (
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 mb-3 block">
+                  Corte: <span className="text-white">{selectedCut}</span>
+                </span>
+                <div className="flex flex-wrap gap-3">
+                  {SHIRT_CUTS.map((cut) => (
+                    <button
+                      key={cut}
+                      type="button"
+                      onClick={() => setSelectedCut(cut)}
+                      className={`px-4 h-12 text-sm font-bold border transition-all cursor-pointer ${
+                        selectedCut === cut
+                          ? "bg-white text-black border-white"
+                          : "bg-black text-neutral-400 border-neutral-800 hover:border-neutral-500"
+                      }`}
+                    >
+                      {cut}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* CANTIDAD Y BOTÓN AGREGAR */}
             <div className="flex gap-4 pt-2">
               <div className="flex items-center border border-neutral-800 bg-neutral-950">
@@ -335,7 +363,9 @@ function ProductDetail({ product }: { product: Product }) {
       <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur border-t border-neutral-800 pl-4 pr-24 py-3 flex items-center gap-3">
         <div className="min-w-0">
           <p className="font-bold text-lg leading-none">{formatPrice(product.price)}</p>
-          <p className="text-[11px] text-neutral-400 mt-1">{soldOut ? "Sin stock" : `Talle ${activeSize}`}</p>
+          <p className="text-[11px] text-neutral-400 mt-1">
+            {soldOut ? "Sin stock" : `Talle ${activeSize}${isShirt ? ` · ${selectedCut}` : ""}`}
+          </p>
         </div>
         <button
           onClick={handleAddToCart}

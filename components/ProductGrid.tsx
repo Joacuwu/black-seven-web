@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductsContext";
-import { availableSizes, formatPrice, isSoldOut } from "@/lib/catalog-types";
+import { availableSizes, formatPrice, isShirtCategory, isSoldOut, SHIRT_CUTS } from "@/lib/catalog-types";
 import FavoriteButton from "@/components/FavoriteButton";
 import ProductCardImage from "@/components/ProductCardImage";
 
@@ -62,7 +62,16 @@ export default function ProductGrid() {
                   </span>
                 ) : availableSizes(product).length === 1 ? (
                   <button
-                    onClick={() => addToCart({ id: product.id, name: product.name, price: formatPrice(product.price), size: availableSizes(product)[0], img: product.images[0] })}
+                    onClick={() =>
+                      addToCart({
+                        id: product.id,
+                        name: product.name,
+                        price: formatPrice(product.price),
+                        size: availableSizes(product)[0],
+                        img: product.images[0],
+                        cut: isShirtCategory(product.category) ? SHIRT_CUTS[0] : undefined,
+                      })
+                    }
                     className="w-full bg-white text-black py-3 rounded-md text-xs font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors cursor-pointer"
                   >
                     Agregar al Carrito

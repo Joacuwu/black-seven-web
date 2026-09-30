@@ -48,7 +48,7 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           formData,
-          items: cart.map(({ id, size, quantity, designUrl }) => ({ id, size, quantity, designUrl })),
+          items: cart.map(({ id, size, quantity, cut }) => ({ id, size, quantity, cut })),
         }),
       });
 
@@ -265,7 +265,8 @@ export default function CheckoutPage() {
                         {item.name}
                       </p>
                       <p className="text-neutral-500">
-                        Talle: {item.size} | Cant: {item.quantity || 1}
+                        Talle: {item.size}
+                        {item.cut ? ` · Corte: ${item.cut}` : ""} | Cant: {item.quantity || 1}
                       </p>
                     </div>
                     <p className="font-bold">{formatPrice((Number(item.price.replace(/\D/g, "")) || 0) * (item.quantity || 1))}</p>

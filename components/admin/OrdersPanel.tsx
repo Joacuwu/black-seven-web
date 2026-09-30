@@ -115,12 +115,11 @@ function OrderCard({
         <div className="space-y-1 text-neutral-300">
           {order.order_items.map((item, i) => (
             <p key={i}>
-              {item.quantity}× {item.name} <span className="text-neutral-500">(Talle {item.size})</span>
-              {item.design_url && (
-                <a href={item.design_url} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline ml-2">
-                  Ver diseño
-                </a>
-              )}
+              {item.quantity}× {item.name}{" "}
+              <span className="text-neutral-500">
+                (Talle {item.size}
+                {item.cut ? `, Corte: ${item.cut}` : ""})
+              </span>
             </p>
           ))}
           <p className="pt-1 font-bold text-white">
