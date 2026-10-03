@@ -6,7 +6,7 @@ An e-commerce site for clothing (T-shirts, hoodies, jackets and sets) with a cat
 
 <!-- Add a screenshot here: ![Home](docs/screenshots/home.png) -->
 
-**Demo:** _(add link if deployed)_
+**Demo:** [black-seven-web.vercel.app](https://black-seven-web.vercel.app/)
 
 ## Features
 

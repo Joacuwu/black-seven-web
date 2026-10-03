@@ -6,7 +6,7 @@ E-commerce de indumentaria (remeras, buzos, camperas y conjuntos) con catálogo,
 
 <!-- Agregar acá una captura de pantalla: ![Home](docs/screenshots/home.png) -->
 
-**Demo:** _(agregar enlace si está desplegado)_
+**Demo:** [black-seven-web.vercel.app](https://black-seven-web.vercel.app/)
 
 ## Funcionalidades
 
