@@ -4,7 +4,7 @@
 
 E-commerce de indumentaria (remeras, buzos, camperas y conjuntos) con catálogo, carrito, checkout, seguimiento de pedidos y un panel de administración pensado para manejarse desde el celular.
 
-<!-- Agregar acá una captura de pantalla: ![Home](docs/screenshots/home.png) -->
+![Página de inicio de BLACK SEVEN](docs/screenshots/home.webp)
 
 **Demo:** [black-seven-web.vercel.app](https://black-seven-web.vercel.app/)
 

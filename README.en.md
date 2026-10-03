@@ -4,7 +4,7 @@
 
 An e-commerce site for clothing (T-shirts, hoodies, jackets and sets) with a catalog, cart, checkout, order tracking and an admin panel designed to be used from a phone.
 
-<!-- Add a screenshot here: ![Home](docs/screenshots/home.png) -->
+![BLACK SEVEN home page](docs/screenshots/home.webp)
 
 **Demo:** [black-seven-web.vercel.app](https://black-seven-web.vercel.app/)
 
