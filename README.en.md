@@ -85,11 +85,14 @@ Open [http://localhost:3000](http://localhost:3000).
 | `NEXT_PUBLIC_SITE_URL` | Public site URL (emails, sitemap, metadata) | Recommended |
 | `RESEND_API_KEY` | Order email delivery | To send emails |
 | `ADMIN_EMAIL` | Administrator email | Optional |
+| `NEXT_PUBLIC_BANK_CBU`, `NEXT_PUBLIC_BANK_ALIAS` | Account that receives transfers | Yes, to take payments |
+| `NEXT_PUBLIC_BANK_HOLDER` | Account holder name (hidden if unset) | Optional |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | WhatsApp number for payment proof, no `+` (e.g. `5491112345678`) | Yes |
 | `NARANJAX_API_URL`, `NARANJAX_CLIENT_ID`, `NARANJAX_CLIENT_SECRET`, `NARANJAX_WEBHOOK_SECRET` | Online payment with Naranja X | Only if online payment is enabled |
 
 ## Store configuration
 
-Payment details (bank account, alias, WhatsApp) and the online-payment switch live in [`lib/payment-config.ts`](lib/payment-config.ts).
+Payment details (bank account, alias, WhatsApp) are loaded from environment variables so they are not published in the repository: copy [`.env.example`](.env.example) to `.env.local` and fill it in. The online-payment switch lives in [`lib/payment-config.ts`](lib/payment-config.ts).
 
 ## Scripts
 

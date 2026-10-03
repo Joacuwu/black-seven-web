@@ -85,11 +85,14 @@ Abrí [http://localhost:3000](http://localhost:3000).
 | `NEXT_PUBLIC_SITE_URL` | URL pública del sitio (mails, sitemap, metadatos) | Recomendada |
 | `RESEND_API_KEY` | Envío de emails de pedido | Para enviar mails |
 | `ADMIN_EMAIL` | Email del administrador | Opcional |
+| `NEXT_PUBLIC_BANK_CBU`, `NEXT_PUBLIC_BANK_ALIAS` | Cuenta que recibe las transferencias | Sí, para cobrar |
+| `NEXT_PUBLIC_BANK_HOLDER` | Titular de la cuenta (si falta, no se muestra) | Opcional |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | WhatsApp para el comprobante, sin `+` (ej: `5491112345678`) | Sí |
 | `NARANJAX_API_URL`, `NARANJAX_CLIENT_ID`, `NARANJAX_CLIENT_SECRET`, `NARANJAX_WEBHOOK_SECRET` | Pago online con Naranja X | Solo si se activa el pago online |
 
 ## Configuración de la tienda
 
-Los datos de cobro (cuenta bancaria, alias, WhatsApp) y la activación del pago online están en [`lib/payment-config.ts`](lib/payment-config.ts).
+Los datos de cobro (cuenta bancaria, alias, WhatsApp) se cargan por variables de entorno, así no quedan publicados en el repositorio: copiá [`.env.example`](.env.example) como `.env.local` y completalo. La activación del pago online está en [`lib/payment-config.ts`](lib/payment-config.ts).
 
 ## Scripts
 

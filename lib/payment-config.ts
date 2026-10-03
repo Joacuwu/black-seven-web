@@ -1,16 +1,17 @@
-// Datos de pago de la tienda. Es el ÚNICO lugar donde hay que cambiarlos.
+// Datos de pago de la tienda. Se cargan por variables de entorno (ver .env.example) para no
+// publicar datos personales en el repositorio. Son NEXT_PUBLIC_ porque el checkout los muestra al comprador.
 
 /** Cuenta que recibe las transferencias. */
 export const BANK_DETAILS = {
   /** CBU o CVU (22 dígitos). */
-  cbu: "0000168300000022305789",
-  alias: "estampados.7",
-  /** Nombre del titular, si se quiere mostrar (ej: "Juan Pérez"). Con null no se muestra. */
-  holder: "Matias Ariel Colman" as string | null,
+  cbu: process.env.NEXT_PUBLIC_BANK_CBU ?? "",
+  alias: process.env.NEXT_PUBLIC_BANK_ALIAS ?? "",
+  /** Nombre del titular, si se quiere mostrar (ej: "Juan Pérez"). Sin la variable no se muestra. */
+  holder: (process.env.NEXT_PUBLIC_BANK_HOLDER || null) as string | null,
 };
 
 /** Número de WhatsApp para mandar el comprobante (sin + ni espacios). */
-export const WHATSAPP_NUMBER = "5491127035976";
+export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
 
 /**
  * Pago online con tarjeta (Naranja X). Mientras esté en false, la tienda ofrece solo transferencia:
