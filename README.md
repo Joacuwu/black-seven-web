@@ -1,5 +1,7 @@
 # BLACK SEVEN — Tienda online
 
+🇬🇧 [Read in English](README.en.md)
+
 E-commerce de indumentaria (remeras, buzos, camperas y conjuntos) con catálogo, carrito, checkout, seguimiento de pedidos y un panel de administración pensado para manejarse desde el celular.
 
 <!-- Agregar acá una captura de pantalla: ![Home](docs/screenshots/home.png) -->
